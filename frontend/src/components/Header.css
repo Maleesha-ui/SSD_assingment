@@ -1,0 +1,118 @@
+/* Header Container */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #828181; /* Solid dark gray */
+    padding: 20px 60px;
+    color: rgb(106, 105, 105);
+    box-shadow: 0 4px 8px rgba(226, 221, 221, 0.688);
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Logo Styling */
+.header-container .logo h1 {
+    font-size: 2rem;
+    margin: 0;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Navigation Menu */
+.nav-links ul {
+    list-style: none;
+    display: flex;
+    gap: 35px;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-links ul li {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.nav-links ul li a {
+    text-decoration: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: 0.3s ease;
+}
+
+.nav-links ul li a:hover {
+    background: #444; /* Slightly lighter gray */
+    color: white;
+}
+
+/* Section Styling */
+.section {
+    margin: 50px auto;
+    padding: 50px;
+    background: #f4f4f4; /* Light gray background */
+    color: #6f6d6d;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    max-width: 80%;
+    text-align: center; /* Ensuring text alignment is balanced */
+}
+
+/* About Us & Contact Us Specific Styling */
+.about-us,
+.contact-us {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 50px;
+    background: #f4f4f4; /* Light gray */
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    margin: 40px auto;
+    max-width: 75%;
+}
+
+/* Ensure Headers in Sections Are Well-Spaced */
+.about-us h2,
+.contact-us h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.about-us p,
+.contact-us p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    max-width: 85%;
+}
+
+/* Horizontal Line */
+hr {
+    border: none;
+    height: 2px;
+    background: #727171; /* Dark gray horizontal line */
+    margin: 30px auto;
+    width: 70%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header-container {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .nav-links ul {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .section,
+    .about-us,
+    .contact-us {
+        max-width: 90%;
+        padding: 30px;
+    }
+}

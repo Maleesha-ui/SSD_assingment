@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .container { padding: 20px; }
+    .header { color: #2196f3; }
+    .items { margin: 20px 0; }
+    .total { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="header">Payment Receipt</h1>
+    <p>Order Number: {{orderNumber}}</p>
+    <p>Date: {{date}}</p>
+    
+    <div class="items">
+      <h3>Items Purchased:</h3>
+      <ul>
+        {{#each items}}
+        <li>{{name}} - Qty: {{quantity}} - ${{price}}</li>
+        {{/each}}
+      </ul>
+    </div>
+    
+    <p class="total">Total Amount: ${{totalAmount}}</p>
+    <p>Payment Method: {{paymentMethod}}</p>
+    <p>Transaction ID: {{transactionId}}</p>
+  </div>
+</body>
+</html> 

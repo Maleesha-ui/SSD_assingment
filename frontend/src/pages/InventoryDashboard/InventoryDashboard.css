@@ -1,0 +1,182 @@
+.welcome-container {
+  padding: 2rem;
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+
+}
+
+.welcome-container h1 {
+  color: var(--primary-color);
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  margin-top: 2rem;
+}
+
+.current-date {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.chart-container {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  height: 60vh;
+  max-width: 1200px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.chart-container:hover {
+  transform: translateY(-5px);
+}
+
+.dashboard-stats {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  min-width: 250px;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-card.low-stock {
+  background: linear-gradient(135deg, #efa4a4 0%, #df4438 100%);
+  color: #ffffff;
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.stat-info h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.stat-info p {
+  margin: 0.5rem 0 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  width: 90%;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #333;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: #666;
+}
+
+.close-button:hover {
+  color: #333;
+}
+
+.low-stock-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.low-stock-table th,
+.low-stock-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.low-stock-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+}
+
+.quantity-low {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .welcome-container {
+    padding: 1rem;
+  }
+
+  .welcome-container h1 {
+    font-size: 2rem;
+  }
+
+  .chart-container {
+    padding: 1rem;
+    height: 50vh;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 1rem;
+  }
+
+  .low-stock-table {
+    font-size: 0.9rem;
+  }
+
+  .low-stock-table th,
+  .low-stock-table td {
+    padding: 0.75rem;
+  }
+}

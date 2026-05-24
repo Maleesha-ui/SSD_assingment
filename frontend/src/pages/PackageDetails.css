@@ -1,0 +1,176 @@
+/* Import Google Fonts for a Modern Look */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@300;400;500&display=swap');
+
+/* General Styling */
+body {
+    font-family: "Poppins", sans-serif;
+    color: #070708;
+    background-color: #e0e0e0; /* Light gray background for the body */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;  /* Center content horizontally */
+    align-items: center;  /* Center content vertically */
+    min-height: 100vh;  /* Ensure content takes up at least full height */
+    flex-direction: column; /* Stack content vertically */
+}
+
+/* Container for Package Details */
+.package-details-container {
+    max-width: 1000px;  /* Increased max width */
+    margin: 30px auto;
+    padding: 20px;  /* Increased padding */
+    background: linear-gradient(to right, #f0f0f0, #c0c0c0); /* Gradient background from light gray to medium gray */
+    border-radius: 12px; /* Rounded corners */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);  /* Added more shadow for modern look */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;  /* Hide any overflowing content */
+}
+
+/* Header Styling (Gradient background for topic) */
+.packages-header {
+    text-align: center;
+    padding: 15px;  /* Increased padding */
+    font-size: 26px;  /* Larger font size */
+    font-weight: bold;
+    font-family: "Playfair Display", serif;
+    background: linear-gradient(to right, #c9c5c5, #696767); /* Gradient background for the header */
+    color: white; /* White text for the topic */
+    border-radius: 8px;
+    width: 100%;
+    margin-bottom: 20px;  /* Increased margin */
+}
+
+/* Main Image Styling */
+.package-detail-image {
+    width: 100%;  /* Increased size to 60% */
+    max-width: 200px;  /* Increased max-width */
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);  /* Shadow for a modern feel */
+    margin-bottom: 20px;  /* Increased margin */
+}
+
+
+/* Package Info Section */
+.package-info {
+    text-align: center;
+    margin-bottom: 30px;  /* Increased margin */
+}
+
+/* Package Title (Graceful Goodbye Package) */
+.package-info h2 {
+    font-size: 26px;  /* Larger font size */
+    font-family: "Poppins", sans-serif;  /* Changed font style */
+    color: white !important;  /* White color for text */
+    background: transparent;  /* No background */
+    padding: 8px 14px;
+    border-radius: 6px;
+    display: inline-block;
+    margin-top: 10px;  /* Increased margin */
+}
+
+/* Price Styling */
+.package-price {
+    font-size: 20px;  /* Slightly larger font size */
+    font-weight: bold;
+    color: #333;
+    margin-top: 10px;  /* Increased margin */
+}
+
+/* "Services Included" Section */
+.services-title {
+    text-align: center;
+    font-size: 24px;  /* Adjusted font size */
+    font-weight: bold;
+    font-family: "Playfair Display", serif;
+    color: #333;
+    margin-top: 20px;
+    width: 100%;
+}
+
+/* Service Cards (Centered & Spaced) */
+.services-list {
+    display: flex;
+    justify-content: center;
+    gap: 20px;  /* Increased gap */
+    padding: 20px;  /* Increased padding */
+    flex-wrap: wrap;
+    margin-top: 10px;
+    width: 100%;
+    overflow: hidden; /* Prevent overflow */
+}
+
+/* Smaller Service Cards */
+.service-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 220px;  /* Smaller width */
+    padding: 20px;  /* Increased padding */
+    background: linear-gradient(to right, #ddd, #bbb); /* Gradient for service cards */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease-in-out;
+    text-align: center;
+    margin-bottom: 20px;  /* Margin for separation */
+}
+
+.service-card:hover {
+    transform: scale(1.05);
+}
+
+.service-card img {
+    width: 250px;  /* Adjusted size */
+    height: 250px;  /* Adjusted size */
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.service-card h4 {
+    font-size: 18px;  /* Larger font size */
+    font-weight: bold;
+    color: #222;
+    margin-top: 8px;  /* Increased margin */
+}
+
+.service-card p {
+    font-size: 16px;  /* Adjusted font size */
+    color: #555;
+    margin-top: 4px;
+}
+
+/* Buttons Section */
+.btn-group {
+    display: flex;
+    justify-content: center;
+    gap: 50px;  /* Increased gap between buttons */
+    margin-top: 30px;  /* Increased margin */
+    width: 100%;
+}
+
+.btn {
+    padding: 12px 24px;  /* Adjusted padding for buttons */
+    text-decoration: none;
+    color: white !important;
+    font-weight: bold;
+    font-size: 18px;  /* Adjusted font size */
+    border-radius: 6px;  /* Adjusted radius */
+    transition: 0.3s;
+}
+
+.back-btn {
+    background: linear-gradient(to right, #666, #444);
+}
+
+.book-btn {
+    background: linear-gradient(to right, #555454, #2f2d2e);
+}
+
+.btn:hover {
+    opacity: 0.8;
+}

@@ -1,0 +1,101 @@
+.package-admin-container {
+    padding: 20px;
+    background: linear-gradient(135deg, #f5f5f5, #e3e3e3);  /* Subtle gradient background */
+    border-radius: 8px;
+  }
+  
+  .package-admin-navbar {
+    background: linear-gradient(135deg, #333, #444);  /* Darker gradient for navbar */
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+  }
+  
+  .package-admin-navbar a {
+    color: white;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px 15px;
+    transition: color 0.3s ease;
+  }
+  
+  .package-admin-navbar a:hover {
+    color: #f39c12;  /* Gold color on hover */
+  }
+  
+  .package-admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .package-admin-table th,
+  .package-admin-table td {
+    border: 1px solid #ddd;
+    padding: 14px;
+    text-align: left;
+    transition: background-color 0.3s ease;
+  }
+  
+  .package-admin-table th {
+    background: linear-gradient(135deg, #333, #444);  /* Gradient for table headers */
+    color: white;
+  }
+  
+  .package-admin-table td {
+    background: #fff;
+  }
+  
+  .package-admin-table tr:hover {
+    background-color: #f1f1f1;  /* Light hover effect for rows */
+  }
+  
+  button {
+    margin-right: 10px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 4px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  button:hover {
+    transform: scale(1.05);  /* Slightly enlarge the button on hover */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .edit-btn {
+    background: linear-gradient(135deg, #4CAF50, #45a049);  /* Green gradient for edit */
+    color: white;
+    border: none;
+  }
+  
+  .delete-btn {
+    background: linear-gradient(135deg, #f44336, #e53935);  /* Red gradient for delete */
+    color: white;
+    border: none;
+  }
+  
+  .view-btn {
+    background: linear-gradient(135deg, #008CBA, #007bb5);  /* Blue gradient for view */
+    color: white;
+    border: none;
+  }
+  
+  .package-image {
+    max-width: 120px;
+    max-height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .package-image:hover {
+    transform: scale(1.05);  /* Slightly enlarge the image on hover */
+  }
+  

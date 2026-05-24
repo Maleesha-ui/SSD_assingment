@@ -1,0 +1,92 @@
+.vehicle-management-wrapper {
+  min-height: 100vh;
+  
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #eceff1 0%, #b0bec5 100%);
+  padding: 20px;
+  width: 100vw;
+}
+
+h1 {
+  font-size: 24px;
+  color: #1a2a3a;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.search-bar {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.add-btn {
+  padding: 10px 15px;
+  background: #1a2a3a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.vehicle-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.vehicle-table th, .vehicle-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.vehicle-table th {
+  background: #1a2a3a;
+  color: white;
+  font-weight: bold;
+}
+
+.vehicle-table .available {
+  color: green;
+}
+
+.vehicle-table .assigned {
+  color: orange;
+}
+
+.vehicle-table .inactive {
+  color: red;
+}
+
+.edit-btn, .assign-btn, .delete-btn {
+  padding: 6px 10px;
+  margin: 4px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.edit-btn {
+  background: #ffc107;
+  color: black;
+}
+
+.assign-btn {
+  background: #007bff;
+  color: white;
+}
+
+.delete-btn {
+  background: #dc3545;
+  color: white;
+}

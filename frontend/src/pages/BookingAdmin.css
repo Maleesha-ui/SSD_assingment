@@ -1,0 +1,101 @@
+/* BookingAdmin.css */
+
+.booking-admin-container {
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .booking-admin-navbar {
+    display: flex;
+    justify-content: flex-start;
+    padding: 10px;
+    background: linear-gradient(145deg, #4e4e4e, #2d2d2d);
+    border-radius: 5px;
+  }
+  
+  .booking-admin-navbar a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 8px 15px;
+  }
+  
+  .booking-admin-navbar a:hover {
+    background-color: #444;
+    border-radius: 5px;
+  }
+  
+  h2 {
+    text-align: center;
+    margin: 20px 0;
+    color: #333;
+  }
+  
+  .booking-admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .booking-admin-table th, 
+  .booking-admin-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+  }
+  
+  .booking-admin-table th {
+    background: linear-gradient(145deg, #636363, #3c3c3c);
+    color: white;
+  }
+  
+  .booking-admin-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .booking-admin-table tr:hover {
+    background-color: #ddd;
+  }
+  
+  .edit-btn,
+  .delete-btn,
+  .view-btn {
+    padding: 8px 12px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .edit-btn {
+    background: linear-gradient(145deg, #e0e0e0, #b3b3b3);
+    color: black;
+  }
+  
+  .delete-btn {
+    background: linear-gradient(145deg, #ff4d4d, #e60000);
+    color: white;
+  }
+  
+  .view-btn {
+    background: linear-gradient(145deg, #4c8c8c, #357b7b);
+    color: white;
+  }
+  
+  .edit-btn:hover {
+    background: linear-gradient(145deg, #c7c7c7, #999999);
+  }
+  
+  .delete-btn:hover {
+    background: linear-gradient(145deg, #c82333, #ff0000);
+  }
+  
+  .view-btn:hover {
+    background: linear-gradient(145deg, #307474, #006666);
+  }
+  

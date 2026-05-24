@@ -1,0 +1,121 @@
+/* Ensure the container is centered and has padding */
+.packages-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header style for the package section */
+.packages-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.packages-header h1 {
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.packages-header p {
+    font-size: 18px;
+    margin-top: 10px;
+    color: #555;
+}
+
+/* Flex grid to display the packages - 3 packages in a row on large screens */
+.packages-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Three equal columns */
+    gap: 20px;
+    justify-items: center; /* Centering the items */
+    width: 100%; /* Ensures it takes full width */
+}
+
+/* Individual package card styling */
+.package-card {
+    background-color: #f9f9f9;
+    border-radius: 10px; /* Slightly smaller border radius for a less rounded look */
+    padding: 20px; /* Reduced padding for a more compact card */
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slightly lighter box-shadow */
+    transition: transform 0.3s ease;
+    width: 280px; /* Smaller width for the card */
+    height: 480px; /* Increased height to accommodate both image and button */
+    margin-bottom: 30px; /* Slightly reduced space between cards */
+    display: flex;
+    flex-direction: column; /* Ensure vertical stacking of image, title, price, and button */
+    align-items: center;
+    justify-content: space-between; /* Space between the items */
+}
+
+.package-card:hover {
+    transform: translateY(-10px); /* Reduced hover effect */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Lighter shadow on hover */
+}
+
+/* Larger image style for each package */
+.package-image {
+    width: 100%;
+    height: 250px; /* Increased height for larger images */
+    object-fit: cover; /* Ensures the image covers the area properly */
+    border-radius: 8px;
+}
+
+/* Package title style */
+.package-title {
+    font-size: 24px;
+    font-weight: 500;
+    color: #333;
+    margin-top: 20px;
+}
+
+/* Price style */
+.package-price {
+    font-size: 18px;
+    color: #333;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+/* Button styling */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #41403f, #feb47b); /* Gradient background */
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px; /* Smaller button */
+    margin-top: 15px;
+    transition: background 0.3s ease;
+}
+
+.btn:hover {
+    background: linear-gradient(135deg, #413d3a, #363434); /* Inverse gradient on hover */
+}
+
+.view-details-btn {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Responsiveness: Stack packages and services vertically on smaller screens */
+@media (max-width: 768px) {
+    .packages-header h1 {
+        font-size: 28px;
+    }
+
+    .packages-header p {
+        font-size: 16px;
+    }
+
+    .package-title {
+        font-size: 20px;
+    }
+
+    /* Stack the packages vertically on smaller screens */
+    .packages-grid {
+        grid-template-columns: 1fr; /* Stack the packages vertically on smaller screens */
+        gap: 30px; /* More space between packages */
+    }
+}
