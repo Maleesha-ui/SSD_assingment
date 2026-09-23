@@ -24,7 +24,7 @@ const Dashboard = () => {
           <div className="overview-cards">
             <div className="card">
               <div className="card-image-container">
-                <img src="/images/vehicle.jpeg" alt="Vehicle" className="card-image" />
+                <img src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=600&q=80" alt="Fleet Vehicle" className="card-image" loading="lazy" />
               </div>
               <div className="card-content">
                 <h3>Total Vehicles</h3>
@@ -38,7 +38,7 @@ const Dashboard = () => {
 
             <div className="card">
               <div className="card-image-container">
-                <img src="/images/driver.jpeg" alt="Driver" className="card-image" />
+                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&q=80" alt="Professional Driver" className="card-image" loading="lazy" />
               </div>
               <div className="card-content">
                 <h3>Total Drivers</h3>
@@ -52,7 +52,7 @@ const Dashboard = () => {
 
             <div className="card">
               <div className="card-image-container">
-                <img src="/images/transport.jpeg" alt="Transport" className="card-image" />
+                <img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=600&q=80" alt="Funeral Procession Transport" className="card-image" loading="lazy" />
               </div>
               <div className="card-content">
                 <h3>Funeral Transports</h3>
@@ -66,7 +66,7 @@ const Dashboard = () => {
 
             <div className="card alert-card">
               <div className="card-image-container">
-                <img src="/images/alert.jpeg" alt="Alert" className="card-image" />
+                <img src="https://images.unsplash.com/photo-1486006920555-c77dce18193b?w=600&q=80" alt="Fleet Service Alerts" className="card-image" loading="lazy" />
               </div>
               <div className="card-content">
                 <h3>Urgent Alerts</h3>

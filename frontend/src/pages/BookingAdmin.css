@@ -1,101 +1,197 @@
-/* BookingAdmin.css */
+/* ============================================
+   BOOKING ADMIN — 60-30-10 Color Rule
+   ============================================ */
 
 .booking-admin-container {
-    width: 80%;
+  width: 90%;
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 32px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--border-light, #E8E4DF);
+  box-shadow: 0 8px 32px rgba(27, 42, 61, 0.06);
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.booking-admin-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #1B2A3D 0%, #243648 100%);
+  border-radius: 12px;
+  margin-bottom: 28px;
+  box-shadow: 0 4px 14px rgba(27, 42, 61, 0.15);
+}
+
+.booking-admin-navbar a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.booking-admin-navbar a:hover {
+  background-color: rgba(201, 169, 97, 0.2);
+  color: #C9A961;
+}
+
+.booking-admin-container h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #1B2A3D;
+  text-align: left;
+  margin: 0 0 24px 0;
+  letter-spacing: -0.3px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.booking-admin-container h2::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 28px;
+  background-color: #C9A961;
+  border-radius: 2px;
+}
+
+.booking-admin-table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border-light, #E8E4DF);
+}
+
+.booking-admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.booking-admin-table th, 
+.booking-admin-table td {
+  padding: 16px 20px;
+  font-size: 0.925rem;
+  border-bottom: 1px solid #E8E4DF;
+  text-align: left;
+}
+
+.booking-admin-table th {
+  background-color: #1B2A3D;
+  color: #ffffff;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.booking-admin-table tr {
+  transition: background-color 0.2s ease;
+}
+
+.booking-admin-table tbody tr:hover {
+  background-color: rgba(248, 246, 243, 0.8);
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.status-confirmed {
+  background-color: rgba(46, 125, 50, 0.12);
+  color: #2E7D32;
+  border: 1px solid rgba(46, 125, 50, 0.25);
+}
+
+.status-pending {
+  background-color: rgba(201, 169, 97, 0.15);
+  color: #9E7B26;
+  border: 1px solid rgba(201, 169, 97, 0.35);
+}
+
+.status-completed {
+  background-color: rgba(27, 42, 61, 0.1);
+  color: #1B2A3D;
+  border: 1px solid rgba(27, 42, 61, 0.2);
+}
+
+/* Action Buttons */
+.edit-btn,
+.delete-btn,
+.view-btn {
+  padding: 7px 14px;
+  margin: 3px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.edit-btn {
+  background-color: #F8F6F3;
+  color: #1B2A3D;
+  border: 1px solid #D5D0C9;
+}
+
+.edit-btn:hover {
+  background-color: #EDE9E3;
+  color: #1B2A3D;
+  transform: translateY(-1px);
+}
+
+.delete-btn {
+  background-color: #fff0f0;
+  color: #d32f2f;
+  border: 1px solid #ffcdd2;
+}
+
+.delete-btn:hover {
+  background-color: #d32f2f;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.view-btn {
+  background-color: #1B2A3D;
+  color: #ffffff;
+}
+
+.view-btn:hover {
+  background-color: #C9A961;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .booking-admin-container {
+    width: 95%;
+    padding: 20px 16px;
     margin: 20px auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
-  
-  .booking-admin-navbar {
-    display: flex;
-    justify-content: flex-start;
-    padding: 10px;
-    background: linear-gradient(145deg, #4e4e4e, #2d2d2d);
-    border-radius: 5px;
-  }
-  
-  .booking-admin-navbar a {
-    color: #fff;
-    text-decoration: none;
-    font-weight: bold;
-    padding: 8px 15px;
-  }
-  
-  .booking-admin-navbar a:hover {
-    background-color: #444;
-    border-radius: 5px;
-  }
-  
-  h2 {
-    text-align: center;
-    margin: 20px 0;
-    color: #333;
-  }
-  
-  .booking-admin-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
+
   .booking-admin-table th, 
   .booking-admin-table td {
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: center;
+    padding: 12px 10px;
+    font-size: 0.85rem;
   }
-  
-  .booking-admin-table th {
-    background: linear-gradient(145deg, #636363, #3c3c3c);
-    color: white;
-  }
-  
-  .booking-admin-table tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
-  
-  .booking-admin-table tr:hover {
-    background-color: #ddd;
-  }
-  
-  .edit-btn,
-  .delete-btn,
-  .view-btn {
-    padding: 8px 12px;
-    margin: 5px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  
-  .edit-btn {
-    background: linear-gradient(145deg, #e0e0e0, #b3b3b3);
-    color: black;
-  }
-  
-  .delete-btn {
-    background: linear-gradient(145deg, #ff4d4d, #e60000);
-    color: white;
-  }
-  
-  .view-btn {
-    background: linear-gradient(145deg, #4c8c8c, #357b7b);
-    color: white;
-  }
-  
-  .edit-btn:hover {
-    background: linear-gradient(145deg, #c7c7c7, #999999);
-  }
-  
-  .delete-btn:hover {
-    background: linear-gradient(145deg, #c82333, #ff0000);
-  }
-  
-  .view-btn:hover {
-    background: linear-gradient(145deg, #307474, #006666);
-  }
-  
+}

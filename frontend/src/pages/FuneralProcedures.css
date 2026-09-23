@@ -1,18 +1,21 @@
-/* Global Styles */
+/* ============================================
+   FUNERAL PROCEDURES — 60-30-10 Color Rule
+   ============================================ */
+
 .procedures-container {
-  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  font-family: 'Inter', 'Roboto', 'Helvetica', 'Arial', sans-serif;
   margin: 0;
   padding: 0;
-  background: #faf9f6;
+  background: #F8F6F3;
   min-height: 100vh;
 }
 
 /* Hero Section */
 .procedures-hero {
   position: relative;
-  min-height: 60vh;
-  background: linear-gradient(135deg, rgba(44, 62, 80, 0.92) 0%, rgba(139, 115, 85, 0.88) 100%),
-              url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=80') center/cover no-repeat fixed;
+  min-height: 55vh;
+  background: linear-gradient(135deg, rgba(27, 42, 61, 0.88) 0%, rgba(17, 29, 43, 0.92) 100%),
+              url('https://images.unsplash.com/photo-1490750967868-88aa4f44baee?w=1920&q=80') center/cover no-repeat fixed;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -25,20 +28,10 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(139, 115, 85, 0.85) 100%);
+  background: linear-gradient(135deg, rgba(27, 42, 61, 0.85) 0%, rgba(17, 29, 43, 0.9) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: gradientShift 15s ease infinite;
-}
-
-@keyframes gradientShift {
-  0%, 100% {
-    background: linear-gradient(135deg, rgba(44, 62, 80, 0.9) 0%, rgba(139, 115, 85, 0.85) 100%);
-  }
-  50% {
-    background: linear-gradient(135deg, rgba(52, 73, 94, 0.9) 0%, rgba(201, 169, 97, 0.85) 100%);
-  }
 }
 
 .hero-content {
@@ -51,26 +44,27 @@
 
 .hero-title {
   color: white !important;
-  text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
   margin-bottom: 1.5rem;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 
 .hero-subtitle {
-  color: rgba(255, 255, 255, 0.95) !important;
-  font-size: 1.3rem;
-  line-height: 1.9;
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 1.2rem;
+  line-height: 1.8;
   margin: 0 auto 2rem;
-  text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.3);
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
 }
 
 /* Section Utility */
 .section {
-  padding: 8rem 0;
+  padding: 6rem 0;
 }
 
 .section-title {
-  color: #2c3e50;
+  color: #1B2A3D;
   margin-bottom: 1rem;
   position: relative;
   display: inline-block;
@@ -82,38 +76,56 @@
   bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
-  width: 80px;
-  height: 4px;
-  background: linear-gradient(90deg, #c9a961 0%, #8b7355 100%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #C9A961 0%, #D4B97A 100%);
   border-radius: 2px;
 }
 
 /* Introduction Section */
 .intro-section {
-  background: linear-gradient(180deg, #faf9f6 0%, #ffffff 100%);
+  background: linear-gradient(180deg, #F8F6F3 0%, #FFFFFF 100%);
 }
 
 /* Steps Section */
 .steps-section {
-  background: linear-gradient(180deg, #ffffff 0%, #faf9f6 100%);
+  background: linear-gradient(180deg, #FFFFFF 0%, #F8F6F3 100%);
 }
 
 .step-card {
   height: 100%;
-  border-radius: 20px;
+  border-radius: 16px;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid #E8E4DF;
   background: white;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 12px rgba(27, 42, 61, 0.04);
+  position: relative;
+}
+
+.step-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #C9A961 0%, #D4B97A 100%);
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+}
+
+.step-card:hover::before {
+  transform: scaleX(1);
 }
 
 .step-card:hover {
-  transform: translateY(-15px);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+  transform: translateY(-12px);
+  box-shadow: 0 20px 50px rgba(27, 42, 61, 0.12);
+  border-color: rgba(201, 169, 97, 0.2);
 }
 
-/* Ensure all containers have consistent width */
+/* Container consistency */
 .procedures-container .MuiContainer-root {
   max-width: 1280px !important;
   width: 100% !important;
@@ -123,18 +135,22 @@
   margin-right: auto !important;
 }
 
-/* Responsive Adjustments */
+/* Responsive */
 @media (max-width: 960px) {
-  .hero-title {
-    font-size: 2.5rem !important;
-  }
-
-  .hero-subtitle {
-    font-size: 1.1rem !important;
-  }
-
-  .section {
-    padding: 5rem 0;
-  }
+  .hero-title { font-size: 2.5rem !important; }
+  .hero-subtitle { font-size: 1.1rem !important; }
+  .section { padding: 4rem 0; }
 }
-  
+
+@media (max-width: 768px) {
+  .procedures-hero { min-height: 45vh; }
+  .hero-title { font-size: 2rem !important; }
+  .section { padding: 3rem 0; }
+}
+
+@media (max-width: 480px) {
+  .procedures-hero { min-height: 40vh; }
+  .hero-title { font-size: 1.75rem !important; }
+  .hero-subtitle { font-size: 0.95rem !important; }
+  .section { padding: 2.5rem 0; }
+}

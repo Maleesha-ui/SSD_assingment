@@ -129,8 +129,7 @@ const Register = () => {
         position: 'fixed',
         top: 0,
         left: 0,
-        backgroundColor: '#faf9f6',
-        backgroundImage: 'linear-gradient(135deg, #faf9f6 0%, #f5f5f5 100%)',
+        backgroundColor: '#F8F6F3',
       }}
     >
       <Grid container sx={{ minHeight: '100vh' }}>
@@ -145,7 +144,7 @@ const Register = () => {
             justifyContent: 'center',
             alignItems: 'center',
             p: 8,
-            background: 'linear-gradient(135deg, rgba(44, 62, 80, 0.95) 0%, rgba(139, 115, 85, 0.9) 100%), url("https://images.unsplash.com/photo-1507643179173-441f81b72784?w=1920&q=80") center/cover no-repeat',
+            background: 'linear-gradient(135deg, rgba(27, 42, 61, 0.92) 0%, rgba(17, 29, 43, 0.95) 100%), url("https://images.unsplash.com/photo-1507643179173-441f81b72784?w=1920&q=80") center/cover no-repeat',
             color: 'white',
             position: 'relative',
             overflow: 'hidden',
@@ -154,14 +153,15 @@ const Register = () => {
           <Box sx={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
             <Fade in={true} timeout={800}>
               <Box>
-                <Spa sx={{ fontSize: 100, mb: 4, color: '#c9a961' }} />
+                <Spa sx={{ fontSize: 90, mb: 3, color: '#C9A961' }} />
                 <Typography 
                   variant="h2" 
                   sx={{ 
                     mb: 2, 
                     fontFamily: '"Playfair Display", serif',
                     fontWeight: 600,
-                    letterSpacing: 1 
+                    letterSpacing: 1,
+                    color: '#ffffff'
                   }}
                 >
                   Eternal Rest
@@ -169,10 +169,10 @@ const Register = () => {
                 <Typography 
                   variant="h5" 
                   sx={{ 
-                    mb: 4, 
+                    mb: 3, 
                     fontWeight: 400,
-                    letterSpacing: 0.5,
-                    opacity: 0.9
+                    letterSpacing: 1,
+                    color: '#C9A961'
                   }}
                 >
                   Funeral Management System
@@ -185,10 +185,11 @@ const Register = () => {
                     mx: 'auto',
                     opacity: 0.85,
                     lineHeight: 1.8,
-                    fontSize: '1.1rem'
+                    fontSize: '1.05rem',
+                    color: 'rgba(255,255,255,0.9)'
                   }}
                 >
-                  Join our compassionate network to help families during their time of need with dignity and care.
+                  Join our compassionate network to help families during their time of need with dignity, reverence, and utmost care.
                 </Typography>
               </Box>
             </Fade>
@@ -203,7 +204,7 @@ const Register = () => {
               width: 200,
               height: 200,
               borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(201, 169, 97, 0.1) 0%, transparent 70%)',
+              background: 'radial-gradient(circle, rgba(201, 169, 97, 0.12) 0%, transparent 70%)',
               zIndex: 1,
             }}
           />
@@ -215,7 +216,7 @@ const Register = () => {
               width: 300,
               height: 300,
               borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(139, 115, 85, 0.15) 0%, transparent 70%)',
+              background: 'radial-gradient(circle, rgba(201, 169, 97, 0.08) 0%, transparent 70%)',
               zIndex: 1,
             }}
           />
@@ -230,54 +231,29 @@ const Register = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            p: 4,
-            background: 'linear-gradient(135deg, #faf9f6 0%, #f5f5f5 100%)',
+            p: { xs: 2, sm: 4 },
+            background: '#F8F6F3',
             position: 'relative',
             overflow: 'hidden',
           }}
         >
-          {/* Decorative background elements */}
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '-50%',
-              right: '-20%',
-              width: 400,
-              height: 400,
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(201, 169, 97, 0.08) 0%, transparent 70%)',
-              zIndex: 0,
-            }}
-          />
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: '-30%',
-              left: '-10%',
-              width: 300,
-              height: 300,
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(139, 115, 85, 0.06) 0%, transparent 70%)',
-              zIndex: 0,
-            }}
-          />
           <Slide direction="left" in={true} timeout={600}>
             <Card
               sx={{
-                maxWidth: 520,
+                maxWidth: 540,
                 width: '100%',
                 borderRadius: 4,
-                boxShadow: '0 20px 60px rgba(0,0,0,0.12)',
-                backgroundColor: 'white',
-                border: '1px solid rgba(0,0,0,0.05)',
+                boxShadow: '0 20px 60px rgba(27, 42, 61, 0.08)',
+                backgroundColor: '#ffffff',
+                border: '1px solid rgba(27, 42, 61, 0.06)',
                 overflowY: 'auto',
-                maxHeight: '90vh',
+                maxHeight: '92vh',
                 position: 'relative',
                 zIndex: 1,
               }}
               elevation={0}
             >
-            <CardContent sx={{ p: 5 }}>
+            <CardContent sx={{ p: { xs: 3, sm: 5 } }}>
               <Typography
                 variant="h3"
                 align="center"
@@ -285,7 +261,7 @@ const Register = () => {
                 sx={{
                   fontFamily: '"Playfair Display", serif',
                   fontWeight: 600,
-                  color: '#2c3e50',
+                  color: '#1B2A3D',
                   mb: 1,
                 }}
               >
@@ -295,7 +271,7 @@ const Register = () => {
                 variant="body1"
                 align="center"
                 sx={{
-                  color: '#5a6c7d',
+                  color: '#5A6C7D',
                   mb: 4,
                 }}
               >
@@ -1012,15 +988,17 @@ const Register = () => {
                     disabled={loading}
                     sx={{
                       mt: 3,
-                      py: 1.8,
+                      py: 1.6,
                       fontSize: '1rem',
                       fontWeight: 500,
-                      borderRadius: 2,
-                      background: 'linear-gradient(135deg, #2c3e50 0%, #34495e 100%)',
+                      borderRadius: '50px',
+                      background: 'linear-gradient(135deg, #1B2A3D 0%, #243648 100%)',
+                      color: '#ffffff',
+                      boxShadow: '0 4px 15px rgba(27, 42, 61, 0.25)',
                       '&:hover': {
-                        background: 'linear-gradient(135deg, #34495e 0%, #2c3e50 100%)',
+                        background: 'linear-gradient(135deg, #243648 0%, #111D2B 100%)',
                         transform: 'translateY(-2px)',
-                        boxShadow: '0 4px 12px rgba(44, 62, 80, 0.3)',
+                        boxShadow: '0 6px 20px rgba(27, 42, 61, 0.35)',
                       },
                       transition: 'all 0.3s ease',
                     }}
@@ -1033,7 +1011,7 @@ const Register = () => {
                     align="center"
                     sx={{
                       mt: 3,
-                      color: '#5a6c7d',
+                      color: '#5A6C7D',
                       fontSize: '0.95rem',
                     }}
                   >
@@ -1041,7 +1019,7 @@ const Register = () => {
                     <Link
                       to="/login"
                       style={{
-                        color: '#8b7355',
+                        color: '#C9A961',
                         textDecoration: 'none',
                         fontWeight: 600,
                       }}

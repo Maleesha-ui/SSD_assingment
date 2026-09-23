@@ -2,7 +2,9 @@
     padding: 2rem;
     max-width: 1400px;
     margin: 0 auto;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Inter', -apple-system, sans-serif;
+    background-color: var(--color-bg-primary, #F8F6F3);
+    min-height: 100vh;
 }
 
 .inventory-header {
@@ -10,11 +12,11 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
-    background: linear-gradient(135deg, #030303 0%, #25333a 100%);
-    padding: 2rem;
-    border-radius: 1rem;
+    background: linear-gradient(135deg, #1B2A3D 0%, #243648 100%);
+    padding: 2rem 2.5rem;
+    border-radius: 16px;
     color: white;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 10px 30px rgba(27, 42, 61, 0.15);
 }
 
 .header-buttons {
@@ -317,7 +319,8 @@
 }
 
 .order-form-section h3 {
-    color: #1a2a6c;
+    color: #1B2A3D;
+    font-family: 'Playfair Display', serif;
     margin-bottom: 1.5rem;
     font-size: 1.5rem;
 }
@@ -350,8 +353,8 @@
 
 .form-group input:focus,
 .form-group select:focus {
-    border-color: #1a2a6c;
-    box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.1);
+    border-color: #C9A961;
+    box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.15);
     outline: none;
 }
 

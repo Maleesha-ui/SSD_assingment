@@ -2,82 +2,82 @@ import React from "react";
 import { useParams, Link } from "react-router-dom";
 import "./Packages.css";
 import "./PackageDetails.css";
-import "../components/Header.css";  // Corrected import path
-import "../components/Footer.css";  // Corrected import path
+import "../components/Header.css";
+import "../components/Footer.css";
 
 const packages = [
   {
     name: "Graceful Goodbye Package",
-    image: "/src/assets/basic-package12.jpg",
+    image: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=600&q=80",
     price: "$1,500",
     services: [
       {
         name: "Casket and Coffin",
-        image: "/src/assets/casket12.jpg",
+        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=80",
         description: "Price: Typically $1,000 - $10,000, depending on material and design.",
       },
       {
         name: "Hearse Service",
-        image: "/src/assets/hearse.jpg",
+        image: "https://images.unsplash.com/photo-1449965408869-ebd3fee3a29f?w=400&q=80",
         description: "Price: Starts at $150 - $500 per trip.",
       },
       {
         name: "Funeral Home Services",
-        image: "/src/assets/funeral-home.jpg",
+        image: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&q=80",
         description: "Use of funeral home for memorial and service preparations. Starts at $1,500 - $3,000, including minimal arrangements.",
       },
       {
         name: "Body Preparations",
-        image: "/src/assets/body-preparation12.jpg",
+        image: "https://images.unsplash.com/photo-1504813184591-01572f98c85f?w=400&q=80",
         description: "Embalming, dressing, and cosmetic preparation for viewing. Starts at $200 - $500 (cleaning and dressing).",
       },
     ],
   },
   {
     name: "Classic Memorial Package",
-    image: "/src/assets/standard-package.jpg",
+    image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&q=80",
     price: "$3,000",
     services: [
       {
         name: "Floral Arrangements",
-        image: "/src/assets/flowers.jpg",
+        image: "https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=400&q=80",
         description: "Beautiful floral tributes and wreaths. Small Bouquets & Sympathy Flowers – $50 - $150, Standing Wreaths & Crosses – $200 - $500",
       },
       {
         name: "Music Service",
-        image: "/src/assets/music.jpg",
+        image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400&q=80",
         description: "Live or recorded music for the ceremony. Pre-recorded Music & Sound Setup – $50 - $200",
       },
       {
         name: "Memorial Booklets",
-        image: "/src/assets/memorial-booklet.jpg",
+        image: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&q=80",
         description: "Personalized memorial booklets for attendees. Basic Black & White Booklet (Stapled, 4-8 pages) – $50 - $150",
       },
     ],
   },
   {
     name: "Grand Legacy Package",
-    image: "/src/assets/premium-package.jpg",
+    image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=600&q=80",
     price: "$5,500",
     services: [
       {
         name: "Customized Package",
-        image: "/src/assets/customized.jpg",
+        image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&q=80",
         description: "Tailor-made services according to family preferences. Basic Custom Package – Starts from $800 - $2,000",
       },
       {
         name: "Catering Services",
-        image: "/src/assets/catering.jpg",
+        image: "https://images.unsplash.com/photo-1555244162-803834f70033?w=400&q=80",
         description: "Professional catering services for guests. Starts from $500 - $1,500 for simple meals and smaller gatherings.",
       },
       {
         name: "Funeral Procession",
-        image: "/src/assets/procession.jpg",
+        image: "https://images.unsplash.com/photo-1449965408869-ebd3fee3a29f?w=400&q=80",
         description: "Organized funeral procession with honor. Starts at $800 - $1,500 for the basic hearse and escort vehicles, including route planning and coordination.",
       },
       {
         name: "Live Streaming of Ceremony",
-        image: "/src/assets/live-streaming.jpg",
+        image: "https://images.unsplash.com/photo-1516321165247-4aa89a48be28?w=400&q=80",
         description: "Broadcast of the ceremony for distant loved ones. Starts at $500 - $800, which includes one camera setup, basic audio, and a standard streaming platform.",
       },
     ],
@@ -103,7 +103,7 @@ const PackageDetails = () => {
       </header>
 
       <div className="package-details-card">
-        <img src={packageDetails.image} alt={packageDetails.name} className="package-detail-image" />
+        <img src={packageDetails.image} alt={packageDetails.name} className="package-detail-image" loading="lazy" />
         <h2>{packageDetails.name}</h2>
         <p className="package-price">Price: {packageDetails.price}</p>
       </div>
@@ -112,7 +112,7 @@ const PackageDetails = () => {
       <div className="services-list">
         {packageDetails.services.map((service, idx) => (
           <div key={idx} className="service-card">
-            <img src={service.image} alt={service.name} />
+            <img src={service.image} alt={service.name} loading="lazy" />
             <div>
               <h4>{service.name}</h4>
               <p>{service.description}</p>

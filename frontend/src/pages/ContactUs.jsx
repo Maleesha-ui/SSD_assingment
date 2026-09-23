@@ -42,10 +42,11 @@ const ContactUs = () => {
                   variant="h5" 
                   className="hero-subtitle"
                   sx={{ 
-                    fontSize: { xs: '1.1rem', md: '1.3rem' },
+                    fontSize: { xs: '1rem', md: '1.2rem' },
                     maxWidth: 700,
                     mb: 4,
-                    color: 'rgba(255, 255, 255, 0.95)'
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    mx: 'auto'
                   }}
                 >
                   We're here to help you during life's most difficult moments. Reach out to us with any questions or concerns.
@@ -67,7 +68,7 @@ const ContactUs = () => {
               fontFamily: '"Playfair Display", serif',
               fontWeight: 600,
               mb: 5,
-              color: '#2c3e50'
+              color: '#1B2A3D'
             }}
           >
             Contact Information
@@ -75,17 +76,17 @@ const ContactUs = () => {
           <Grid container spacing={4}>
             {[
               {
-                icon: <LocationOn sx={{ fontSize: 50 }} />,
+                icon: <LocationOn sx={{ fontSize: 45 }} />,
                 title: 'Our Location',
                 details: ['123 Memorial Ave, Serenity City', 'Sri Lanka']
               },
               {
-                icon: <Phone sx={{ fontSize: 50 }} />,
+                icon: <Phone sx={{ fontSize: 45 }} />,
                 title: 'Phone',
                 details: ['+94 112 345 678', '+94 112 987 654', 'Available 24/7']
               },
               {
-                icon: <Email sx={{ fontSize: 50 }} />,
+                icon: <Email sx={{ fontSize: 45 }} />,
                 title: 'Email',
                 details: ['info@eternalrest.com', 'support@eternalrest.com']
               }
@@ -100,11 +101,13 @@ const ContactUs = () => {
                           display: 'inline-flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          width: 100,
-                          height: 100,
+                          width: 90,
+                          height: 90,
                           borderRadius: '50%',
-                          background: 'linear-gradient(135deg, #c9a961 0%, #8b7355 100%)',
-                          color: 'white'
+                          background: 'linear-gradient(135deg, #1B2A3D 0%, #243648 100%)',
+                          color: '#C9A961',
+                          boxShadow: '0 8px 24px rgba(27, 42, 61, 0.2)',
+                          transition: 'all 0.3s ease'
                         }}
                       >
                         {item.icon}
@@ -115,7 +118,8 @@ const ContactUs = () => {
                           fontFamily: '"Playfair Display", serif',
                           fontWeight: 600,
                           mb: 2,
-                          color: '#2c3e50'
+                          color: '#1B2A3D',
+                          fontSize: '1.1rem'
                         }}
                       >
                         {item.title}
@@ -125,9 +129,10 @@ const ContactUs = () => {
                           key={idx}
                           variant="body2" 
                           sx={{ 
-                            color: '#5a6c7d',
-                            mb: 1,
-                            lineHeight: 1.6
+                            color: '#5A6C7D',
+                            mb: 0.5,
+                            lineHeight: 1.6,
+                            fontSize: '0.9rem'
                           }}
                         >
                           {detail}
@@ -156,7 +161,7 @@ const ContactUs = () => {
                       fontFamily: '"Playfair Display", serif',
                       fontWeight: 600,
                       mb: 3,
-                      color: '#2c3e50'
+                      color: '#1B2A3D'
                     }}
                   >
                     Send Us a Message
@@ -164,21 +169,21 @@ const ContactUs = () => {
                   <Typography 
                     variant="body1" 
                     sx={{ 
-                      color: '#5a6c7d',
+                      color: '#5A6C7D',
                       lineHeight: 1.8,
                       mb: 4,
-                      fontSize: '1.1rem'
+                      fontSize: '1.05rem'
                     }}
                   >
                     Have questions about our services or need assistance with arrangements? Fill out the form below and our compassionate team will get back to you as soon as possible.
                   </Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                    <Spa sx={{ fontSize: 40, mr: 2, color: '#c9a961' }} />
-                    <Typography variant="h6" sx={{ color: '#8b7355', fontWeight: 600 }}>
+                    <Spa sx={{ fontSize: 36, mr: 2, color: '#C9A961' }} />
+                    <Typography variant="h6" sx={{ color: '#1B2A3D', fontWeight: 600, fontFamily: '"Playfair Display", serif' }}>
                       Eternal Rest
                     </Typography>
                   </Box>
-                  <Typography variant="body2" sx={{ color: '#5a6c7d', lineHeight: 1.7 }}>
+                  <Typography variant="body2" sx={{ color: '#5A6C7D', lineHeight: 1.7 }}>
                     Providing compassionate care and support during life's most difficult moments.
                   </Typography>
                 </Box>
@@ -187,7 +192,7 @@ const ContactUs = () => {
             <Grid item xs={12} md={6}>
               <Slide direction="left" in={true} timeout={1000}>
                 <Card className="form-card">
-                  <CardContent sx={{ p: 5 }}>
+                  <CardContent sx={{ p: { xs: 3, md: 5 } }}>
                     <form onSubmit={handleSubmit}>
                       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                         <TextField
@@ -199,17 +204,11 @@ const ContactUs = () => {
                           sx={{
                             '& .MuiOutlinedInput-root': {
                               borderRadius: 2,
-                              '& fieldset': {
-                                borderColor: '#e9ecef',
-                              },
-                              '&:hover fieldset': {
-                                borderColor: '#8b7355',
-                              },
-                              '&.Mui-focused fieldset': {
-                                borderColor: '#8b7355',
-                                borderWidth: 2,
-                              },
+                              '& fieldset': { borderColor: '#E8E4DF' },
+                              '&:hover fieldset': { borderColor: '#C9A961' },
+                              '&.Mui-focused fieldset': { borderColor: '#C9A961', borderWidth: 2 },
                             },
+                            '& .MuiInputLabel-root.Mui-focused': { color: '#C9A961' },
                           }}
                         />
                         <TextField
@@ -222,17 +221,11 @@ const ContactUs = () => {
                           sx={{
                             '& .MuiOutlinedInput-root': {
                               borderRadius: 2,
-                              '& fieldset': {
-                                borderColor: '#e9ecef',
-                              },
-                              '&:hover fieldset': {
-                                borderColor: '#8b7355',
-                              },
-                              '&.Mui-focused fieldset': {
-                                borderColor: '#8b7355',
-                                borderWidth: 2,
-                              },
+                              '& fieldset': { borderColor: '#E8E4DF' },
+                              '&:hover fieldset': { borderColor: '#C9A961' },
+                              '&.Mui-focused fieldset': { borderColor: '#C9A961', borderWidth: 2 },
                             },
+                            '& .MuiInputLabel-root.Mui-focused': { color: '#C9A961' },
                           }}
                         />
                         <TextField
@@ -243,17 +236,11 @@ const ContactUs = () => {
                           sx={{
                             '& .MuiOutlinedInput-root': {
                               borderRadius: 2,
-                              '& fieldset': {
-                                borderColor: '#e9ecef',
-                              },
-                              '&:hover fieldset': {
-                                borderColor: '#8b7355',
-                              },
-                              '&.Mui-focused fieldset': {
-                                borderColor: '#8b7355',
-                                borderWidth: 2,
-                              },
+                              '& fieldset': { borderColor: '#E8E4DF' },
+                              '&:hover fieldset': { borderColor: '#C9A961' },
+                              '&.Mui-focused fieldset': { borderColor: '#C9A961', borderWidth: 2 },
                             },
+                            '& .MuiInputLabel-root.Mui-focused': { color: '#C9A961' },
                           }}
                         />
                         <TextField
@@ -267,17 +254,11 @@ const ContactUs = () => {
                           sx={{
                             '& .MuiOutlinedInput-root': {
                               borderRadius: 2,
-                              '& fieldset': {
-                                borderColor: '#e9ecef',
-                              },
-                              '&:hover fieldset': {
-                                borderColor: '#8b7355',
-                              },
-                              '&.Mui-focused fieldset': {
-                                borderColor: '#8b7355',
-                                borderWidth: 2,
-                              },
+                              '& fieldset': { borderColor: '#E8E4DF' },
+                              '&:hover fieldset': { borderColor: '#C9A961' },
+                              '&.Mui-focused fieldset': { borderColor: '#C9A961', borderWidth: 2 },
                             },
+                            '& .MuiInputLabel-root.Mui-focused': { color: '#C9A961' },
                           }}
                         />
                         <Button
@@ -290,12 +271,13 @@ const ContactUs = () => {
                             py: 1.8,
                             fontSize: '1rem',
                             fontWeight: 600,
-                            borderRadius: 2,
-                            background: 'linear-gradient(135deg, #c9a961 0%, #8b7355 100%)',
+                            borderRadius: '50px',
+                            background: 'linear-gradient(135deg, #C9A961 0%, #D4B97A 100%)',
+                            color: '#1B2A3D',
                             '&:hover': {
-                              background: 'linear-gradient(135deg, #8b7355 0%, #c9a961 100%)',
+                              background: 'linear-gradient(135deg, #D4B97A 0%, #C9A961 100%)',
                               transform: 'translateY(-2px)',
-                              boxShadow: '0 4px 12px rgba(201, 169, 97, 0.4)',
+                              boxShadow: '0 4px 15px rgba(201, 169, 97, 0.4)',
                             },
                             transition: 'all 0.3s ease',
                           }}
@@ -323,7 +305,7 @@ const ContactUs = () => {
               fontFamily: '"Playfair Display", serif',
               fontWeight: 600,
               mb: 5,
-              color: '#2c3e50'
+              color: '#1B2A3D'
             }}
           >
             Find Us
@@ -334,7 +316,7 @@ const ContactUs = () => {
               src="https://maps.google.com/maps?q=6.915202029177645,79.97222615966794&z=15&output=embed"
               width="100%"
               height="450"
-              style={{ border: 0, borderRadius: '20px' }}
+              style={{ border: 0, borderRadius: '16px' }}
               allowFullScreen=""
               loading="lazy"
             ></iframe>
