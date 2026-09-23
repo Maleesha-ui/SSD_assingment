@@ -32,14 +32,15 @@ import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import Header from '../components/Header';
 
-// Placeholder images (in a real app, replace with actual image paths)
-const mainImage1 = "/api/placeholder/1200/400";
-const mainImage2 = "/api/placeholder/1200/400";
-const service1 = "/api/placeholder/400/200";
-const service2 = "/api/placeholder/400/200";
-const service3 = "/api/placeholder/400/200";
-const service4 = "/api/placeholder/400/200";
-const service5 = "/api/placeholder/400/200";
+// Funeral & Memorial Services Photography (Direct Unsplash URLs)
+const mainImage1 = "https://images.unsplash.com/photo-1544717305-2782549b5136?w=1200&q=80";
+const mainImage2 = "https://images.unsplash.com/photo-1470240731273-7821a6eeb6bd?w=1200&q=80";
+const service1 = "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=600&q=80";
+const service2 = "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=600&q=80";
+const service3 = "https://images.unsplash.com/photo-1490750967868-88aa4f44baee?w=600&q=80";
+const service4 = "https://images.unsplash.com/photo-1450133064473-71024230f91b?w=600&q=80";
+const service5 = "https://images.unsplash.com/photo-1516585427167-9f4af9627e6c?w=600&q=80";
+const service6 = "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&q=80";
 
 const DashboardCard = ({ title, icon, value, onClick, color = 'primary' }) => {
   const theme = useTheme();
@@ -49,35 +50,40 @@ const DashboardCard = ({ title, icon, value, onClick, color = 'primary' }) => {
         p: 3,
         cursor: 'pointer',
         height: '100%',
-        transition: 'all 0.3s ease',
-        borderLeft: `4px solid ${theme.palette[color]?.main || theme.palette.primary.main}`,
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        borderLeft: '4px solid #C9A961',
+        border: '1px solid rgba(27, 42, 61, 0.06)',
+        borderLeftWidth: '4px',
         background: '#ffffff',
+        borderRadius: 3,
+        boxShadow: '0 2px 12px rgba(27, 42, 61, 0.05)',
         '&:hover': { 
           transform: 'translateY(-5px)',
-          boxShadow: theme.shadows[8],
+          boxShadow: '0 12px 28px rgba(27, 42, 61, 0.12)',
+          borderColor: 'rgba(201, 169, 97, 0.4)',
+          borderLeftColor: '#C9A961',
           '& .icon': {
-            color: theme.palette[color]?.main || theme.palette.primary.main,
-            transform: 'scale(1.1)'
+            color: '#C9A961',
+            transform: 'scale(1.08)'
           }
         },
-        borderRadius: 2,
         display: 'flex',
         flexDirection: 'column'
       }}
-      elevation={3}
+      elevation={0}
       onClick={onClick}
     >
       <Box className="icon" sx={{ 
-        color: theme.palette[color]?.main || theme.palette.primary.main,
+        color: '#1B2A3D',
         mb: 2,
         transition: 'all 0.3s ease'
       }}>
-        {React.cloneElement(icon, { sx: { fontSize: 42 } })}
+        {React.cloneElement(icon, { sx: { fontSize: 40 } })}
       </Box>
-      <Typography variant="h6" sx={{ fontWeight: 500, mb: 1 }}>
+      <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5, color: '#1B2A3D', fontFamily: '"Playfair Display", serif' }}>
         {title}
       </Typography>
-      <Typography variant="body2" color="text.secondary">
+      <Typography variant="body2" sx={{ color: '#5A6C7D' }}>
         {value}
       </Typography>
     </Paper>
@@ -163,7 +169,7 @@ const PackageCard = ({ name, price, description, services, image }) => {
         }}
         onError={(e) => {
           e.target.onerror = null;
-          e.target.src = "/api/placeholder/400/200";
+          e.target.src = "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=600&q=80";
         }}
       />
       <CardContent sx={{ flexGrow: 1, p: 3 }}>
@@ -252,17 +258,32 @@ const Dashboard = () => {
 
   const renderDashboardContent = () => (
     <Container maxWidth="xl" sx={{ mt: 4 }}>
-      <Paper sx={{ p: 3, mb: 4, borderRadius: 2, boxShadow: 'none', bgcolor: 'rgba(63, 81, 181, 0.08)' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Avatar sx={{ bgcolor: 'primary.main', width: 56, height: 56 }}>
-            <Person sx={{ fontSize: 30 }} />
+      <Paper sx={{ 
+        p: { xs: 3, sm: 4 }, 
+        mb: 4, 
+        borderRadius: 3, 
+        background: 'linear-gradient(135deg, #1B2A3D 0%, #243648 100%)',
+        color: '#ffffff',
+        boxShadow: '0 8px 24px rgba(27, 42, 61, 0.12)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: 2
+      }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5 }}>
+          <Avatar sx={{ bgcolor: '#C9A961', color: '#1B2A3D', width: 60, height: 60, boxShadow: '0 4px 12px rgba(201, 169, 97, 0.35)' }}>
+            <Person sx={{ fontSize: 34 }} />
           </Avatar>
           <Box>
-            <Typography variant="body2" color="text.secondary">
-              Welcome back,
+            <Typography variant="body2" sx={{ color: '#C9A961', fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase', fontSize: '0.75rem' }}>
+              Welcome back
             </Typography>
-            <Typography variant="h5" sx={{ fontWeight: 500 }}>
-              {user?.name || 'User'}
+            <Typography variant="h4" sx={{ fontWeight: 600, color: '#ffffff', fontFamily: '"Playfair Display", serif', mt: 0.2 }}>
+              {user?.name || 'Valued Client'}
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.7)', mt: 0.5 }}>
+              Eternal Rest Memorial Services — Here to support you with compassion and dignity.
             </Typography>
           </Box>
         </Box>
@@ -468,7 +489,7 @@ const Dashboard = () => {
                   price={pkg.price}
                   description={pkg.description}
                   services={pkg.services || []}
-                  image={pkg.image || "/api/placeholder/400/200"}
+                  image={pkg.image || "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=600&q=80"}
                 />
               </Grid>
             ))}
@@ -483,10 +504,16 @@ const Dashboard = () => {
             sx={{
               py: 1.5,
               px: 4,
-              borderRadius: 2,
+              borderRadius: '50px',
+              background: 'linear-gradient(135deg, #1B2A3D 0%, #243648 100%)',
+              color: '#ffffff',
               textTransform: 'none',
               fontSize: '1rem',
               fontWeight: 500,
+              boxShadow: '0 4px 14px rgba(27, 42, 61, 0.25)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #243648 0%, #111D2B 100%)',
+              }
             }}
           >
             Return to Dashboard
@@ -565,7 +592,7 @@ const Dashboard = () => {
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
             <ServiceCard
-              image={service5}
+              image={service6}
               title="Memorial Keepsakes"
               description="Thoughtful remembrance items and personalized mementos to preserve precious memories of your loved one."
               onClick={() => handleServiceClick("keepsakes")}
@@ -581,10 +608,16 @@ const Dashboard = () => {
             sx={{
               py: 1.5,
               px: 4,
-              borderRadius: 2,
+              borderRadius: '50px',
+              background: 'linear-gradient(135deg, #1B2A3D 0%, #243648 100%)',
+              color: '#ffffff',
               textTransform: 'none',
               fontSize: '1rem',
               fontWeight: 500,
+              boxShadow: '0 4px 14px rgba(27, 42, 61, 0.25)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #243648 0%, #111D2B 100%)',
+              }
             }}
           >
             Return to Dashboard
@@ -598,7 +631,7 @@ const Dashboard = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: '#f5f7fa',
+        bgcolor: '#F8F6F3',
         width: '100%',
         position: 'relative',
         pb: 8

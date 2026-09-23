@@ -48,33 +48,33 @@ const Home = ({ onServiceClick = () => {} }) => {
 
   const features = [
     {
-      icon: <LocalFlorist sx={{ fontSize: 40 }} />,
+      icon: <LocalFlorist sx={{ fontSize: 36 }} />,
       title: 'Compassionate Care',
       description: 'Dedicated support during difficult times with empathy and understanding'
     },
     {
-      icon: <Favorite sx={{ fontSize: 40 }} />,
+      icon: <Favorite sx={{ fontSize: 36 }} />,
       title: 'Personalized Services',
       description: 'Tailored arrangements that honor your loved one\'s unique life'
     },
     {
-      icon: <EventAvailable sx={{ fontSize: 40 }} />,
+      icon: <EventAvailable sx={{ fontSize: 36 }} />,
       title: '24/7 Availability',
       description: 'Round-the-clock support whenever you need us most'
     },
     {
-      icon: <SupportAgent sx={{ fontSize: 40 }} />,
+      icon: <SupportAgent sx={{ fontSize: 36 }} />,
       title: 'Expert Guidance',
       description: 'Experienced professionals to guide you through every step'
     }
   ];
 
   const services = [
-    { icon: <Church sx={{ fontSize: 60 }} />, title: 'Burial Services', desc: 'We offer complete burial services with care and dignity.', click: 'burial' },
-    { icon: <NaturePeople sx={{ fontSize: 60 }} />, title: 'Cremation Services', desc: 'Affordable and respectful cremation services.', click: 'cremation' },
-    { icon: <Favorite sx={{ fontSize: 60 }} />, title: 'Memorial Services', desc: 'Personalized memorial services to honor your loved ones.', click: 'memorial' },
-    { icon: <CalendarMonth sx={{ fontSize: 60 }} />, title: 'Pre-Planning Services', desc: 'Plan ahead to ease the burden on your family.', click: 'prePlanning' },
-    { icon: <Psychology sx={{ fontSize: 60 }} />, title: 'Grief Support', desc: 'Compassionate support to help you through difficult times.', click: 'griefSupport' }
+    { icon: <Church sx={{ fontSize: 50 }} />, title: 'Burial Services', desc: 'We offer complete burial services with care and dignity.', click: 'burial' },
+    { icon: <NaturePeople sx={{ fontSize: 50 }} />, title: 'Cremation Services', desc: 'Affordable and respectful cremation services.', click: 'cremation' },
+    { icon: <Favorite sx={{ fontSize: 50 }} />, title: 'Memorial Services', desc: 'Personalized memorial services to honor your loved ones.', click: 'memorial' },
+    { icon: <CalendarMonth sx={{ fontSize: 50 }} />, title: 'Pre-Planning Services', desc: 'Plan ahead to ease the burden on your family.', click: 'prePlanning' },
+    { icon: <Psychology sx={{ fontSize: 50 }} />, title: 'Grief Support', desc: 'Compassionate support to help you through difficult times.', click: 'griefSupport' }
   ];
 
   return (
@@ -103,9 +103,10 @@ const Home = ({ onServiceClick = () => {} }) => {
                   variant="h5" 
                   className="hero-subtitle"
                   sx={{ 
-                    fontSize: { xs: '1.1rem', md: '1.3rem' },
+                    fontSize: { xs: '1rem', md: '1.2rem' },
                     maxWidth: 700,
-                    mb: 4
+                    mb: 4,
+                    mx: 'auto'
                   }}
                 >
                   Compassionate funeral services that celebrate life and provide comfort during difficult times
@@ -121,7 +122,7 @@ const Home = ({ onServiceClick = () => {} }) => {
                     sx={{ 
                       px: 4,
                       py: 1.5,
-                      fontSize: '1.1rem',
+                      fontSize: '1.05rem',
                       mr: 2
                     }}
                   >
@@ -136,8 +137,8 @@ const Home = ({ onServiceClick = () => {} }) => {
                     sx={{ 
                       px: 4,
                       py: 1.5,
-                      fontSize: '1.1rem',
-                      borderColor: 'white',
+                      fontSize: '1.05rem',
+                      borderColor: 'rgba(255,255,255,0.7)',
                       color: 'white',
                       '&:hover': {
                         borderColor: 'white',
@@ -157,7 +158,7 @@ const Home = ({ onServiceClick = () => {} }) => {
       {/* About Section */}
       <Box className="about-section section">
         <Container maxWidth="lg">
-          <Grid container spacing={4} alignItems="center">
+          <Grid container spacing={5} alignItems="center">
             <Grid item xs={12} md={6}>
               <Slide direction="right" in={true} timeout={1000}>
                 <Box>
@@ -178,9 +179,9 @@ const Home = ({ onServiceClick = () => {} }) => {
                     variant="body1" 
                     className="about-text"
                     sx={{ 
-                      fontSize: '1.1rem',
+                      fontSize: '1.05rem',
                       lineHeight: 1.8,
-                      color: '#5a6c7d'
+                      color: '#5A6C7D'
                     }}
                   >
                     At Memorial Services Hub, we are committed to providing compassionate and professional funeral arrangements, ensuring dignity and care in every service we offer. More than just a funeral management service, we stand as a trusted companion during your time of need.
@@ -188,9 +189,9 @@ const Home = ({ onServiceClick = () => {} }) => {
                   <Typography 
                     variant="body1" 
                     sx={{ 
-                      fontSize: '1.1rem',
+                      fontSize: '1.05rem',
                       lineHeight: 1.8,
-                      color: '#5a6c7d',
+                      color: '#5A6C7D',
                       mt: 2
                     }}
                   >
@@ -202,7 +203,7 @@ const Home = ({ onServiceClick = () => {} }) => {
             <Grid item xs={12} md={6}>
               <Slide direction="left" in={true} timeout={1000}>
                 <Box className="about-image">
-                  <img src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&q=80" alt="About Us" loading="lazy" />
+                  <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80" alt="About Us" loading="lazy" />
                 </Box>
               </Slide>
             </Grid>
@@ -225,13 +226,13 @@ const Home = ({ onServiceClick = () => {} }) => {
           >
             Why Choose Us
           </Typography>
-          <Grid container spacing={4}>
+          <Grid container spacing={3}>
             {features.map((feature, index) => (
               <Grid item xs={12} sm={6} md={3} key={index}>
                 <Fade in={true} timeout={800 + index * 200}>
                   <Card className="feature-card">
-                    <CardContent sx={{ textAlign: 'center', py: 4 }}>
-                      <Box className="feature-icon" sx={{ color: '#8b7355', mb: 2 }}>
+                    <CardContent sx={{ textAlign: 'center', py: 4, px: 3 }}>
+                      <Box className="feature-icon" sx={{ color: '#C9A961', mb: 2 }}>
                         {feature.icon}
                       </Box>
                       <Typography 
@@ -239,8 +240,9 @@ const Home = ({ onServiceClick = () => {} }) => {
                         sx={{ 
                           fontFamily: '"Playfair Display", serif',
                           fontWeight: 600,
-                          mb: 2,
-                          color: '#2c3e50'
+                          mb: 1.5,
+                          color: '#1B2A3D',
+                          fontSize: '1.1rem'
                         }}
                       >
                         {feature.title}
@@ -248,8 +250,9 @@ const Home = ({ onServiceClick = () => {} }) => {
                       <Typography 
                         variant="body2" 
                         sx={{ 
-                          color: '#5a6c7d',
-                          lineHeight: 1.6
+                          color: '#5A6C7D',
+                          lineHeight: 1.6,
+                          fontSize: '0.9rem'
                         }}
                       >
                         {feature.description}
@@ -283,10 +286,10 @@ const Home = ({ onServiceClick = () => {} }) => {
             align="center"
             sx={{ 
               mb: 5,
-              color: '#5a6c7d',
+              color: '#5A6C7D',
               maxWidth: 600,
               mx: 'auto',
-              fontSize: '1.1rem',
+              fontSize: '1.05rem',
               lineHeight: 1.7
             }}
           >
@@ -297,7 +300,7 @@ const Home = ({ onServiceClick = () => {} }) => {
             <Grid container spacing={4}>
               {[1, 2, 3].map((item) => (
                 <Grid item xs={12} md={4} key={item}>
-                  <Card>
+                  <Card sx={{ border: '1px solid #E8E4DF' }}>
                     <Skeleton variant="rectangular" height={200} />
                     <CardContent>
                       <Skeleton variant="text" height={40} />
@@ -325,7 +328,7 @@ const Home = ({ onServiceClick = () => {} }) => {
                       <CardContent className="package-content">
                         <Box className="package-icon-wrapper">
                           <Box className="package-icon">
-                            <Church sx={{ fontSize: 50 }} />
+                            <Church sx={{ fontSize: 40 }} />
                           </Box>
                         </Box>
                         <Typography 
@@ -335,7 +338,7 @@ const Home = ({ onServiceClick = () => {} }) => {
                             fontFamily: '"Playfair Display", serif',
                             fontWeight: 600,
                             mb: 1,
-                            color: '#2c3e50'
+                            color: '#1B2A3D'
                           }}
                         >
                           {pkg.name}
@@ -344,7 +347,7 @@ const Home = ({ onServiceClick = () => {} }) => {
                           variant="h4" 
                           className="package-price"
                           sx={{ 
-                            color: '#c9a961',
+                            color: '#C9A961',
                             fontWeight: 700,
                             mb: 2,
                             fontSize: '1.8rem'
@@ -356,7 +359,7 @@ const Home = ({ onServiceClick = () => {} }) => {
                           variant="body2" 
                           className="package-description"
                           sx={{ 
-                            color: '#5a6c7d',
+                            color: '#5A6C7D',
                             mb: 2,
                             lineHeight: 1.6
                           }}
@@ -395,12 +398,13 @@ const Home = ({ onServiceClick = () => {} }) => {
             sx={{ 
               fontFamily: '"Playfair Display", serif',
               fontWeight: 600,
-              mb: 5
+              mb: 5,
+              color: 'white'
             }}
           >
             Our Services
           </Typography>
-          <Grid container spacing={4}>
+          <Grid container spacing={3}>
             {services.map((service, index) => (
               <Grid item xs={12} sm={6} md={2.4} key={index}>
                 <Fade in={true} timeout={800 + index * 150}>
@@ -413,26 +417,26 @@ const Home = ({ onServiceClick = () => {} }) => {
                       transition: 'all 0.3s ease',
                       '&:hover': {
                         transform: 'translateY(-8px)',
-                        boxShadow: '0 12px 24px rgba(0, 0, 0, 0.15)'
+                        boxShadow: '0 12px 30px rgba(0, 0, 0, 0.2)'
                       }
                     }}
                   >
-                    <CardContent sx={{ textAlign: 'center', py: 5 }}>
+                    <CardContent sx={{ textAlign: 'center', py: 4 }}>
                       <Box 
                         sx={{ 
-                          mb: 3,
+                          mb: 2.5,
                           display: 'inline-flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          width: 100,
-                          height: 100,
+                          width: 90,
+                          height: 90,
                           borderRadius: '50%',
-                          background: 'linear-gradient(135deg, #c9a961 0%, #8b7355 100%)',
+                          background: 'linear-gradient(135deg, #C9A961 0%, #D4B97A 100%)',
                           color: 'white',
                           transition: 'all 0.3s ease',
+                          boxShadow: '0 4px 15px rgba(201, 169, 97, 0.3)',
                           '&:hover': {
-                            transform: 'scale(1.1)',
-                            boxShadow: '0 8px 20px rgba(201, 169, 97, 0.4)'
+                            transform: 'scale(1.05)',
                           }
                         }}
                       >
@@ -443,8 +447,9 @@ const Home = ({ onServiceClick = () => {} }) => {
                         sx={{ 
                           fontFamily: '"Playfair Display", serif',
                           fontWeight: 600,
-                          mb: 2,
-                          color: '#2c3e50'
+                          mb: 1.5,
+                          color: '#1B2A3D',
+                          fontSize: '1rem'
                         }}
                       >
                         {service.title}
@@ -452,8 +457,9 @@ const Home = ({ onServiceClick = () => {} }) => {
                       <Typography 
                         variant="body2" 
                         sx={{ 
-                          color: '#5a6c7d',
-                          lineHeight: 1.6
+                          color: '#5A6C7D',
+                          lineHeight: 1.6,
+                          fontSize: '0.85rem'
                         }}
                       >
                         {service.desc}
@@ -486,9 +492,11 @@ const Home = ({ onServiceClick = () => {} }) => {
               variant="body1" 
               sx={{ 
                 mb: 4,
-                color: 'rgba(255, 255, 255, 0.9)',
+                color: 'rgba(255, 255, 255, 0.85)',
                 maxWidth: 600,
-                mx: 'auto'
+                mx: 'auto',
+                fontSize: '1.05rem',
+                lineHeight: 1.7
               }}
             >
               Let us help you create a beautiful tribute that honors your loved one's memory with dignity and grace.
@@ -502,7 +510,7 @@ const Home = ({ onServiceClick = () => {} }) => {
               sx={{ 
                 px: 5,
                 py: 1.5,
-                fontSize: '1.1rem'
+                fontSize: '1.05rem'
               }}
             >
               Get Started Today

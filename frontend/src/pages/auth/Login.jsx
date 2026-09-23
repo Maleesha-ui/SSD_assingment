@@ -92,8 +92,7 @@ const Login = () => {
         position: 'fixed',
         top: 0,
         left: 0,
-        backgroundColor: '#faf9f6',
-        backgroundImage: 'linear-gradient(135deg, #faf9f6 0%, #f5f5f5 100%)',
+        backgroundColor: '#F8F6F3',
       }}
     >
       <Grid container sx={{ minHeight: '100vh' }}>
@@ -108,7 +107,7 @@ const Login = () => {
             justifyContent: 'center',
             alignItems: 'center',
             p: 8,
-            background: 'linear-gradient(135deg, rgba(44, 62, 80, 0.95) 0%, rgba(139, 115, 85, 0.9) 100%), url("https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?w=1920&q=80") center/cover no-repeat',
+            background: 'linear-gradient(135deg, rgba(27, 42, 61, 0.92) 0%, rgba(17, 29, 43, 0.95) 100%), url("https://images.unsplash.com/photo-1490750967868-88aa4f44baee?w=1920&q=80") center/cover no-repeat',
             color: 'white',
             position: 'relative',
             overflow: 'hidden',
@@ -117,14 +116,15 @@ const Login = () => {
           <Box sx={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
             <Fade in={true} timeout={800}>
               <Box>
-                <Spa sx={{ fontSize: 100, mb: 4, color: '#c9a961' }} />
+                <Spa sx={{ fontSize: 80, mb: 4, color: '#C9A961' }} />
                 <Typography 
                   variant="h2" 
                   sx={{ 
                     mb: 2, 
                     fontFamily: '"Playfair Display", serif',
                     fontWeight: 600,
-                    letterSpacing: 1 
+                    letterSpacing: 0.5,
+                    fontSize: { md: '2.5rem', lg: '3rem' }
                   }}
                 >
                   Eternal Rest
@@ -133,9 +133,11 @@ const Login = () => {
                   variant="h5" 
                   sx={{ 
                     mb: 4, 
-                    fontWeight: 400,
+                    fontWeight: 300,
                     letterSpacing: 0.5,
-                    opacity: 0.9
+                    opacity: 0.85,
+                    fontFamily: '"Inter", sans-serif',
+                    fontSize: '1.1rem'
                   }}
                 >
                   Funeral Management System
@@ -144,11 +146,12 @@ const Login = () => {
                   variant="body1" 
                   align="center" 
                   sx={{ 
-                    maxWidth: 450, 
+                    maxWidth: 420, 
                     mx: 'auto',
-                    opacity: 0.85,
+                    opacity: 0.75,
                     lineHeight: 1.8,
-                    fontSize: '1.1rem'
+                    fontSize: '1rem',
+                    fontFamily: '"Inter", sans-serif'
                   }}
                 >
                   Compassionate care for life's final journey. Sign in to access our memorial services and manage arrangements with dignity.
@@ -166,7 +169,7 @@ const Login = () => {
               width: 200,
               height: 200,
               borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(201, 169, 97, 0.1) 0%, transparent 70%)',
+              background: 'radial-gradient(circle, rgba(201, 169, 97, 0.08) 0%, transparent 70%)',
               zIndex: 1,
             }}
           />
@@ -178,7 +181,7 @@ const Login = () => {
               width: 300,
               height: 300,
               borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(139, 115, 85, 0.15) 0%, transparent 70%)',
+              background: 'radial-gradient(circle, rgba(201, 169, 97, 0.06) 0%, transparent 70%)',
               zIndex: 1,
             }}
           />
@@ -193,8 +196,8 @@ const Login = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            p: 4,
-            background: 'linear-gradient(135deg, #faf9f6 0%, #f5f5f5 100%)',
+            p: { xs: 3, md: 4 },
+            background: '#F8F6F3',
             position: 'relative',
             overflow: 'hidden',
           }}
@@ -208,7 +211,7 @@ const Login = () => {
               width: 400,
               height: 400,
               borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(201, 169, 97, 0.08) 0%, transparent 70%)',
+              background: 'radial-gradient(circle, rgba(201, 169, 97, 0.06) 0%, transparent 70%)',
               zIndex: 0,
             }}
           />
@@ -220,7 +223,7 @@ const Login = () => {
               width: 300,
               height: 300,
               borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(139, 115, 85, 0.06) 0%, transparent 70%)',
+              background: 'radial-gradient(circle, rgba(27, 42, 61, 0.04) 0%, transparent 70%)',
               zIndex: 0,
             }}
           />
@@ -230,15 +233,15 @@ const Login = () => {
                 maxWidth: 480,
                 width: '100%',
                 borderRadius: 4,
-                boxShadow: '0 20px 60px rgba(0,0,0,0.12)',
+                boxShadow: '0 16px 48px rgba(27, 42, 61, 0.1)',
                 backgroundColor: 'white',
-                border: '1px solid rgba(0,0,0,0.05)',
+                border: '1px solid #E8E4DF',
                 position: 'relative',
                 zIndex: 1,
               }}
               elevation={0}
             >
-              <CardContent sx={{ p: 5 }}>
+              <CardContent sx={{ p: { xs: 3, md: 5 } }}>
                 <Typography
                   variant="h3"
                   align="center"
@@ -246,8 +249,9 @@ const Login = () => {
                   sx={{
                     fontFamily: '"Playfair Display", serif',
                     fontWeight: 600,
-                    color: '#2c3e50',
+                    color: '#1B2A3D',
                     mb: 1,
+                    fontSize: { xs: '1.8rem', md: '2.2rem' }
                   }}
                 >
                   Welcome Back
@@ -256,8 +260,9 @@ const Login = () => {
                   variant="body1"
                   align="center"
                   sx={{
-                    color: '#5a6c7d',
+                    color: '#5A6C7D',
                     mb: 4,
+                    fontSize: '0.95rem'
                   }}
                 >
                   Sign in to your account
@@ -269,9 +274,10 @@ const Login = () => {
                       severity="error"
                       sx={{
                         mb: 3,
-                        backgroundColor: '#ffebee',
-                        color: '#c62828',
+                        backgroundColor: '#FFF5F5',
+                        color: '#C53030',
                         borderRadius: 2,
+                        border: '1px solid #FED7D7'
                       }}
                     >
                       {error}
@@ -291,28 +297,17 @@ const Login = () => {
                       sx={{
                         '& .MuiOutlinedInput-root': {
                           borderRadius: 2,
-                          '& fieldset': {
-                            borderColor: '#e9ecef',
-                          },
-                          '&:hover fieldset': {
-                            borderColor: '#8b7355',
-                          },
-                          '&.Mui-focused fieldset': {
-                            borderColor: '#8b7355',
-                            borderWidth: 2,
-                          },
+                          '& fieldset': { borderColor: '#E8E4DF' },
+                          '&:hover fieldset': { borderColor: '#C9A961' },
+                          '&.Mui-focused fieldset': { borderColor: '#C9A961', borderWidth: 2 },
                         },
-                        '& .MuiInputLabel-root': {
-                          color: '#5a6c7d',
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                          color: '#8b7355',
-                        },
+                        '& .MuiInputLabel-root': { color: '#5A6C7D' },
+                        '& .MuiInputLabel-root.Mui-focused': { color: '#C9A961' },
                       }}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
-                            <EmailIcon sx={{ color: '#8b7355' }} />
+                            <EmailIcon sx={{ color: '#C9A961' }} />
                           </InputAdornment>
                         ),
                       }}
@@ -328,28 +323,17 @@ const Login = () => {
                       sx={{
                         '& .MuiOutlinedInput-root': {
                           borderRadius: 2,
-                          '& fieldset': {
-                            borderColor: '#e9ecef',
-                          },
-                          '&:hover fieldset': {
-                            borderColor: '#8b7355',
-                          },
-                          '&.Mui-focused fieldset': {
-                            borderColor: '#8b7355',
-                            borderWidth: 2,
-                          },
+                          '& fieldset': { borderColor: '#E8E4DF' },
+                          '&:hover fieldset': { borderColor: '#C9A961' },
+                          '&.Mui-focused fieldset': { borderColor: '#C9A961', borderWidth: 2 },
                         },
-                        '& .MuiInputLabel-root': {
-                          color: '#5a6c7d',
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                          color: '#8b7355',
-                        },
+                        '& .MuiInputLabel-root': { color: '#5A6C7D' },
+                        '& .MuiInputLabel-root.Mui-focused': { color: '#C9A961' },
                       }}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
-                            <LockIcon sx={{ color: '#8b7355' }} />
+                            <LockIcon sx={{ color: '#C9A961' }} />
                           </InputAdornment>
                         ),
                         endAdornment: (
@@ -357,7 +341,7 @@ const Login = () => {
                             <IconButton
                               onClick={() => setShowPassword(!showPassword)}
                               edge="end"
-                              sx={{ color: '#8b7355' }}
+                              sx={{ color: '#5A6C7D' }}
                             >
                               {showPassword ? <VisibilityOff /> : <Visibility />}
                             </IconButton>
@@ -370,7 +354,7 @@ const Login = () => {
                     <Typography
                       variant="body2"
                       sx={{
-                        color: '#8b7355',
+                        color: '#C9A961',
                         fontSize: '0.9rem',
                       }}
                     >
@@ -378,7 +362,7 @@ const Login = () => {
                         to="/forgot-password"
                         style={{
                           textDecoration: 'none',
-                          color: '#8b7355',
+                          color: '#C9A961',
                           fontWeight: 500,
                         }}
                       >
@@ -397,13 +381,13 @@ const Login = () => {
                       mt: 2,
                       py: 1.8,
                       fontSize: '1rem',
-                      fontWeight: 500,
-                      borderRadius: 2,
-                      background: 'linear-gradient(135deg, #2c3e50 0%, #34495e 100%)',
+                      fontWeight: 600,
+                      borderRadius: '50px',
+                      background: 'linear-gradient(135deg, #1B2A3D 0%, #243648 100%)',
                       '&:hover': {
-                        background: 'linear-gradient(135deg, #34495e 0%, #2c3e50 100%)',
+                        background: 'linear-gradient(135deg, #243648 0%, #1B2A3D 100%)',
                         transform: 'translateY(-2px)',
-                        boxShadow: '0 4px 12px rgba(44, 62, 80, 0.3)',
+                        boxShadow: '0 4px 15px rgba(27, 42, 61, 0.3)',
                       },
                       transition: 'all 0.3s ease',
                     }}
@@ -415,7 +399,7 @@ const Login = () => {
                     align="center"
                     sx={{
                       mt: 3,
-                      color: '#5a6c7d',
+                      color: '#5A6C7D',
                       fontSize: '0.95rem',
                     }}
                   >
@@ -424,7 +408,7 @@ const Login = () => {
                       to="/register"
                       style={{
                         textDecoration: 'none',
-                        color: '#8b7355',
+                        color: '#C9A961',
                         fontWeight: 600,
                       }}
                     >

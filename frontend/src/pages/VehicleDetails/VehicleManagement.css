@@ -1,92 +1,189 @@
+/* ============================================
+   VEHICLE MANAGEMENT — 60-30-10 Palette
+   ============================================ */
+
 .vehicle-management-wrapper {
   min-height: 100vh;
-  
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #eceff1 0%, #b0bec5 100%);
-  padding: 20px;
-  width: 100vw;
+  background-color: var(--color-bg-primary, #F8F6F3);
+  padding: 30px 20px 60px 20px;
+  font-family: 'Inter', -apple-system, sans-serif;
+  width: 100%;
 }
 
-h1 {
-  font-size: 24px;
-  color: #1a2a3a;
-  margin-bottom: 20px;
-  text-align: center;
+.vehicle-management-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--border-light, #E8E4DF);
+  box-shadow: 0 8px 32px rgba(27, 42, 61, 0.06);
+  padding: 32px;
+}
+
+.vehicle-management-wrapper h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: #1B2A3D;
+  margin-bottom: 24px;
+  text-align: left;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vehicle-management-wrapper h1::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 28px;
+  background-color: #C9A961;
+  border-radius: 2px;
+}
+
+.vehicle-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 24px;
 }
 
 .search-bar {
   width: 100%;
-  max-width: 400px;
-  padding: 10px;
-  margin-bottom: 20px;
+  max-width: 420px;
+  padding: 10px 16px;
   border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 16px;
+  border: 1px solid #D5D0C9;
+  font-size: 0.9rem;
+  background-color: #F8F6F3;
+  transition: all 0.25s ease;
+  font-family: inherit;
+}
+
+.search-bar:focus {
+  outline: none;
+  border-color: #C9A961;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.15);
 }
 
 .add-btn {
-  padding: 10px 15px;
-  background: #1a2a3a;
-  color: white;
+  padding: 10px 22px;
+  background: linear-gradient(135deg, #1B2A3D 0%, #243648 100%);
+  color: #ffffff;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
-  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(27, 42, 61, 0.2);
+  transition: all 0.25s ease;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-btn:hover {
+  background: linear-gradient(135deg, #243648 0%, #111D2B 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(27, 42, 61, 0.3);
+}
+
+.vehicle-table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #E8E4DF;
 }
 
 .vehicle-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
 }
 
 .vehicle-table th, .vehicle-table td {
-  border: 1px solid #ddd;
-  padding: 12px;
-  text-align: center;
-  white-space: nowrap;
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 0.9rem;
 }
 
 .vehicle-table th {
-  background: #1a2a3a;
-  color: white;
-  font-weight: bold;
+  background-color: #1B2A3D;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-bottom: none;
+}
+
+.vehicle-table td {
+  border-bottom: 1px solid #E8E4DF;
+  vertical-align: middle;
+}
+
+.vehicle-table tr:hover {
+  background-color: rgba(248, 246, 243, 0.8);
 }
 
 .vehicle-table .available {
-  color: green;
+  color: #2E7D32;
+  font-weight: 600;
+  background-color: rgba(46, 125, 50, 0.1);
+  padding: 4px 10px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  display: inline-block;
 }
 
-.vehicle-table .assigned {
-  color: orange;
+.vehicle-table .unavailable {
+  color: #d32f2f;
+  font-weight: 600;
+  background-color: rgba(211, 47, 47, 0.1);
+  padding: 4px 10px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  display: inline-block;
 }
 
-.vehicle-table .inactive {
-  color: red;
-}
-
-.edit-btn, .assign-btn, .delete-btn {
-  padding: 6px 10px;
-  margin: 4px;
-  border: none;
-  border-radius: 5px;
-  font-size: 14px;
+.action-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
   cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  margin-right: 6px;
+  font-family: inherit;
 }
 
-.edit-btn {
-  background: #ffc107;
-  color: black;
+.action-btn.edit {
+  background-color: #F8F6F3;
+  color: #1B2A3D;
+  border: 1px solid #D5D0C9;
 }
 
-.assign-btn {
-  background: #007bff;
-  color: white;
+.action-btn.edit:hover {
+  background-color: #1B2A3D;
+  color: #ffffff;
 }
 
-.delete-btn {
-  background: #dc3545;
-  color: white;
+.action-btn.delete {
+  background-color: #fff0f0;
+  color: #d32f2f;
+  border: 1px solid #ffcdd2;
+}
+
+.action-btn.delete:hover {
+  background-color: #d32f2f;
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .vehicle-management-container {
+    padding: 18px 12px;
+  }
 }

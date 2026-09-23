@@ -5,26 +5,21 @@ import "../components/Header.css";
 import "../components/Footer.css";
 import "./PackageDetails.css";
 
-// Import images directly
-import basicPackage from "../assets/basic-package12.jpg";
-import standardPackage from "../assets/standard-package.jpg";
-import premiumPackage from "../assets/premium-package.jpg";
-
-// Array of packages with names, images, and prices
+// Use direct Unsplash URLs for topic-related photos
 const packages = [
   {
     name: "Graceful Goodbye Package",
-    image: basicPackage,
+    image: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=600&q=80",
     price: "$1,500",
   },
   {
     name: "Classic Memorial Package",
-    image: standardPackage,
+    image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&q=80",
     price: "$3,000",
   },
   {
     name: "Grand Legacy Package",
-    image: premiumPackage,
+    image: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=600&q=80",
     price: "$5,500",
   },
 ];
@@ -34,7 +29,7 @@ const Packages = () => {
     <div className="packages-container">
       <header className="packages-header">
         <h1>Explore Our Funeral Packages</h1>
-        <p>Select the best package for your needs and get more details.</p>
+        <p>Select the best package for your needs and get more details about our comprehensive funeral services.</p>
       </header>
 
       <div className="packages-grid">
@@ -45,6 +40,7 @@ const Packages = () => {
               src={pkg.image} 
               alt={`Image of ${pkg.name}`} 
               className="package-image" 
+              loading="lazy"
             />
             <h2 className="package-title">{pkg.name}</h2>
             <p className="package-price">{pkg.price}</p>

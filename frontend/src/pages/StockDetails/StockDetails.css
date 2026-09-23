@@ -2,7 +2,9 @@
   padding: 2rem;
   max-width: 1400px;
   margin: 0 auto;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', -apple-system, sans-serif;
+  background-color: var(--color-bg-primary, #F8F6F3);
+  min-height: 100vh;
 }
 
 .inventory-header {
@@ -10,11 +12,11 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
-  background: linear-gradient(135deg, #1a2a6c 0%, #2a4858 100%);
-  padding: 2rem;
-  border-radius: 1rem;
+  background: linear-gradient(135deg, #1B2A3D 0%, #243648 100%);
+  padding: 2rem 2.5rem;
+  border-radius: 16px;
   color: white;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 30px rgba(27, 42, 61, 0.15);
 }
 
 .header-controls {
@@ -30,23 +32,26 @@
 }
 
 .download-btn {
-  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
-  color: white;
+  background: #C9A961;
+  color: #1B2A3D;
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 50px;
   cursor: pointer;
   font-weight: 600;
   font-size: 0.95rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
+  font-family: inherit;
+  box-shadow: 0 4px 14px rgba(201, 169, 97, 0.25);
 }
 
 .download-btn:hover {
+  background: #D4B97A;
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 18px rgba(201, 169, 97, 0.35);
 }
 
 .inventory-header h2 {
@@ -91,7 +96,7 @@
 }
 
 .search-input:focus {
-  border-color: #1a2a6c;
+  border-color: #C9A961;
   box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.1);
   outline: none;
 }
@@ -118,7 +123,7 @@
 }
 
 .filter-select:focus {
-  border-color: #1a2a6c;
+  border-color: #C9A961;
   box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.1);
   outline: none;
 }
@@ -152,12 +157,12 @@
 
 .inventory-table th.sortable:hover {
   background: #f8fafc;
-  color: #1a2a6c;
+  color: #1B2A3D;
 }
 
 .inventory-table th {
   background: #f8fafc;
-  color: #1a2a6c;
+  color: #1B2A3D;
   font-weight: 600;
   font-size: 0.95rem;
   text-transform: uppercase;
@@ -299,7 +304,7 @@
 }
 
 .edit-input:focus {
-  border-color: #1a2a6c;
+  border-color: #C9A961;
   box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.1);
   outline: none;
   background: #ffffff;
@@ -522,7 +527,7 @@ kbd {
 }
 
 .add-form-container h3 {
-  color: #1a2a6c;
+  color: #1B2A3D;
   margin-bottom: 1.5rem;
   font-size: 1.5rem;
 }
@@ -557,7 +562,7 @@ kbd {
 
 .form-group input:focus,
 .form-group select:focus {
-  border-color: #1a2a6c;
+  border-color: #C9A961;
   box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.1);
   outline: none;
 }

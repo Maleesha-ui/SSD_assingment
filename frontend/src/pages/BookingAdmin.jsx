@@ -40,36 +40,42 @@ const BookingAdmin = () => {
       </nav>
 
       <h2>Booking Management</h2>
-      <table className="booking-admin-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Customer Name</th>
-            <th>Package</th>
-            <th>Booking Date</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {bookings.map((booking) => (
-            <tr key={booking.id}>
-              <td>{booking.id}</td>
-              <td>{booking.name}</td>
-              <td>{booking.package}</td>
-              <td>{booking.date}</td>
-              <td>{booking.status}</td>
-              <td>
-                <button className="edit-btn">Edit</button>
-                <button className="delete-btn" onClick={() => handleDelete(booking.id)}>
-                  Delete
-                </button>
-                <button className="view-btn">View</button>
-              </td>
+      <div className="booking-admin-table-wrapper">
+        <table className="booking-admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Customer Name</th>
+              <th>Package</th>
+              <th>Booking Date</th>
+              <th>Status</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {bookings.map((booking) => (
+              <tr key={booking.id}>
+                <td><strong>#{booking.id}</strong></td>
+                <td>{booking.name}</td>
+                <td>{booking.package}</td>
+                <td>{booking.date}</td>
+                <td>
+                  <span className={`status-badge status-${booking.status.toLowerCase()}`}>
+                    {booking.status}
+                  </span>
+                </td>
+                <td>
+                  <button className="edit-btn">Edit</button>
+                  <button className="delete-btn" onClick={() => handleDelete(booking.id)}>
+                    Delete
+                  </button>
+                  <button className="view-btn">View</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

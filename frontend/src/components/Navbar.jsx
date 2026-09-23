@@ -6,22 +6,23 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import { styled } from '@mui/material/styles';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  backgroundColor: '#424242',
-  boxShadow: 'none',
-  borderBottom: '1px solid #616161',
-  padding: theme.spacing(0, 2)
+  backgroundColor: '#1B2A3D',
+  boxShadow: '0 4px 20px rgba(27, 42, 61, 0.15)',
+  borderBottom: '1px solid rgba(201, 169, 97, 0.25)',
+  padding: theme.spacing(0.5, 2)
 }));
 
 const NavLink = styled(Link)(({ theme }) => ({
-  color: '#e0e0e0',
+  color: 'rgba(255, 255, 255, 0.85)',
   textDecoration: 'none',
-  fontWeight: 300,
-  fontSize: '1rem',
+  fontWeight: 400,
+  fontSize: '0.95rem',
   padding: theme.spacing(1, 2),
-  transition: 'all 0.3s ease',
+  borderRadius: '50px',
+  transition: 'all 0.25s ease',
   '&:hover': {
-    color: 'white',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)'
+    color: '#ffffff',
+    backgroundColor: 'rgba(201, 169, 97, 0.2)'
   }
 }));
 
@@ -47,11 +48,12 @@ const Header = () => {
             to="/" 
             sx={{ 
               textDecoration: 'none',
-              color: 'white',
-              fontWeight: 300,
+              color: '#ffffff',
+              fontFamily: '"Playfair Display", serif',
+              fontWeight: 600,
               letterSpacing: 1,
               '&:hover': {
-                color: '#e0e0e0'
+                color: '#C9A961'
               }
             }}
           >
@@ -61,10 +63,9 @@ const Header = () => {
 
         {/* Navigation Links - Desktop */}
         {!isMobile && (
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <NavLink to="/">Home</NavLink>
             <NavLink to="/packages">Packages</NavLink>
-            
             <NavLink to="/about-us">About Us</NavLink>
             <NavLink to="/funeral-procedures">Funeral Procedures</NavLink>
             <NavLink to="/contact-us">Contact Us</NavLink>
@@ -72,13 +73,17 @@ const Header = () => {
             <Button
               component={Link}
               to="/login"
-              startIcon={<AccountCircle />}
+              startIcon={<AccountCircle sx={{ color: '#C9A961' }} />}
               sx={{
-                color: '#e0e0e0',
+                color: '#ffffff',
                 marginLeft: 2,
-                fontWeight: 300,
+                fontWeight: 500,
+                borderRadius: '50px',
+                border: '1px solid rgba(201, 169, 97, 0.4)',
+                padding: '6px 18px',
                 '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                  backgroundColor: 'rgba(201, 169, 97, 0.2)',
+                  borderColor: '#C9A961'
                 }
               }}
             >
@@ -93,7 +98,7 @@ const Header = () => {
             color="inherit"
             aria-label="menu"
             sx={{ 
-              color: '#e0e0e0',
+              color: '#C9A961',
               minWidth: 'auto',
               padding: '8px'
             }}

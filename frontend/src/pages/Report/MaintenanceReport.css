@@ -1,111 +1,175 @@
+/* ============================================
+   MAINTENANCE REPORT — 60-30-10 Palette
+   ============================================ */
+
 .maintenance-report-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-  }
-  
-  .maintenance-report-container h1 {
-    font-size: 24px;
-    color: #333;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .error {
-    color: red;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .filter-container {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-  }
-  
-  .filter-group {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .filter-group label {
-    font-size: 16px;
-    color: #333;
-    margin-bottom: 5px;
-  }
-  
-  .filter-group input {
-    padding: 8px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100px;
-  }
-  
-  .filter-btn {
-    padding: 8px 16px;
-    font-size: 16px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  .download-buttons {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-  
-  .download-btn {
-    padding: 8px 16px;
-    font-size: 16px;
-    background-color: #17a2b8;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  .chart-container {
-    margin-bottom: 30px;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
-  .report-table-container {
-    overflow-x: auto;
-  }
-  
-  .report-table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .report-table th,
-  .report-table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .report-table th {
-    background-color: #f4f4f4;
-    font-weight: bold;
-  }
-  
-  .report-table tr:hover {
-    background-color: #f9f9f9;
-  }
+  max-width: 1300px;
+  margin: 30px auto;
+  padding: 36px;
+  font-family: 'Inter', -apple-system, sans-serif;
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--border-light, #E8E4DF);
+  box-shadow: 0 8px 32px rgba(27, 42, 61, 0.06);
+}
+
+.maintenance-report-container h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  color: #1B2A3D;
+  text-align: left;
+  margin-bottom: 24px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.maintenance-report-container h1::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 28px;
+  background-color: #C9A961;
+  border-radius: 2px;
+}
+
+.error {
+  color: #d32f2f;
+  background-color: #fff0f0;
+  border: 1px solid #ffcdd2;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+.filter-container {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  background-color: #F8F6F3;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #E8E4DF;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-group label {
+  font-size: 0.85rem;
+  color: #1B2A3D;
+  font-weight: 500;
+}
+
+.filter-group input {
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  border: 1px solid #D5D0C9;
+  border-radius: 8px;
+  width: 120px;
+  font-family: inherit;
+  background-color: #ffffff;
+}
+
+.filter-btn {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background-color: #1B2A3D;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.25s ease;
+  font-family: inherit;
+}
+
+.filter-btn:hover {
+  background-color: #C9A961;
+}
+
+.download-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.pdf-btn, .excel-btn {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  font-family: inherit;
+}
+
+.pdf-btn {
+  background-color: #d32f2f;
+  color: white;
+}
+
+.pdf-btn:hover {
+  background-color: #b71c1c;
+  transform: translateY(-1px);
+}
+
+.excel-btn {
+  background-color: #2E7D32;
+  color: white;
+}
+
+.excel-btn:hover {
+  background-color: #1B5E20;
+  transform: translateY(-1px);
+}
+
+.report-table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #E8E4DF;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.report-table th, .report-table td {
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.report-table th {
+  background-color: #1B2A3D;
+  color: white;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.report-table td {
+  border-bottom: 1px solid #E8E4DF;
+  vertical-align: middle;
+}
+
+.report-table tr:hover {
+  background-color: rgba(248, 246, 243, 0.8);
+}
