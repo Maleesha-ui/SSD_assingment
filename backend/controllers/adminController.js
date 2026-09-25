@@ -5,6 +5,7 @@ const Booking = require('../models/Booking');
 const FuneralPackage = require('../models/Package');
 const Staff = require('../models/Staff');
 const Feedback = require('../models/Feedback');
+const bcrypt = require('bcryptjs');
 
 exports.getDashboardStats = async (req, res) => {
   try {
@@ -244,15 +245,25 @@ exports.approveLeaveRequest = async (req, res) => {
 exports.addStaff = async (req, res) => {
   try {
     const { name, email, password, staffDetails } = req.body;
+    
+    // Hash the password using bcrypt
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    
     const user = await User.create({
       name,
       email,
-      password, 
+      password: hashedPassword,
       role: 'staff',
       staffDetails,
     });
     await Staff.create({ userId: user._id });
-    res.status(201).json({ message: 'Staff added successfully', user });
+    
+    // Return user without password in response
+    const userResponse = user.toObject();
+    delete userResponse.password;
+    
+    res.status(201).json({ message: 'Staff added successfully', user: userResponse });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
