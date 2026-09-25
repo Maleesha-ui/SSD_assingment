@@ -50,7 +50,7 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     secure: process.env.NODE_ENV === 'production',
-    maxAge: 24 * 60 * 60 * 1000
+    maxAge: 60 * 60 * 1000 // 1 hour login session timeout
   }
 }));
 

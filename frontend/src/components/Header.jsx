@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   AppBar, 
   Toolbar, 
@@ -13,12 +13,16 @@ import {
   ListItem,
   ListItemText,
   IconButton,
-  Divider
+  Divider,
+  Avatar,
+  Tooltip
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { styled } from '@mui/material/styles';
+import { useAuth } from '../context/AuthContext';
 
 const StyledAppBar = styled(AppBar)(({ theme, scrolled }) => ({
   backgroundColor: scrolled ? 'rgba(27, 42, 61, 0.97)' : 'rgba(255, 255, 255, 0.97)',
@@ -64,6 +68,13 @@ const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, token, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -136,32 +147,100 @@ const Header = () => {
           </ListItem>
         ))}
         <Divider sx={{ my: 2, borderColor: '#E8E4DF' }} />
-        <ListItem 
-          button 
-          component={Link}
-          to="/login"
-          onClick={handleDrawerToggle}
-          sx={{
-            mx: 2,
-            my: 1,
-            borderRadius: 2,
-            background: 'linear-gradient(135deg, #1B2A3D 0%, #243648 100%)',
-            '&:hover': {
-              background: 'linear-gradient(135deg, #243648 0%, #1B2A3D 100%)',
-            }
-          }}
-        >
-          <ListItemText 
-            primary="Account"
+        {user && token ? (
+          <Box sx={{ px: 2 }}>
+            <Box 
+              component={Link}
+              to={user?.role === 'admin' ? '/admin' : '/dashboard'}
+              onClick={handleDrawerToggle}
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1.5, 
+                p: 1.5, 
+                mb: 1.5, 
+                backgroundColor: 'rgba(201, 169, 97, 0.1)', 
+                borderRadius: 2,
+                textDecoration: 'none',
+              }}
+            >
+              <Avatar
+                src={user?.avatar || ''}
+                alt={user?.name || 'User'}
+                sx={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: '50%',
+                  border: '2px solid #C9A961',
+                  backgroundColor: '#1B2A3D',
+                  color: '#C9A961',
+                  fontWeight: 600,
+                }}
+              >
+                {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+              </Avatar>
+              <Box sx={{ overflow: 'hidden' }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: '#1B2A3D', noWrap: true }}>
+                  {user?.name || 'User'}
+                </Typography>
+                <Typography variant="caption" sx={{ color: '#5A6C7D', textTransform: 'capitalize' }}>
+                  {user?.role || 'Customer'} • Dashboard
+                </Typography>
+              </Box>
+            </Box>
+
+            <ListItem
+              button
+              onClick={() => {
+                handleDrawerToggle();
+                handleLogout();
+              }}
+              sx={{
+                borderRadius: 2,
+                backgroundColor: '#FFF5F5',
+                border: '1px solid #FED7D7',
+                color: '#C53030',
+                '&:hover': {
+                  backgroundColor: '#C53030',
+                  color: '#FFFFFF',
+                },
+              }}
+            >
+              <LogoutIcon sx={{ mr: 1.5, fontSize: 20 }} />
+              <ListItemText
+                primary="Logout"
+                sx={{ '& .MuiTypography-root': { fontWeight: 600 } }}
+              />
+            </ListItem>
+          </Box>
+        ) : (
+          <ListItem 
+            button 
+            component={Link}
+            to="/login"
+            onClick={handleDrawerToggle}
             sx={{
-              '& .MuiTypography-root': {
-                fontWeight: 500,
-                color: '#FFFFFF',
-                textAlign: 'center'
+              mx: 2,
+              my: 1,
+              borderRadius: 2,
+              background: 'linear-gradient(135deg, #1B2A3D 0%, #243648 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #243648 0%, #1B2A3D 100%)',
               }
             }}
-          />
-        </ListItem>
+          >
+            <ListItemText 
+              primary="Account"
+              sx={{
+                '& .MuiTypography-root': {
+                  fontWeight: 500,
+                  color: '#FFFFFF',
+                  textAlign: 'center'
+                }
+              }}
+            />
+          </ListItem>
+        )}
       </List>
     </Box>
   );
@@ -215,30 +294,86 @@ const Header = () => {
                 </NavLink>
               ))}
               
-              <Button
-                component={Link}
-                to="/login"
-                startIcon={<AccountCircle />}
-                sx={{
-                  color: scrolled ? '#FFFFFF' : '#1B2A3D',
-                  marginLeft: 2,
-                  fontWeight: 500,
-                  borderRadius: '50px',
-                  padding: '8px 24px',
-                  border: `2px solid ${scrolled ? 'rgba(201, 169, 97, 0.6)' : '#1B2A3D'}`,
-                  fontSize: '0.9rem',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    backgroundColor: '#C9A961',
-                    color: 'white',
-                    borderColor: '#C9A961',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 4px 15px rgba(201, 169, 97, 0.3)'
-                  }
-                }}
-              >
-                Account
-              </Button>
+              {user && token ? (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, ml: 2 }}>
+                  <Tooltip title={`${user?.name || 'User'} (${user?.role || 'Customer'}) - Dashboard`}>
+                    <Avatar
+                      src={user?.avatar || ''}
+                      alt={user?.name || 'User Avatar'}
+                      component={Link}
+                      to={user?.role === 'admin' ? '/admin' : '/dashboard'}
+                      sx={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: '50%',
+                        border: '2px solid #C9A961',
+                        cursor: 'pointer',
+                        boxShadow: '0 2px 8px rgba(201, 169, 97, 0.35)',
+                        backgroundColor: '#1B2A3D',
+                        color: '#C9A961',
+                        fontWeight: 600,
+                        fontSize: '1rem',
+                        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                        '&:hover': {
+                          transform: 'scale(1.08)',
+                          boxShadow: '0 4px 14px rgba(201, 169, 97, 0.5)',
+                        },
+                      }}
+                    >
+                      {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                    </Avatar>
+                  </Tooltip>
+
+                  <Button
+                    onClick={handleLogout}
+                    startIcon={<LogoutIcon sx={{ fontSize: 18 }} />}
+                    sx={{
+                      color: scrolled ? '#FFFFFF' : '#1B2A3D',
+                      fontWeight: 600,
+                      borderRadius: '50px',
+                      padding: '7px 20px',
+                      border: `1.5px solid ${scrolled ? 'rgba(201, 169, 97, 0.6)' : '#1B2A3D'}`,
+                      fontSize: '0.875rem',
+                      textTransform: 'none',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        backgroundColor: '#C53030',
+                        color: '#FFFFFF',
+                        borderColor: '#C53030',
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 4px 12px rgba(197, 48, 48, 0.3)',
+                      },
+                    }}
+                  >
+                    Logout
+                  </Button>
+                </Box>
+              ) : (
+                <Button
+                  component={Link}
+                  to="/login"
+                  startIcon={<AccountCircle />}
+                  sx={{
+                    color: scrolled ? '#FFFFFF' : '#1B2A3D',
+                    marginLeft: 2,
+                    fontWeight: 500,
+                    borderRadius: '50px',
+                    padding: '8px 24px',
+                    border: `2px solid ${scrolled ? 'rgba(201, 169, 97, 0.6)' : '#1B2A3D'}`,
+                    fontSize: '0.9rem',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: '#C9A961',
+                      color: 'white',
+                      borderColor: '#C9A961',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 4px 15px rgba(201, 169, 97, 0.3)'
+                    }
+                  }}
+                >
+                  Account
+                </Button>
+              )}
             </Box>
           )}
 

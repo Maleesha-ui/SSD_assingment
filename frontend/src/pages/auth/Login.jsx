@@ -42,7 +42,14 @@ const Login = () => {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
+    const expired = params.get('expired');
     const err = params.get('error');
+
+    if (expired) {
+      setError('Your login session has timed out (1 hour limit). Please sign in again.');
+      return;
+    }
+
     if (err) {
       if (err === 'google_auth_failed') {
         setError('Google authentication was cancelled or failed. Please try again.');

@@ -1,25 +1,79 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
 import api from '../services/api';
 
 const AuthContext = createContext();
 
+// Helper to determine if a JWT has expired (1 hour limit)
+const isTokenExpired = (jwtToken) => {
+  if (!jwtToken) return true;
+  try {
+    const decoded = jwtDecode(jwtToken);
+    if (!decoded.exp) return false;
+    return Date.now() >= decoded.exp * 1000;
+  } catch {
+    return true;
+  }
+};
+
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(() => localStorage.getItem('token') || null);
+  const [token, setToken] = useState(() => {
+    const savedToken = localStorage.getItem('token');
+    if (savedToken && !isTokenExpired(savedToken)) {
+      return savedToken;
+    }
+    if (savedToken) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('role');
+    }
+    return null;
+  });
+
   const [user, setUser] = useState(() => {
     try {
+      const savedToken = localStorage.getItem('token');
+      if (!savedToken || isTokenExpired(savedToken)) return null;
       const savedUser = localStorage.getItem('user');
       return savedUser ? JSON.parse(savedUser) : null;
     } catch {
       return null;
     }
   });
+
   const [loading, setLoading] = useState(true);
 
-  // Restore user session on application load or token change
+  // Auto-logout timer when token hits 1-hour expiration
+  useEffect(() => {
+    if (!token) return;
+
+    try {
+      const decoded = jwtDecode(token);
+      if (decoded.exp) {
+        const remainingTimeMs = decoded.exp * 1000 - Date.now();
+        if (remainingTimeMs <= 0) {
+          logout();
+          window.location.href = '/login?expired=true';
+          return;
+        }
+
+        const timerId = setTimeout(() => {
+          logout();
+          window.location.href = '/login?expired=true';
+        }, remainingTimeMs);
+
+        return () => clearTimeout(timerId);
+      }
+    } catch (err) {
+      console.error('Failed to parse token expiration:', err);
+    }
+  }, [token]);
+
+  // Restore fresh user profile on application mount
   useEffect(() => {
     const fetchCurrentUser = async () => {
       const savedToken = localStorage.getItem('token');
-      if (savedToken) {
+      if (savedToken && !isTokenExpired(savedToken)) {
         try {
           const response = await api.get('/auth/me');
           const userData = response.data;
@@ -32,6 +86,8 @@ export const AuthProvider = ({ children }) => {
             logout();
           }
         }
+      } else if (savedToken && isTokenExpired(savedToken)) {
+        logout();
       }
       setLoading(false);
     };

@@ -1,8 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Box, Button, useTheme, useMediaQuery } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
+import { AppBar, Toolbar, Typography, Box, Button, useTheme, useMediaQuery, Avatar, Tooltip } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { useAuth } from '../context/AuthContext';
 import { styled } from '@mui/material/styles';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
@@ -29,6 +31,13 @@ const NavLink = styled(Link)(({ theme }) => ({
 const Header = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const navigate = useNavigate();
+  const { user, token, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <StyledAppBar position="static">
@@ -70,25 +79,76 @@ const Header = () => {
             <NavLink to="/funeral-procedures">Funeral Procedures</NavLink>
             <NavLink to="/contact-us">Contact Us</NavLink>
             
-            <Button
-              component={Link}
-              to="/login"
-              startIcon={<AccountCircle sx={{ color: '#C9A961' }} />}
-              sx={{
-                color: '#ffffff',
-                marginLeft: 2,
-                fontWeight: 500,
-                borderRadius: '50px',
-                border: '1px solid rgba(201, 169, 97, 0.4)',
-                padding: '6px 18px',
-                '&:hover': {
-                  backgroundColor: 'rgba(201, 169, 97, 0.2)',
-                  borderColor: '#C9A961'
-                }
-              }}
-            >
-              Account
-            </Button>
+            {user && token ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, ml: 2 }}>
+                <Tooltip title={`${user?.name || 'User'} (${user?.role || 'Customer'}) - Dashboard`}>
+                  <Avatar
+                    src={user?.avatar || ''}
+                    alt={user?.name || 'User Avatar'}
+                    component={Link}
+                    to={user?.role === 'admin' ? '/admin' : '/dashboard'}
+                    sx={{
+                      width: 38,
+                      height: 38,
+                      borderRadius: '50%',
+                      border: '2px solid #C9A961',
+                      bgcolor: '#1B2A3D',
+                      color: '#C9A961',
+                      cursor: 'pointer',
+                      boxShadow: '0 2px 8px rgba(201, 169, 97, 0.35)',
+                      fontWeight: 600,
+                      transition: 'transform 0.2s ease',
+                      '&:hover': {
+                        transform: 'scale(1.08)',
+                      }
+                    }}
+                  >
+                    {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                  </Avatar>
+                </Tooltip>
+
+                <Button
+                  onClick={handleLogout}
+                  startIcon={<LogoutIcon sx={{ fontSize: 18 }} />}
+                  sx={{
+                    color: '#ffffff',
+                    fontWeight: 600,
+                    borderRadius: '50px',
+                    border: '1.5px solid rgba(201, 169, 97, 0.5)',
+                    padding: '6px 18px',
+                    fontSize: '0.875rem',
+                    textTransform: 'none',
+                    '&:hover': {
+                      backgroundColor: '#C53030',
+                      borderColor: '#C53030',
+                      boxShadow: '0 4px 12px rgba(197, 48, 48, 0.3)',
+                    }
+                  }}
+                >
+                  Logout
+                </Button>
+              </Box>
+            ) : (
+              <Button
+                component={Link}
+                to="/login"
+                startIcon={<AccountCircle sx={{ color: '#C9A961' }} />}
+                sx={{
+                  color: '#ffffff',
+                  marginLeft: 2,
+                  fontWeight: 500,
+                  borderRadius: '50px',
+                  border: '1px solid rgba(201, 169, 97, 0.4)',
+                  padding: '6px 18px',
+                  '&:hover': {
+                    backgroundColor: 'rgba(201, 169, 97, 0.2)',
+                    borderColor: '#C9A961'
+                  }
+                }}
+              >
+                Account
+              </Button>
+            )}
           </Box>
         )}
 
