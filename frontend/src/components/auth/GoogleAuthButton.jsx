@@ -23,6 +23,24 @@ export const GoogleIcon = () => (
   </svg>
 );
 
+// RFC 7636 PKCE Helpers
+const generateRandomString = (length = 64) => {
+  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+  const randomValues = new Uint8Array(length);
+  window.crypto.getRandomValues(randomValues);
+  return Array.from(randomValues).map(val => charset[val % charset.length]).join('');
+};
+
+const generateCodeChallenge = async (verifier) => {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(verifier);
+  const digest = await window.crypto.subtle.digest('SHA-256', data);
+  return btoa(String.fromCharCode(...new Uint8Array(digest)))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+};
+
 const GoogleAuthButton = ({ 
   text = 'Continue with Google', 
   loading = false, 
@@ -30,13 +48,36 @@ const GoogleAuthButton = ({
 }) => {
   const backendBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
-  const handleClick = (e) => {
+  const handleClick = async (e) => {
     if (onClick) {
       onClick(e);
       return;
     }
-    // Default flow: trigger Passport Google OAuth on backend
-    window.location.href = `${backendBaseUrl}/api/auth/google`;
+
+    try {
+      // Invariant 4: Generate PKCE S256 verifier and challenge
+      const codeVerifier = generateRandomString(64);
+      const codeChallenge = await generateCodeChallenge(codeVerifier);
+      const state = generateRandomString(32);
+
+      sessionStorage.setItem('oauth_code_verifier', codeVerifier);
+      sessionStorage.setItem('oauth_state', state);
+
+      const redirectUri = `${window.location.origin}/auth/callback`;
+      const params = new URLSearchParams({
+        code_challenge: codeChallenge,
+        code_challenge_method: 'S256',
+        state: state,
+        redirect_uri: redirectUri,
+      });
+
+      // Default flow: trigger Passport Google OAuth with PKCE parameters
+      window.location.href = `${backendBaseUrl}/api/auth/google?${params.toString()}`;
+    } catch (err) {
+      console.error('PKCE generation error:', err);
+      // Fallback redirect if subtle crypto unavailable
+      window.location.href = `${backendBaseUrl}/api/auth/google`;
+    }
   };
 
   return (

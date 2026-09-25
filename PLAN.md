@@ -1,240 +1,293 @@
-# Remediation Plan: V01 Mass Assignment & Privilege Escalation via Public Registration
+# PLAN.md — V15 Remediation: Token Leakage via URL Query String (OAuth Flow)
 
-## 1. Stack Confirmation & Adaptations
-
-The repository is built with:
-- **Backend**: Node.js + Express, MongoDB with Mongoose (adapted from Prisma while strictly maintaining all security invariants and relational constraints), JWT authentication, bcryptjs password hashing, Passport.js Google OAuth + Google Auth Library.
-- **Frontend**: React 18 (Vite), Material-UI (MUI v5), Tailwind CSS, React Router v7, Axios, React Toastify.
-- **Validation**: Strict DTO Whitelisting with rejection of unallowed/extra fields (`forbidNonWhitelisted` returning HTTP `400 Bad Request`).
-- **Testing**: Jest + Supertest test suite covering all 15 acceptance criteria in Section 13.
-
-All security invariants specified in Section 4 are non-negotiable and strictly enforced at the server boundary.
+**Target Issue:** V15 (High) — Leaking Bearer JWT tokens in OAuth redirect URL query string (`?token=...`)  
+**Architecture:** MERN Stack (React 18 Vite SPA + Node.js/Express + MongoDB Mongoose)  
+**Standard Compliance:** OAuth 2.0 Security BCP (RFC 6819 §4.3.4), RFC 7636 (PKCE), OAuth 2.1 Draft, OWASP ASVS v4.0 §3.4.1  
+**Author:** Senior Application Security Engineer (Google Antigravity)  
+**Status:** PROPOSED — PENDING APPROVAL
 
 ---
 
-## 2. File Tree & Architecture Plan
+## 1. Architectural Decision: Pattern B with Dual Delivery Support
 
-```text
+### 1.1 Decision Rationale
+The deployment topology consists of a React Vite SPA running on origin `http://localhost:3000` (port 3000) communicating with an Express REST API backend running on origin `http://localhost:5000` (port 5000). In production cloud environments (e.g. Vercel/Netlify for frontend and Railway/AWS for API), cross-origin and cross-subdomain separation is common. 
+
+To ensure complete compliance with Section 5 and Section 12 acceptance criteria, we implement **Pattern B (One-Time PKCE Authorization Code Exchange)** as the default cross-origin exchange mechanism, while providing first-class support for **Pattern A (HttpOnly Secure Cookie delivery)** selectable via the feature flag `AUTH_OAUTH_DELIVERY=code|cookie`.
+
+In both modes:
+- **Zero tokens appear in URLs:** No JWT, no access token, and no refresh token ever appears in query parameters, path segments, or URL fragments.
+- In Pattern B, the URL carries only a transient, single-use, 32-byte opaque code (entropy ≥ 256 bits, TTL 60 seconds).
+- The SPA immediately invokes `window.history.replaceState({}, '', '/auth/callback')` to wipe the `?code=` query parameter prior to DOM render.
+- The exchange code is stored only as a SHA-256 hash in MongoDB and atomically consumed via `findOneAndDelete`.
+- Refresh tokens are strictly delivered via `HttpOnly`, `Secure`, `SameSite=Lax` cookies, with automatic reuse detection and cryptographic family invalidation.
+
+---
+
+## 2. File Tree & Impact Scope
+
+```
+SSD_assingment/
+├── DETECTION.md                         [Created] Static & dynamic vulnerability audit
+├── PLAN.md                              [Current] Architectural remediation plan
+├── SECURITY.md                          [Update] V15 root cause, security invariants, operational guides
+├── VERIFICATION.md                      [Deliverable] Section 12 test verification matrix
+├── poc/
+│   ├── reproduce_v15_leak.js            [Created] Runnable PoC script reproducing leak
+│   └── redirect_capture.txt             [Created] Raw redirect capture proving leak
 ├── backend/
-│   ├── app.js                          # Register /api/admin/users route & middleware
-│   ├── config/
-│   │   ├── passport.js                 # Harden Google OAuth to check PendingInvite & default to 'customer'
-│   ├── controllers/
-│   │   ├── authController.js           # Remove role/userType handling; hardcode 'customer'; atomic invite consumption
-│   │   ├── adminUserController.js      # NEW: Privileged provisioning endpoints, step-up re-auth, invites, user management
-│   ├── middleware/
-│   │   ├── auth.js                     # Existing protect, admin + NEW stepUpAuth middleware (<= 5 min validity)
-│   │   ├── validate.js                 # NEW: Strict DTO whitelisting & forbidNonWhitelisted middleware
-│   │   ├── rateLimiter.js              # NEW: Rate limiting for privileged endpoints (10 req/min/admin)
 │   ├── models/
-│   │   ├── User.js                     # Update role enum, status enum ('active','pending_invite','suspended'), mfaEnabled
-│   │   ├── PendingInvite.js            # NEW: Invite model (email, role, seedData, token, expiresAt, consumedAt, createdBy)
-│   │   ├── AuditLog.js                 # NEW: Audit log model (actorId, targetUserId, action, roleGranted, ip, userAgent, requestId)
-│   │   ├── Branch.js                   # NEW: Branch reference model for managedBranch validation
-│   │   ├── FuneralStaffProfile.js      # NEW: Profile model matching Section 5.3
-│   │   ├── HearseDriverProfile.js      # NEW: Profile model matching Section 5.4
-│   │   ├── FuneralManagerProfile.js    # NEW: Profile model matching Section 5.5
-│   │   ├── AdminProfile.js             # NEW: Profile model matching Section 5.6
+│   │   ├── OAuthExchangeCode.js         [New] Schema for one-time exchange codes (TTL: 60s, hashed)
+│   │   ├── RefreshToken.js              [New] Schema for rotating refresh tokens (hashed, family tracking)
+│   │   └── AuditLog.js                  [Update] Ensure action index and OAuth security event tracking
+│   ├── controllers/
+│   │   └── authController.js            [Update] Rewrite googleCallbackHandler, add oauthExchange, refresh, logout
 │   ├── routes/
-│   │   ├── authRoutes.js               # Enforce strict DTO validation on /register and Google endpoints
-│   │   ├── adminUserRoutes.js          # NEW: Privileged routes (/funeral-staff, /hearse-driver, /funeral-manager, /admin, etc.)
-│   ├── scripts/
-│   │   ├── seed_admin.js               # NEW: Seed super-admin, initial branch, 0 staff
+│   │   └── authRoutes.js                [Update] Add /oauth/exchange, /refresh, /logout, enforce POST-only (405 for GET)
+│   ├── middleware/
+│   │   ├── rateLimiter.js               [New] Lightweight sliding-window rate limiter for exchange & refresh
+│   │   └── securityHeaders.js           [New] Referrer-Policy, Cache-Control, log redaction middleware
+│   ├── app.js                           [Update] Mount cookie parser, security headers, logger redactor
 │   ├── tests/
-│   │   ├── v01_remediation.test.js     # NEW: Comprehensive test suite verifying all 15 acceptance criteria
-│   ├── utils/
-│   │   ├── auditLogger.js              # NEW: Reusable audit logging utility
-│   │   ├── passwordValidator.js        # NEW: Password complexity validator (>= 12 chars, character diversity)
-│
-├── frontend/
-│   ├── src/
-│   │   ├── pages/
-│   │   │   ├── auth/
-│   │   │   │   ├── Register.jsx        # REMOVE role/userType selector completely; customer registration only
-│   │   │   ├── admin/
-│   │   │   │   ├── components/
-│   │   │   │   │   ├── UsersTable.jsx  # ADD "Add User" button beside "Export PDF"; role & status filters
-│   │   │   │   ├── dashboard/
-│   │   │   │   │   ├── DashboardPage.jsx # Wire state and handler for "Add User" modal and refresh
-│   │   │   │   ├── users/
-│   │   │   │   │   ├── AddUserModal.jsx        # NEW: Role picker & wizard container dialog
-│   │   │   │   │   ├── StepUpAuthDialog.jsx    # NEW: Password/MFA re-auth dialog for admin creation & role change
-│   │   │   │   │   ├── forms/
-│   │   │   │   │   │   ├── FuneralStaffForm.jsx   # NEW: Intake form for Section 5.3
-│   │   │   │   │   │   ├── HearseDriverForm.jsx   # NEW: Intake form for Section 5.4
-│   │   │   │   │   │   ├── FuneralManagerForm.jsx # NEW: Intake form for Section 5.5
-│   │   │   │   │   │   ├── AdminForm.jsx          # NEW: Intake form for Section 5.6 (high privilege banner)
-│   │   │   │   │   │   ├── InviteUserForm.jsx     # NEW: Send privileged email invite (Section 5.7)
-│
-├── PLAN.md                             # This plan
-├── SECURITY.md                         # Security documentation on V01 root cause, fix, and invariants
-└── VERIFICATION.md                     # Verification report with all 15 acceptance test results
+│   │   ├── v01_remediation.test.js      [Preserve] Keep existing 15 tests green
+│   │   └── v15_remediation.test.js      [New] Complete Section 12 acceptance test suite (19 criteria)
+│   └── scripts/
+│       └── migrate_v15_indexes.js       [New] Safe idempotent MongoDB index migration script
+└── frontend/
+    ├── index.html                       [Update] Add <meta name="referrer" content="strict-origin-when-cross-origin">
+    ├── src/
+    │   ├── context/
+    │   │   └── AuthContext.jsx          [Update] Secure in-memory token state, silent cookie refresh, no URL token
+    │   ├── components/
+    │   │   └── auth/
+    │   │       └── GoogleAuthButton.jsx [Update] Generate PKCE verifier/challenge before OAuth redirect
+    │   ├── pages/
+    │   │   └── auth/
+    │   │       ├── AuthCallback.jsx     [Update] Pattern B: replaceState immediate sanitization, POST exchange
+    │   │       ├── OAuthDone.jsx        [New] Pattern A: silent page for cookie hydration
+    │   │       └── CompleteProfile.jsx  [Update] Remove token from query parameters; rely on authenticated session
+    │   └── App.jsx                      [Update] Register /oauth/done route
 ```
 
 ---
 
-## 3. Database Schema Updates & Migrations (Mongoose)
+## 3. MongoDB Schema & Index Migrations
 
-### 3.1 `User` Model Updates
-- `role`: Enum `['customer', 'funeral_staff', 'hearse_driver', 'funeral_manager', 'admin']` (with aliases `staff`, `driver`, `manager` supported for backward compatibility). Default: `'customer'`.
-- `status`: Enum `['active', 'pending_invite', 'suspended']`. Default: `'active'`.
-- `mfaEnabled`: Boolean, default: `false`.
-- Profile references:
-  - `staffProfile`: ObjectId ref `FuneralStaffProfile`
-  - `driverProfile`: ObjectId ref `HearseDriverProfile`
-  - `managerProfile`: ObjectId ref `FuneralManagerProfile`
-  - `adminProfile`: ObjectId ref `AdminProfile`
+### 3.1 `oauth_exchange_codes` Collection
+```javascript
+const oauthExchangeCodeSchema = new mongoose.Schema({
+  codeHash: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  clientId: {
+    type: String,
+    required: true,
+  },
+  redirectUri: {
+    type: String,
+    required: true,
+  },
+  codeChallenge: {
+    type: String,
+    required: true,
+  },
+  codeChallengeMethod: {
+    type: String,
+    enum: ['S256'],
+    default: 'S256',
+  },
+  state: {
+    type: String,
+    default: null,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    expires: 60, // TTL index: automatically deleted after 60 seconds
+  },
+  consumedAt: {
+    type: Date,
+    default: null,
+  },
+});
+```
+**Security Invariants:**
+- Raw `exchange_code` is **never stored**; only `SHA-256(rawCode)` is persisted.
+- Atomic consumption via `OAuthExchangeCode.findOneAndDelete({ codeHash })`.
 
-### 3.2 New Models
-1. **`PendingInvite`**:
-   - `email`: String, required, unique, lowercase, indexed.
-   - `role`: Enum matching elevated roles.
-   - `seedData`: Schema.Types.Mixed (pre-filled role profile data).
-   - `token`: String, unique, indexed (crypto-generated random 64-char hex or signed JWT).
-   - `expiresAt`: Date (now + 72 hours).
-   - `consumedAt`: Date, default `null`.
-   - `createdBy`: ObjectId ref `User` (the admin who issued the invite).
-2. **`AuditLog`**:
-   - `actorId`: ObjectId ref `User` (nullable for system events).
-   - `targetUserId`: ObjectId ref `User`.
-   - `action`: String (e.g. `'user.provision.funeral_staff'`, `'user.provision.admin'`).
-   - `roleGranted`: String.
-   - `ip`: String.
-   - `userAgent`: String.
-   - `requestId`: String.
-   - `metadata`: Schema.Types.Mixed.
-   - `createdAt`: Date, default `Date.now`, indexed with `actorId`.
-3. **`Branch`**:
-   - `name`: String, required, unique.
-   - `code`: String, required, unique.
-   - `address`: String.
-   - `isActive`: Boolean, default `true`.
-4. **Role Profiles**:
-   - `FuneralStaffProfile`: `userId`, `employeeId` (unique), `department`, `branch` (ref Branch), `hireDate`, `employmentType` (`full-time`, `part-time`, `contract`), `certifications` `[{ name, expiry }]`, `emergencyContact` `{ name, relation, phone }`, `shift` (`morning`, `evening`, `night`, `rotating`).
-   - `HearseDriverProfile`: `userId`, `employeeId` (unique), `licenseNumber` (unique), `licenseClass`, `licenseExpiry` (future Date), `medicalCertificateExpiry` (future Date), `backgroundCheckDate`, `assignedVehicleId`, `availabilitySchedule`, `emergencyContact` `{ name, relation, phone }`.
-   - `FuneralManagerProfile`: `userId`, `employeeId` (unique), `managedBranch` (ref Branch), `reportingTo` (ref User), `hireDate`, `yearsOfExperience` (Number >= 0), `managementCertifications` `[{ name, expiry }]`, `emergencyContact` `{ name, relation, phone }`.
-   - `AdminProfile`: `userId`, `employeeId` (unique), `accessTier` (`super_admin`, `ops_admin`, `support_admin`), `managedBranch`, `reportingTo`, `hireDate`, `yearsOfExperience`, `emergencyContact`, `forcePasswordReset` (Boolean, default `true`).
+### 3.2 `refresh_tokens` Collection
+```javascript
+const refreshTokenSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  jti: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  tokenHash: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  familyId: {
+    type: String,
+    required: true,
+    index: true,
+  },
+  expiresAt: {
+    type: Date,
+    required: true,
+  },
+  revokedAt: {
+    type: Date,
+    default: null,
+  },
+  replacedByJti: {
+    type: String,
+    default: null,
+  },
+  ip: String,
+  userAgent: String,
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
----
-
-## 4. Endpoints & API Contract
-
-### 4.1 Public Endpoints
-- `POST /api/auth/register`:
-  - **Allowed fields only**: `name` (or `fullName`), `email`, `password`, `phone` (optional), `address` (optional).
-  - **Whitelist Enforcement**: If `role`, `userType`, `isAdmin`, `permissions`, or any unexpected field is provided $\rightarrow$ `400 Bad Request` with descriptive whitelist error.
-  - **Server-side assignment**: `role = 'customer'`, `status = 'active'`.
-  - Response: `201 Created` with sanitized user object (no password, no internal flags) + token.
-- `POST /api/auth/google-token` & Passport Callback:
-  - Validates Google token.
-  - Checks if email matches an unconsumed `PendingInvite` (`consumedAt == null` and `expiresAt > Date.now()`):
-    - **If invite matches**: In an atomic transaction, assign `role = invite.role`, instantiate profile from `invite.seedData`, mark `consumedAt = Date.now()`, write high-priority `AuditLog`, set `status = 'active'`.
-    - **If no invite**: Set `role = 'customer'`, `status = 'active'`.
-    - **If existing user**: Preserve existing role (never downgrade).
-
-### 4.2 Privileged Admin Endpoints (Under `/api/admin/users`)
-All routes require `protect` and `admin` middleware.
-1. `POST /api/admin/users/funeral-staff` $\rightarrow$ Validate Section 5.3 fields $\rightarrow$ Transactionally create User + FuneralStaffProfile $\rightarrow$ Audit Log $\rightarrow$ `201 Created`.
-2. `POST /api/admin/users/hearse-driver` $\rightarrow$ Validate Section 5.4 fields (check future expiry on licenses) $\rightarrow$ Transactionally create User + HearseDriverProfile $\rightarrow$ Audit Log $\rightarrow$ `201 Created`.
-3. `POST /api/admin/users/funeral-manager` $\rightarrow$ Validate Section 5.5 fields (check valid `reportingTo` and `managedBranch`) $\rightarrow$ Transactionally create User + FuneralManagerProfile $\rightarrow$ Audit Log $\rightarrow$ `201 Created`.
-4. `POST /api/admin/users/admin` $\rightarrow$ Require `stepUpAuth` token ($\le 5$ min old) $\rightarrow$ Validate Section 5.6 fields $\rightarrow$ Create User + AdminProfile with `forcePasswordReset: true` $\rightarrow$ Emit high-severity Audit Log $\rightarrow$ `201 Created`.
-5. `POST /api/admin/users/invite` $\rightarrow$ Body: `{ email, role, seedData }` $\rightarrow$ Validate role and seedData $\rightarrow$ Generate signed 72h invite token $\rightarrow$ Store `PendingInvite` $\rightarrow$ Audit Log $\rightarrow$ `201 Created`.
-6. `POST /api/admin/users/step-up` $\rightarrow$ Body: `{ password }` $\rightarrow$ Verifies admin password $\rightarrow$ Issues short-lived signed step-up JWT token (valid for 5 minutes) $\rightarrow$ `200 OK { stepUpToken }`.
-7. `GET /api/admin/users` $\rightarrow$ Query: `role`, `branch`, `status`, `search` $\rightarrow$ Returns users with populated profiles and `provisionedBy` audit details.
-8. `PATCH /api/admin/users/:id/role` $\rightarrow$ Body: `{ role, stepUpToken? }` $\rightarrow$ If new role is `admin`, step-up token is mandatory $\rightarrow$ Update role in transaction $\rightarrow$ Audit Log $\rightarrow$ `200 OK`.
-9. `DELETE /api/admin/users/:id` $\rightarrow$ Soft-deletes user (`status = 'suspended'`) $\rightarrow$ Audit Log $\rightarrow$ `204 No Content`.
-
----
-
-## 5. UI / UX Design & Admin Dashboard Integration
-
-### 5.1 Public Self-Registration (`/register`)
-- Completely remove the role/userType `<Select>` dropdown and role-specific conditional inputs.
-- Form presents clean, compassionate fields: Full Name, Email, Password, Confirm Password, Phone (optional), Address (optional).
-- Form explicitly posts only clean customer fields.
-- Automated tests verify no `role` or `userType` input exists in the DOM.
-
-### 5.2 Admin Console — Users Table & "Add User" Button
-- In `frontend/src/pages/admin/components/UsersTable.jsx`:
-  - Locate the header actions box containing the `Export PDF` button.
-  - **Insert the `Add User` button directly beside the `Export PDF` button**:
-    ```jsx
-    <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<PersonAddIcon />}
-        onClick={handleOpenAddUserModal}
-        sx={{ bgcolor: '#1b2a3d', '&:hover': { bgcolor: '#2c3e50' } }}
-      >
-        Add User
-      </Button>
-      <Button
-        variant="contained"
-        startIcon={<PdfIcon />}
-        onClick={onExportPdf}
-        sx={{ bgcolor: theme.palette.error.main, '&:hover': { bgcolor: theme.palette.error.dark } }}
-      >
-        Export PDF
-      </Button>
-    </Box>
-    ```
-- Clicking `Add User` opens `AddUserModal`:
-  1. **Step 1: Role Selection**: Cards for "Funeral Staff", "Hearse Driver", "Funeral Manager", "Admin", and "Send Email Invite".
-  2. **Step 2: Role-Specific Form**:
-     - **Staff Form**: Employee ID, Department, Branch, Hire Date, Employment Type, Shift, Certifications, Emergency Contact.
-     - **Driver Form**: License Number, License Class, License Expiry (with future date picker validation), Medical Cert Expiry, Background Check Date, Assigned Vehicle, Availability, Emergency Contact.
-     - **Manager Form**: Managed Branch selector, Reporting Manager selector, Years of Experience, Management Certifications, Emergency Contact.
-     - **Admin Form**: Access Tier (`super_admin`, `ops_admin`, `support_admin`), plus high-privilege red warning banner:
-       > ⚠️ **HIGH-PRIVILEGE ACTION**: Creating an Administrator account grants full control over the funeral management system. Re-authentication (Password / MFA verification) is strictly required.
-     - **Step-Up Dialog**: If Admin creation or role promotion is submitted, `StepUpAuthDialog` triggers to prompt the acting admin's current password.
-  3. **Step 3: Feedback**: Toast on success with credential details / invite delivery notice, automatically reloading the user table.
+refreshTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 }); // MongoDB TTL
+refreshTokenSchema.index({ familyId: 1 });
+```
+**Security Invariants:**
+- Raw refresh token is **never stored**; only `SHA-256(rawRefreshToken)` is persisted.
+- If a revoked token within a `familyId` is submitted, the **entire token family is revoked immediately**, and an audit event is triggered.
 
 ---
 
-## 6. Implementation Sequence (Reviewable Chunks)
+## 4. API Endpoints & Contract Specification
 
-1. **Chunk 1: Data Models & Schema Hardening**
-   - Create `AuditLog.js`, `PendingInvite.js`, `Branch.js`, `FuneralStaffProfile.js`, `HearseDriverProfile.js`, `FuneralManagerProfile.js`, `AdminProfile.js`.
-   - Update `User.js` with new enum roles, status, and default `'customer'`.
-2. **Chunk 2: Security Middleware & Utilities**
-   - Create `middleware/validate.js` (strict DTO whitelist & forbidNonWhitelisted).
-   - Create `middleware/rateLimiter.js` (10 req/min for privileged provisioning).
-   - Create `utils/auditLogger.js` and `utils/passwordValidator.js`.
-   - Update `middleware/auth.js` to add `stepUpAuth`.
-3. **Chunk 3: Auth Hardening (Public & Google)**
-   - Refactor `backend/controllers/authController.js` and `backend/routes/authRoutes.js`:
-     - Whitelist check on `/register` $\rightarrow$ 400 on unexpected fields.
-     - Hardcode role assignment to `'customer'`.
-     - In `googleTokenAuth` and Passport callback: check `PendingInvite`, consume inside transaction, audit log.
-     - Secure `completeProfile`: forbid role changes.
-4. **Chunk 4: Privileged Admin Provisioning Module**
-   - Implement `backend/routes/adminUserRoutes.js` and `backend/controllers/adminUserController.js`.
-   - Implement step-up re-authentication route (`/api/admin/users/step-up`).
-   - Implement role-specific provisioning endpoints (`/funeral-staff`, `/hearse-driver`, `/funeral-manager`, `/admin`, `/invite`, `/role`).
-   - Register routes in `backend/app.js`.
-5. **Chunk 5: Seed Script**
-   - Create `backend/scripts/seed_admin.js` to seed 1 super-admin, 1 branch, 0 staff.
-6. **Chunk 6: Frontend Hardening & Registration Cleanup**
-   - Update `frontend/src/pages/auth/Register.jsx` to completely strip role selection and extra fields.
-7. **Chunk 7: Admin Console UI (Add User Button & Intake Wizards)**
-   - Update `frontend/src/pages/admin/components/UsersTable.jsx` to place "Add User" button beside "Export PDF".
-   - Create `AddUserModal.jsx`, `StepUpAuthDialog.jsx`, and role form components.
-   - Integrate with `DashboardPage.jsx` for state and data refresh.
-8. **Chunk 8: Automated Verification & Documentation**
-   - Implement Jest + Supertest test suite in `backend/tests/v01_remediation.test.js` validating all 15 acceptance criteria.
-   - Run tests and record results in `VERIFICATION.md`.
-   - Produce `SECURITY.md` and Rollback Plan.
+| Method | Endpoint | Access | Purpose & Security Controls |
+|---|---|---|---|
+| `GET` | `/api/auth/google` | Public | Generates OAuth `state` + accepts client PKCE challenge, stores in session, redirects (302) to Google. |
+| `GET` | `/api/auth/google/callback` | Public (Google) | Verifies Google auth. If `AUTH_OAUTH_DELIVERY=cookie`, sets HttpOnly cookies and redirects to `/oauth/done`. If `code`, generates 60s single-use `exchange_code`, stores SHA-256 hash, redirects to `/auth/callback?code=<opaque>`. |
+| `POST` | `/api/auth/oauth/exchange` | Public | Body: `{ code, codeVerifier, redirectUri }`. Atomically consumes code (`findOneAndDelete`), verifies PKCE S256, matches `redirect_uri`. Returns `200 { accessToken, user, isProfileComplete }` + sets HttpOnly `rt` cookie. Double consumption yields `401` + `auth.oauth.code_reuse_detected` audit log. |
+| `GET` | `/api/auth/oauth/exchange` | Public | Explicitly returns `405 Method Not Allowed`. |
+| `POST` | `/api/auth/refresh` | Cookie / Body | Reads `rt` cookie or body refresh token. Validates hash and family. Revokes old `jti`, issues new `jti`, sets rotated `rt` cookie. If reused token detected: revokes family and returns `401`. |
+| `POST` | `/api/auth/logout` | Authenticated | Clears `at` and `rt` cookies, revokes active refresh family in MongoDB. Returns `204 No Content`. |
+| `GET` | `/api/auth/me` | Authenticated | Supports both `Authorization: Bearer <token>` and `at` cookie. Returns sanitized profile. |
 
 ---
 
-## 7. Rollback Plan
+## 5. Frontend & UI Flow Architecture
 
-- **Database / Schema**:
-  - New collections (`pendinginvites`, `auditlogs`, `branches`, profiles) can be dropped without affecting existing tables.
-  - `User.role` remains backward compatible with existing users.
-- **Backend**:
-  - Revert `adminUserRoutes.js` registration in `app.js`.
-  - Revert `authController.js` and `passport.js` git changes if needed.
-- **Feature Flag / Kill Switch**:
-  - Environment variable `FEATURE_STRICT_RBAC=true` (defaults to true; can be toggled to false if temporary bypass is needed in non-production).
+### 5.1 Pattern B Exchange Flow (`/auth/callback`)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User
+    participant Browser
+    participant SPA as React SPA (/auth/callback)
+    participant API as Backend API
+    participant Google as Google IdP
+
+    User->>SPA: Click "Continue with Google"
+    SPA->>SPA: Generate PKCE (verifier + S256 challenge), store verifier in sessionStorage
+    SPA->>API: GET /api/auth/google?code_challenge=...&redirect_uri=...
+    API->>Google: 302 Redirect to Google OAuth consent
+    Google->>API: GET /api/auth/google/callback?code=...&state=...
+    API->>API: Verify Google profile, create SHA-256 hashed 60s exchange_code
+    API->>Browser: 302 Redirect to /auth/callback?code=<opaque_32_bytes>
+    Browser->>SPA: Load /auth/callback?code=<opaque>
+    SPA->>SPA: window.history.replaceState({}, '', '/auth/callback') [Wipe from address bar]
+    SPA->>API: POST /api/auth/oauth/exchange { code, codeVerifier }
+    API->>API: findOneAndDelete(codeHash) + Verify PKCE S256 + Issue JWT
+    API-->>SPA: 200 { accessToken, user, isProfileComplete } + Set-Cookie: rt (HttpOnly)
+    SPA->>SPA: Store accessToken in React memory only; navigate to dashboard
+```
+
+### 5.2 Pattern A Silent Cookie Hydration (`/oauth/done`)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User
+    participant Browser
+    participant SPA as React SPA (/oauth/done)
+    participant API as Backend API
+
+    Browser->>SPA: Load /oauth/done (NO query params, NO fragment)
+    SPA->>API: GET /api/auth/me (Cookie: at=...)
+    API-->>SPA: 200 { user profile }
+    SPA->>SPA: Hydrate user context; navigate to /dashboard
+```
+
+### 5.3 CompleteProfile Sanitization
+- `frontend/src/pages/auth/CompleteProfile.jsx` currently extracts `params.get('token')`.
+- This is completely removed. `CompleteProfile` will rely strictly on the active in-memory authenticated session or `useAuth()`.
+
+---
+
+## 6. Hardening & Security Policies
+
+1. **Cookie Configuration:**
+   - Name: `rt` (Refresh Token) and `at` (Access Token in cookie mode).
+   - Attributes: `HttpOnly: true; Secure: ${NODE_ENV === 'production'}; SameSite: 'Lax'; Path: '/'` (or `/api/auth`).
+2. **Referrer-Policy:**
+   - Injected in HTTP headers: `strict-origin-when-cross-origin`.
+   - Set in `frontend/index.html`: `<meta name="referrer" content="strict-origin-when-cross-origin">`.
+   - On OAuth callback routes: `no-referrer`.
+3. **Cache-Control:**
+   - `no-store, no-cache, must-revalidate, proxy-revalidate` on all `/api/auth/*` routes.
+4. **Log Redaction:**
+   - Express logging middleware scrubs `token`, `access_token`, `refresh_token`, `code`, `id_token` from query parameters and request headers.
+5. **Rate Limiting:**
+   - `/api/auth/oauth/exchange` and `/api/auth/refresh` restricted to 20 requests per minute per IP.
+6. **CORS:**
+   - Explicit origin allowlist (`http://localhost:3000`, `http://127.0.0.1:3000`, `CLIENT_URL`) with `credentials: true`.
+
+---
+
+## 7. Rollout, Rollback & Kill Switch Strategy
+
+- **Feature Flag:** `AUTH_OAUTH_DELIVERY`
+  - Values: `code` (Pattern B - default) | `cookie` (Pattern A).
+  - Setting `AUTH_OAUTH_DELIVERY=cookie` switches callback handling immediately to direct HttpOnly cookie delivery.
+- **Rollback Plan:**
+  - If a runtime regression occurs, `AUTH_OAUTH_DELIVERY` can be flipped dynamically without modifying schemas.
+  - The MongoDB collections `oauth_exchange_codes` and `refresh_tokens` are non-breaking additions that do not modify existing user collections.
+  - Index rollback script provided in `backend/scripts/rollback_v15.js`.
+
+---
+
+## 8. Acceptance Verification Suite (Section 12 Mapping)
+
+| # | Acceptance Test Case | Target Assertion |
+|---|---|---|
+| 1 | `grep -R "?token=" src/` after fix | Zero matches across codebase |
+| 2 | OAuth Flow Final URL | Zero tokens/JWTs in URL |
+| 3 | Pattern A Cookie Delivery | `Set-Cookie: at=...; HttpOnly; Secure; SameSite=Lax` |
+| 4 | Pattern B Opaque Code | `?code=<opaque>`, length ≤ 64 chars, not a JWT |
+| 5 | `POST /auth/oauth/exchange` Valid Code | `200 { accessToken }`, no refresh in JSON body |
+| 6 | Code Replay / Reuse Detection | 2nd call returns `401`, triggers `auth.oauth.code_reuse_detected` |
+| 7 | Code Expiry after 60s | Returns `401 Unauthorized` |
+| 8 | Tampered PKCE Verifier | Returns `401 Unauthorized` |
+| 9 | Mismatched Redirect URI | Returns `401 Unauthorized` |
+| 10 | `GET /auth/oauth/exchange` | Returns `405 Method Not Allowed` |
+| 11 | Referrer Isolation | No token leaked via Referer header |
+| 12 | Access Log Redaction | Logs redact `token`, `code`, `access_token` query params |
+| 13 | Refresh Token Rotation | Old `jti` revoked, new `jti` issued |
+| 14 | Refresh Token Family Reuse | Reusing old token revokes entire family, returns `401` |
+| 15 | Storage Scanning | No JWT stored in `localStorage` or `sessionStorage` in cookie mode |
+| 16 | History Sanitization | `window.history.replaceState` called before first paint |
+| 17 | Security Headers Check | `Referrer-Policy`, `Cache-Control: no-store`, `SameSite` flags |
+| 18 | Mongo Exchange Code Deletion | Atomically consumed, no leftover code in DB |
+| 19 | Mongo Refresh Token Hashing | Only `tokenHash` stored; raw token never in DB |

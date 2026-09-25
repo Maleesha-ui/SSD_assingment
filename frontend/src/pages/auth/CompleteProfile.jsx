@@ -55,27 +55,16 @@ const CompleteProfile = () => {
   const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Extract token from URL if present and fetch initial profile
+  // Fetch initial profile using authenticated session (no tokens read from URL)
   useEffect(() => {
     const initializeProfile = async () => {
       try {
         const params = new URLSearchParams(location.search);
-        const urlToken = params.get('token');
-        const activeToken = urlToken || token || localStorage.getItem('token');
+        const activeToken = token || localStorage.getItem('token');
 
-        if (!activeToken) {
-          navigate('/login');
-          return;
-        }
-
-        const res = await api.get('/auth/me', {
-          headers: { Authorization: `Bearer ${activeToken}` },
-        });
-
+        const headers = activeToken ? { Authorization: `Bearer ${activeToken}` } : {};
+        const res = await api.get('/auth/me', { headers });
         const profile = res.data;
-        if (urlToken) {
-          applyAuthSession(urlToken, profile);
-        }
 
         // If profile is already marked complete, redirect to dashboard
         if (profile.isProfileComplete && !params.get('isNew')) {
@@ -95,13 +84,14 @@ const CompleteProfile = () => {
       } catch (err) {
         console.error('Error fetching profile for completion:', err);
         setError('Failed to load profile details. Please log in again.');
+        setTimeout(() => navigate('/login'), 2000);
       } finally {
         setInitialLoading(false);
       }
     };
 
     initializeProfile();
-  }, [location.search, token, navigate, applyAuthSession]);
+  }, [location.search, token, navigate]);
 
   const validate = () => {
     if (!formData.name.trim()) {

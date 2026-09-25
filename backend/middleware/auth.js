@@ -7,6 +7,8 @@ const protect = async (req, res, next) => {
     let token;
     if (req.headers.authorization?.startsWith('Bearer')) {
       token = req.headers.authorization.split(' ')[1];
+    } else if (req.cookies?.at) {
+      token = req.cookies.at;
     }
 
     if (!token) {

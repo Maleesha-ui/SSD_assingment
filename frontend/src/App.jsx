@@ -13,6 +13,7 @@ import Register from "./pages/auth/Register";
 import Login from "./pages/auth/Login";
 import CompleteProfile from "./pages/auth/CompleteProfile";
 import AuthCallback from "./pages/auth/AuthCallback";
+import OAuthDone from "./pages/auth/OAuthDone";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import Dashboard from "./pages/Dashboard";
 import OrderForm from "./pages/orders/OrderForm";
@@ -149,6 +150,7 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/complete-profile" element={<CompleteProfile />} />
                   <Route path="/auth/callback" element={<AuthCallback />} />
+                  <Route path="/oauth/done" element={<OAuthDone />} />
 
                 {/* Protected Routes */}
                 <Route element={<ProtectedRoute />}>

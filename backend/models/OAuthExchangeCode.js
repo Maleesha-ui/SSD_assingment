@@ -22,7 +22,7 @@ const oauthExchangeCodeSchema = new mongoose.Schema({
   },
   codeChallenge: {
     type: String,
-    required: true,
+    default: '',
   },
   codeChallengeMethod: {
     type: String,

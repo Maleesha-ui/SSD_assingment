@@ -34,6 +34,11 @@ connectDB();
 
 const app = express();
 
+// Security Headers, Cookie Parser & Log Redactor (V15 Hardening)
+const { securityHeaders, logRedactor, parseCookies } = require('./middleware/securityHeaders');
+app.use(securityHeaders);
+app.use(parseCookies);
+
 // Middleware
 const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
 app.use(cors({
@@ -41,6 +46,13 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+app.use(logRedactor);
+
+// Sanitize query params in HTTP request logs (Morgan)
+morgan.token('url', (req) => {
+  const raw = req.originalUrl || req.url || '';
+  return raw.replace(/([?&](?:code|token|access_token|refresh_token|credential)=)[^&]+/gi, '$1[REDACTED]');
+});
 app.use(morgan('dev'));
 
 // Session middleware for OAuth state verification
@@ -62,6 +74,7 @@ app.use(passport.session());
 try {
   console.log('Registering routes...');
   app.use('/api/auth', require('./routes/authRoutes'));
+  app.use('/auth', require('./routes/authRoutes'));
   app.use('/api/products', require('./routes/productRoutes'));
   app.use('/api/payments', require('./routes/paymentRoutes'));
   app.use('/api/sales', require('./routes/salesRoutes'));
