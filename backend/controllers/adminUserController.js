@@ -8,6 +8,7 @@ const FuneralManagerProfile = require('../models/FuneralManagerProfile');
 const AdminProfile = require('../models/AdminProfile');
 const PendingInvite = require('../models/PendingInvite');
 const { logAuditEvent } = require('../utils/auditLogger');
+const { getStepUpSecret } = require('../config/jwtSecrets');
 
 /**
  * Step-Up Re-Authentication Endpoint
@@ -30,14 +31,13 @@ exports.stepUpAuth = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials. Step-up authentication failed.' });
     }
 
-    const secret = process.env.STEP_UP_SECRET || (process.env.JWT_SECRET + '_stepup');
     const stepUpToken = jwt.sign(
       {
         adminId: adminUser._id.toString(),
         action: 'step-up',
       },
-      secret,
-      { expiresIn: '5m' } // 5 minutes TTL (Invariant 2)
+      getStepUpSecret(),
+      { expiresIn: '5m', algorithm: 'HS256' } // 5 minutes TTL (Invariant 2)
     );
 
     await logAuditEvent({
@@ -577,9 +577,8 @@ exports.updateUserRole = async (req, res) => {
         });
       }
 
-      const secret = process.env.STEP_UP_SECRET || (process.env.JWT_SECRET + '_stepup');
       try {
-        const decoded = jwt.verify(token, secret);
+        const decoded = jwt.verify(token, getStepUpSecret(), { algorithms: ['HS256'] });
         if (decoded.adminId !== req.user._id.toString() || decoded.action !== 'step-up') {
           return res.status(403).json({ message: 'Forbidden: Invalid step-up token.' });
         }

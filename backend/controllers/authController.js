@@ -2,10 +2,12 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { processInviteForUser } = require('../utils/inviteHandler');
+const { getJwtSecret } = require('../config/jwtSecrets');
 
 const generateToken = (id, role = 'customer') => {
-  return jwt.sign({ id, role }, process.env.JWT_SECRET, {
+  return jwt.sign({ id, role }, getJwtSecret(), {
     expiresIn: '1h',
+    algorithm: 'HS256',
   });
 };
 

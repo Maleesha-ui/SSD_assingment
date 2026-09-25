@@ -23,6 +23,7 @@ const maintenanceRoutes = require("./routes/MaintenanceRoutes");
 
 // Load env vars
 dotenv.config();
+require('./config/jwtSecrets').validateJwtSecrets();
 
 // Passport & Session
 const session = require('express-session');

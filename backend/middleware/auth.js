@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { getJwtSecret, getStepUpSecret } = require('../config/jwtSecrets');
 
 // Authentication middleware
 const protect = async (req, res, next) => {
@@ -13,7 +14,7 @@ const protect = async (req, res, next) => {
       return res.status(401).json({ message: 'Not authorized, no token provided' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, getJwtSecret(), { algorithms: ['HS256'] });
     const user = await User.findById(decoded.id).select('-password');
     
     if (!user) {
@@ -53,8 +54,7 @@ const stepUpAuth = async (req, res, next) => {
       });
     }
 
-    const secret = process.env.STEP_UP_SECRET || (process.env.JWT_SECRET + '_stepup');
-    const decoded = jwt.verify(stepUpToken, secret);
+    const decoded = jwt.verify(stepUpToken, getStepUpSecret(), { algorithms: ['HS256'] });
 
     if (!decoded || decoded.action !== 'step-up') {
       return res.status(403).json({ message: 'Forbidden: Invalid step-up token.' });
