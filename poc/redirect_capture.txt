@@ -1,0 +1,30 @@
+=== V15 OAUTH REDIRECT URL CAPTURE ===
+Timestamp: 2026-09-25T15:35:36.317Z
+Target: Google OAuth Callback -> Frontend Redirect
+Captured Redirect URL:
+http://localhost:3000/auth/callback?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhYjY5NGM2OTI2MGFhODA5YmU3NjI5NiIsInJvbGUiOiJjdXN0b21lciIsImlhdCI6MTc5MDM1MDUzNSwiZXhwIjoxNzkwMzU0MTM1fQ.uS8VmIaFfohMZ2f9YNhdqlIrgtjgoB4MCPnvEpZ1QPE
+
+Leaked Token (Query String):
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhYjY5NGM2OTI2MGFhODA5YmU3NjI5NiIsInJvbGUiOiJjdXN0b21lciIsImlhdCI6MTc5MDM1MDUzNSwiZXhwIjoxNzkwMzU0MTM1fQ.uS8VmIaFfohMZ2f9YNhdqlIrgtjgoB4MCPnvEpZ1QPE
+
+Decoded Payload:
+{
+  "id": "6ab694c69260aa809be76296",
+  "role": "customer",
+  "iat": 1790350535,
+  "exp": 1790354135
+}
+
+Verification against GET /api/auth/me:
+Status: 200
+Authenticated User ID: 6ab694c69260aa809be76296
+User Email: v15_victim@example.com
+User Role: customer
+
+Attack Surface / Leak Vectors Demonstrated:
+1. Browser History: Location "http://localhost:3000/auth/callback?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhYjY5NGM2OTI2MGFhODA5YmU3NjI5NiIsInJvbGUiOiJjdXN0b21lciIsImlhdCI6MTc5MDM1MDUzNSwiZXhwIjoxNzkwMzU0MTM1fQ.uS8VmIaFfohMZ2f9YNhdqlIrgtjgoB4MCPnvEpZ1QPE" stored in plaintext in browser history database.
+2. Referer Header: If user or page triggers outbound link/resource from /auth/callback?token=..., Referer header includes the full query string:
+   Referer: http://localhost:3000/auth/callback?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhYjY5NGM2OTI2MGFhODA5YmU3NjI5NiIsInJvbGUiOiJjdXN0b21lciIsImlhdCI6MTc5MDM1MDUzNSwiZXhwIjoxNzkwMzU0MTM1fQ.uS8VmIaFfohMZ2f9YNhdqlIrgtjgoB4MCPnvEpZ1QPE
+3. Web Server / Proxy / CDN Logs: Full GET request logged in cleartext:
+   GET /auth/callback?token=eyJhbGciOiJIUzI1NiIs... HTTP/1.1
+4. Shoulder Surfing & URL Sharing: Token exposed directly on the address bar.
