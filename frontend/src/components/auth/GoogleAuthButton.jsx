@@ -1,9 +1,9 @@
 import React from 'react';
 import { Button, CircularProgress } from '@mui/material';
 
-// Official multi-color Google SVG icon
+// Official multi-color Google SVG icon (18x18px as per Google Identity Guidelines)
 export const GoogleIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" style={{ marginRight: '12px', flexShrink: 0 }}>
+  <svg width="18" height="18" viewBox="0 0 24 24" style={{ marginRight: '12px', flexShrink: 0 }}>
     <path
       fill="#4285F4"
       d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
@@ -42,35 +42,50 @@ const GoogleAuthButton = ({
   return (
     <Button
       fullWidth
-      variant="outlined"
       size="large"
       onClick={handleClick}
       disabled={loading}
       sx={{
-        py: 1.4,
+        py: 1.3,
         px: 3,
-        fontSize: '0.95rem',
-        fontWeight: 600,
+        height: '46px',
+        fontSize: '0.925rem',
+        fontWeight: 500,
+        fontFamily: '"Roboto", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
         borderRadius: '50px',
-        borderColor: '#E8E4DF',
-        color: '#1B2A3D',
-        backgroundColor: '#FFFFFF',
+        border: '1px solid #dadce0 !important',
+        color: '#3c4043 !important',
+        backgroundColor: '#ffffff !important',
+        backgroundImage: 'none !important',
         textTransform: 'none',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        boxShadow: '0 2px 6px rgba(27, 42, 61, 0.06)',
-        transition: 'all 0.25s ease',
+        letterSpacing: '0.25px',
+        boxShadow: '0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15) !important',
+        transition: 'background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease',
         '&:hover': {
-          borderColor: '#C9A961',
-          backgroundColor: '#FCFAF7',
-          boxShadow: '0 4px 14px rgba(201, 169, 97, 0.2)',
-          transform: 'translateY(-1px)',
+          backgroundColor: '#f8f9fa !important',
+          borderColor: '#dadce0 !important',
+          boxShadow: '0 1px 3px 1px rgba(60, 64, 67, 0.2), 0 2px 8px 2px rgba(60, 64, 67, 0.1) !important',
+        },
+        '&:focus-visible': {
+          backgroundColor: '#ffffff !important',
+          outline: '2px solid #4285F4',
+          outlineOffset: '2px',
+        },
+        '&:active': {
+          backgroundColor: '#f1f3f4 !important',
+          boxShadow: '0 1px 2px 0 rgba(60, 64, 67, 0.3) !important',
+        },
+        '&.Mui-disabled': {
+          backgroundColor: '#ffffff !important',
+          opacity: 0.6,
         },
       }}
     >
       {loading ? (
-        <CircularProgress size={22} sx={{ color: '#C9A961' }} />
+        <CircularProgress size={20} sx={{ color: '#4285F4' }} />
       ) : (
         <>
           <GoogleIcon />
