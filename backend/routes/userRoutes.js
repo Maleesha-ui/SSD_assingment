@@ -1,22 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
+const { requireUserOwnership } = require('../middleware/ownership');
 const { getAllUsers, getUserProfile, updateUserProfile, deleteUserAccount } = require('../controllers/userController');
 
-router.get('/', protect, getAllUsers);
+// List all users: Admin and Manager only
+router.get('/', protect, authorize('admin', 'manager', 'funeral_manager'), getAllUsers);
 
-router.get('/:userId', protect, getUserProfile);
+// Access specific profile: Owner or Admin/Manager only (IDOR protection)
+router.get('/:userId', protect, requireUserOwnership, getUserProfile);
 
 router.put('/update-profile', protect, updateUserProfile);
-
 router.delete('/delete-account', protect, deleteUserAccount);
-
-router.get('/testing', async (req, res) => {
-  try {
-    return res.status(200).send({ message: 'Done' });
-  } catch (error) {
-    return res.status(500).send({ message: error.message });
-  }
-});
 
 module.exports = router;

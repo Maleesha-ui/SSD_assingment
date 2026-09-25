@@ -35,7 +35,7 @@ exports.register = async (req, res) => {
       return res.status(409).json({ message: 'User with this email already exists' });
     }
 
-    const salt = await bcrypt.genSalt(10);
+    const salt = await bcrypt.genSalt(12);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Hardened User Object: strictly customer, active
@@ -74,7 +74,8 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const normalizedEmail = email ? email.toLowerCase().trim() : '';
-    const user = await User.findOne({ email: normalizedEmail });
+    // Must explicitly select password because schema has select: false (Invariant 5)
+    const user = await User.findOne({ email: normalizedEmail }).select('+password');
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
@@ -90,7 +91,8 @@ exports.login = async (req, res) => {
       });
     }
 
-    if (await bcrypt.compare(password, user.password)) {
+    const isMatch = await user.comparePassword(password);
+    if (isMatch) {
       res.json({
         _id: user._id,
         name: user.name,
@@ -101,6 +103,7 @@ exports.login = async (req, res) => {
         phone: user.phone,
         address: user.address,
         isProfileComplete: user.isProfileComplete,
+        passwordResetRequired: !!user.passwordResetRequired,
         token: generateToken(user._id, user.role),
       });
     } else {

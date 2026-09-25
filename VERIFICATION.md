@@ -1,94 +1,111 @@
-# VERIFICATION.md — V15 Acceptance & Verification Matrix
+# VERIFICATION.md — Remediation Acceptance Test Results: V01, V02, V03, V04
 
-**Assessment Date:** 2026-09-25  
-**Remediation Target:** Vulnerability V15 — Token Leakage via URL Query String (OAuth Flow)  
-**Standard Compliance:** RFC 6749 §10.3, RFC 7636 (PKCE S256), OAuth 2.0 Security BCP, OAuth 2.1  
-**Overall Verdict:**  **PASSED (19 / 19 Acceptance Criteria Verified)**
-
----
-
-## 1. Acceptance Verification Matrix
-
-| # | Acceptance Test Case | Requirement / Invariant | Status | Evidence / Verification Details |
-|---|---|---|---|---|
-| **1** | `grep -R "?token=" src/` after fix | Zero instances across codebase |  **PASS** | Ripgrep & filesystem scanner confirmed 0 matches in `frontend/src` and `backend`. Verified by `v15_remediation.test.js:44`. |
-| **2** | OAuth Flow Final Redirect URL | No JWT, no `access_token`, no `refresh_token` in URL |  **PASS** | Redirect URL format: `http://localhost:3000/auth/callback?code=<opaque>`. Confirmed no JWT dots, no `token=`. Verified by `v15_remediation.test.js:75`. |
-| **3** | Pattern A Cookie Delivery | `Set-Cookie: at=...; HttpOnly; Secure; SameSite=Lax` |  **PASS** | When `AUTH_OAUTH_DELIVERY=cookie`, backend sets `at` (15m) and `rt` (7d) as HttpOnly SameSite=Lax cookies and redirects to `/oauth/done` without query parameters. Verified by `v15_remediation.test.js:106`. |
-| **4** | Pattern B Opaque Exchange Code | `?code=<opaque>`, length ≤ 64 chars, not a JWT |  **PASS** | Code is 32 random bytes (base64url, 43 chars ≤ 64 chars), high entropy (256 bits). Verified by `v15_remediation.test.js:146`. |
-| **5** | `POST /auth/oauth/exchange` Valid Code | `200 { accessToken }`, no refresh in JSON body |  **PASS** | Responds `HTTP 200`, body contains `accessToken` and user object, `refreshToken` is `undefined` in JSON body, delivered via HttpOnly `rt` cookie. Verified by `v15_remediation.test.js:174`. |
-| **6** | Exchange Code Replay / Reuse Detection | 2nd call returns `401`; writes `auth.oauth.code_reuse_detected` |  **PASS** | First exchange consumes code atomically via `findOneAndDelete`. Second request fails with `HTTP 401` and inserts high-severity audit record. Verified by `v15_remediation.test.js:219`. |
-| **7** | Code Expiry after 60s | TTL hard cap returns `401` |  **PASS** | Codes older than 60 seconds are rejected with `HTTP 401 Exchange code has expired`. MongoDB TTL index purges them after 60s. Verified by `v15_remediation.test.js:264`. |
-| **8** | Tampered PKCE Verifier | PKCE S256 verification failure returns `401` |  **PASS** | When code verifier digest does not match SHA-256 code challenge, server rejects with `HTTP 401 PKCE verification failed`. Verified by `v15_remediation.test.js:292`. |
-| **9** | Mismatched `redirect_uri` | Code bound to redirect URI; mismatch returns `401` |  **PASS** | Tampering with `redirectUri` during POST exchange results in `HTTP 401 redirect_uri mismatch`. Verified by `v15_remediation.test.js:324`. |
-| **10** | `GET /auth/oauth/exchange` | `405 Method Not Allowed` with `Allow: POST` |  **PASS** | Non-POST requests return `HTTP 405` with `Allow: POST` header. Verified by `v15_remediation.test.js:351`. |
-| **11** | Referrer Isolation | No token leaked via `Referer` header |  **PASS** | `Referrer-Policy: no-referrer` header emitted on OAuth callback routes; `<meta name="referrer" content="strict-origin-when-cross-origin">` added to `frontend/index.html`. Verified by `v15_remediation.test.js:358`. |
-| **12** | Access Log Redaction | `token` and `code` query parameters redacted in logs |  **PASS** | Express `logRedactor` middleware scrubs `req.query.code`, `req.query.token`, `req.query.access_token` to `[REDACTED]`. Verified by `v15_remediation.test.js:365`. |
-| **13** | Refresh Token Rotation | Old `jti` revoked, new `jti` issued |  **PASS** | Calling `/api/auth/refresh` marks old token `revokedAt = Date.now()` and generates new token in same family. Verified by `v15_remediation.test.js:384`. |
-| **14** | Refresh Token Family Reuse Detection | Reusing revoked token revokes entire family, returns `401` |  **PASS** | Presentation of a revoked refresh token triggers immediate invalidation of all sibling tokens in that `familyId` and logs `auth.oauth.refresh_reuse_detected`. Verified by `v15_remediation.test.js:421`. |
-| **15** | Browser Storage Cleanliness | No tokens extracted from URL query into storage |  **PASS** | `CompleteProfile.jsx` and `AuthCallback.jsx` inspected and verified to contain zero `params.get('token')` calls. Verified by `v15_remediation.test.js:467`. |
-| **16** | History Sanitization via `replaceState` | URL scrubbed before first render |  **PASS** | `AuthCallback.jsx` executes `window.history.replaceState({}, '', '/auth/callback')` immediately upon mount. Verified by `v15_remediation.test.js:481`. |
-| **17** | Security Headers Baseline | `Cache-Control: no-store`, `nosniff`, `DENY` |  **PASS** | Header inspection confirms `Cache-Control: no-store, no-cache, must-revalidate`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`. Verified by `v15_remediation.test.js:493`. |
-| **18** | MongoDB Exchange Code Deletion | Atomically deleted upon successful exchange |  **PASS** | Collection query for `OAuthExchangeCode.findOne({ codeHash })` returns `null` immediately post-exchange. Verified by `v15_remediation.test.js:503`. |
-| **19** | Refresh Token Cryptographic Hashing | MongoDB stores only SHA-256 `tokenHash`, never raw token |  **PASS** | Database dump confirms raw cookie value is not present in MongoDB; only `tokenHash === sha256(rawToken)` is stored. Verified by `v15_remediation.test.js:527`. |
+**Audit Date:** 2026-09-25  
+**Target Application:** Funeral Services Management Platform  
+**Test Suites:**
+- `backend/tests/v01_remediation.test.js`
+- `backend/tests/v02_remediation.test.js`
+- `backend/tests/v03_v04_remediation.test.js`  
+**Test Engine:** Jest 30.5.2 / Supertest 7.3.0  
+**Overall Verdict:** 100% PASSED (All machine-checkable criteria verified)
 
 ---
 
-## 2. Automated Test Suite Results
+## 1. Complete Machine-Checkable Acceptance Matrix (Section 11)
 
+| # | Vuln | Test Description | Target Invariant | Actual Result | Status | Test / Log Reference |
+|---|---|---|---|---|---|---|
+| **1** | **V01** | `POST /auth/register { role:"admin" }` | `400` whitelist rejection | Returns `400 Bad Request` (`FORBIDDEN_FIELD`) | ✅ **PASS** | `v01_remediation.test.js:84` |
+| **2** | **V01** | `POST /auth/register` valid body | user created with `role="customer"` | User created with `role: "customer"` | ✅ **PASS** | `v01_remediation.test.js:103` |
+| **3** | **V01** | Google OAuth new user | `role="customer"` | Literal `customer` assigned server-side | ✅ **PASS** | `passport.js:63`, `authController.js:256` |
+| **4** | **V01** | `POST /admin/users` as customer | `403 Forbidden` | Returns `403 Forbidden` | ✅ **PASS** | `v01_remediation.test.js:192` |
+| **5** | **V01** | `POST /admin/users` as admin | `201`, role assigned, audit logged | Returns `201 Created`, audit record created | ✅ **PASS** | `v01_remediation.test.js:203` |
+| **6** | **V02** | Core CRUD routes without JWT | `401 Unauthorized` | 11/11 routes rejected with `401` | ✅ **PASS** | `v02_remediation.test.js:61` |
+| **7** | **V02** | Core CRUD route with wrong role | `403 Forbidden` | Customer accessing admin route returns `403` | ✅ **PASS** | `v02_remediation.test.js:80` |
+| **8** | **V02** | Core CRUD route with correct role | `2xx Success` | Admin accessing `/drivers`, `/vehicles` returns `200` | ✅ **PASS** | `v02_remediation.test.js:115` |
+| **9** | **V02** | Customer accessing another user's profile | `403 Forbidden` | Cross-customer access rejected with `403` | ✅ **PASS** | `v02_remediation.test.js:140` |
+| **10** | **V03** | `POST /staff` with password → MongoDB dump | Stored password begins with `$2b$12$` | Password stored as `$2b$12$...` | ✅ **PASS** | `v03_v04_remediation.test.js:46` |
+| **11** | **V03** | `POST /staff` response body | Zero `password` field in response | Response contains user without `password` | ✅ **PASS** | `v03_v04_remediation.test.js:71` |
+| **12** | **V03** | `GET /users/:id` / `findOne` response | `password` excluded by default (`select: false`) | `user.password === undefined` and stripped in `toJSON` | ✅ **PASS** | `v03_v04_remediation.test.js:86` |
+| **13** | **V03** | Login with correct / incorrect password | Correct → `200`, Incorrect → `401` | Correct returns `200` + token; incorrect returns `401` | ✅ **PASS** | `v03_v04_remediation.test.js:95` |
+| **14** | **V03** | Safe password comparison instance method | `comparePassword` verifies bcrypt hash | Returns `true` for valid password, `false` for invalid | ✅ **PASS** | `v03_v04_remediation.test.js:120` |
+| **15** | **V04** | `grep -R "jwt.sign(.*'123'" src/` | Zero matches across codebase | Zero occurrences in application code | ✅ **PASS** | `v03_v04_remediation.test.js:128` |
+| **16** | **V04** | Boot without / weak `JWT_SECRET` | Startup fails with clear error | Process halts if secret < 32 bytes or === `'123'` | ✅ **PASS** | `backend/app.js:27-38` |
+| **17** | **V04** | Token signed with unauthorized secret | `401 Unauthorized` on protected route | Rejected with `401` (`invalid signature`) | ✅ **PASS** | `v03_v04_remediation.test.js:139` |
+| **18** | **V04** | Token signed with new 256-bit secret | `200 OK` on protected route | Accepted with `200 OK` and returns profile | ✅ **PASS** | `v03_v04_remediation.test.js:152` |
+
+---
+
+## 2. Automated Test Execution Logs
+
+### A. V02 Test Suite (`backend/tests/v02_remediation.test.js`)
 ```
-PASS tests/v15_remediation.test.js (12.469 s)
-  V15 Remediation Verification Suite: Token Leakage via URL Query String
-    √ 1. Static check: zero instances of "?token=" exist in frontend or backend codebase (21 ms)
-    √ 2. Complete OAuth flow redirect URL contains no JWT, no access_token, no refresh_token (1668 ms)
-    √ 3. Pattern A cookie delivery: Set-Cookie at=... with HttpOnly and SameSite=Lax, redirects to /oauth/done (325 ms)
-    √ 4. Pattern B exchange code is opaque, <= 64 characters, and not a JWT (217 ms)
-    √ 5. POST /auth/oauth/exchange with valid code returns 200 { accessToken } and no refresh token in body (615 ms)
-    √ 6. Replay attack: exchanging same code twice returns 401 and creates code_reuse_detected audit log (878 ms)
-    √ 7. Exchange code older than 60s returns 401 expired (230 ms)
-    √ 8. Exchange with tampered or mismatched PKCE verifier returns 401 (241 ms)
-    √ 9. Exchange with mismatched redirect_uri returns 401 (226 ms)
-    √ 10. GET /api/auth/oauth/exchange returns 405 Method Not Allowed with Allow: POST header (13 ms)
-    √ 11. Security headers enforce Referrer-Policy: no-referrer on OAuth callback routes (12 ms)
-    √ 12. Query param log redactor scrubs token and code parameters
-    √ 13. POST /api/auth/refresh rotates token, revoking old jti and issuing new jti in same family (754 ms)
-    √ 14. Reuse of revoked refresh token revokes entire token family and returns 401 (797 ms)
-    √ 15. CompleteProfile and AuthCallback component code does not extract "?token=" from URL (3 ms)
-    √ 16. AuthCallback.jsx invokes window.history.replaceState to scrub code before rendering (1 ms)
-    √ 17. Auth endpoints include Cache-Control: no-store and MIME sniffing protection (12 ms)
-    √ 18. Mongo oauth_exchange_codes record is atomically deleted after exchange (659 ms)
-    √ 19. Mongo refresh_tokens stores only SHA-256 tokenHash, never the plaintext raw token (648 ms)
+PASS tests/v02_remediation.test.js (8.661 s)
+  V02 Remediation Verification Suite: Unauthenticated CRUD & RBAC Protection
+    Criterion 6: Rejection of Unauthenticated Requests (401 Unauthorized)
+      √ [GET] /drivers returns 401 without JWT (50 ms)
+      √ [POST] /drivers returns 401 without JWT (104 ms)
+      √ [GET] /vehicles returns 401 without JWT (32 ms)
+      √ [POST] /vehicles returns 401 without JWT (31 ms)
+      √ [GET] /assignments returns 401 without JWT (16 ms)
+      √ [GET] /routes returns 401 without JWT (14 ms)
+      √ [GET] /maintenance/all returns 401 without JWT (11 ms)
+      √ [GET] /inventory returns 401 without JWT (12 ms)
+      √ [GET] /supplier returns 401 without JWT (14 ms)
+      √ [GET] /inventoryorder returns 401 without JWT (13 ms)
+      √ [GET] /api/admin/debug returns 401 without JWT (11 ms)
+    Criterion 7: Role Authorization Enforcement (403 Forbidden for insufficient roles)
+      √ Customer token on admin-only POST /drivers returns 403 Forbidden (134 ms)
+      √ Customer token on admin-only GET /maintenance/all returns 403 Forbidden (115 ms)
+      √ Customer token on admin-only GET /supplier returns 403 Forbidden (114 ms)
+      √ Customer token on admin-only GET /api/orders returns 403 Forbidden (121 ms)
+    Criterion 8: Legitimate Access with Authorized Role (2xx Success)
+      √ Admin token on GET /drivers returns 200 OK (244 ms)
+      √ Admin token on GET /vehicles returns 200 OK (233 ms)
+      √ Admin token on GET /inventory returns 200 OK (246 ms)
+    Criterion 9: Resource Ownership Enforcement (IDOR Protection)
+      √ Customer 1 accessing Customer 2 profile returns 403 Forbidden (119 ms)
+      √ Customer 1 accessing own profile returns 200 OK (252 ms)
 
-PASS tests/v01_remediation.test.js (8.8 s)
-  V01 Remediation Verification Suite: Mass Assignment & Privilege Escalation
-    √ 15/15 tests passed
+Test Suites: 1 passed, 1 total
+Tests:       20 passed, 20 total
+Time:        8.851 s
+```
 
-Test Suites: 2 passed, 2 total
-Tests:       34 passed, 34 total
-Snapshots:   0 total
-Time:        21.492 s
+### B. V03 & V04 Test Suite (`backend/tests/v03_v04_remediation.test.js`)
+```
+PASS tests/v03_v04_remediation.test.js (10.308 s)
+  V03 & V04 Remediation Verification Suite
+    V03: Plaintext Password Storage & Leakage in addStaff
+      √ Criterion 10: Stored password in MongoDB must be a bcrypt hash starting with $2b$12$ (1486 ms)
+      √ Criterion 11: POST /api/admin/staff/add response body must NOT include password (721 ms)
+      √ Criterion 12: GET user queries without select(+password) must NOT return password (102 ms)
+      √ Criterion 13: Login succeeds with correct password and fails with incorrect password (793 ms)
+      √ Criterion 14: User.comparePassword helper works correctly (677 ms)
+    V04: Strong JWT Secret from Environment
+      √ Criterion 15: grep check confirms zero fallbacks to 123 for signing/validation (1 ms)
+      √ Criterion 16: Environment JWT_SECRET must have at least 32 bytes (256 bits) of entropy (1 ms)
+      √ Criterion 17: Token signed with unauthorized/random secret is rejected (401) (27 ms)
+      √ Criterion 18: Token signed with new 256-bit secret is accepted (200) (220 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       9 passed, 9 total
+Time:        10.505 s
 ```
 
 ---
 
-## 3. End-to-End PoC Verification Output
-
-Execution of [`poc/verify_v15_remediated.js`](file:///d:/SLIIT/YEAR%2004/Secure%20Software%20Development/Assignment/SSD_assingment/poc/verify_v15_remediated.js):
+## 3. Database Migration Output
 
 ```
-=== V15 Remediation Verification PoC ===
+=== V03 Plaintext Password Migration ===
 [+] Connected to MongoDB
-[+] Testing with user: v15_victim@example.com
-[+] Captured Secure Redirect URL:
-    http://localhost:3000/auth/callback?code=1cE0FQFvxVht1rzcACWa8gfjpj-7Yeu8hb5Qu2StBRc
-[+] VERIFIED: URL contains ZERO bearer tokens. Opaque exchange code: 1cE0FQFvxVht1rzcACWa8gfjpj-7Yeu8hb5Qu2StBRc
-[+] VERIFIED: MongoDB stores only SHA-256 codeHash: fd330df233e9b742881703b9c41e4d20cb88ff07f63a78e9b217e657f4d56762
-POST /api/auth/oauth/exchange 200 404.583 ms - 399
-[+] Code Exchange Successful: HTTP 200
-    Issued Access Token in JSON body: [Present]
-    Refresh Token in JSON body: [NONE - Compliant with Invariant 2]
-[+] Refresh Token Set-Cookie: rt=vjmffjxoYxO1O0EWWgnguUQH1vdMQBiYIKLWDHNPJL8; Max-Age=604800; Path=/; Expires=Fri, 02 Oct 2026 15:48:24 GMT; HttpOnly; SameSite=Lax
-[+] VERIFIED: Exchange code was atomically consumed and purged from MongoDB.
-POST /api/auth/oauth/exchange 401 202.325 ms - 66
-[+] Replay Attack Blocked: HTTP 401 Unauthorized.
-[+] REMEDIATION VERIFICATION COMPLETE. V15 SUCCESSFULLY MITIGATED.
+[*] Total users inspected: 77
+[!] Migrating plaintext password for user: teststaff@example.com (staff)
+--- Migration Summary ---
+[+] Total accounts scanned: 77
+[+] Already secure/hashed:  66
+[+] OAuth accounts (no pw): 10
+[+] Migrated plaintext pw:  1
+[+] Migration complete.
 ```

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
@@ -8,7 +9,12 @@ const userSchema = new mongoose.Schema({
     required: function() { 
       // Password is required for traditional local registration, but optional for OAuth accounts
       return !this.googleId; 
-    } 
+    },
+    select: false // Invariant 5: Never selected by default in queries
+  },
+  passwordResetRequired: {
+    type: Boolean,
+    default: false
   },
   googleId: { 
     type: String, 
@@ -125,5 +131,46 @@ const userSchema = new mongoose.Schema({
   },
   orders: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
 }, { timestamps: true });
+
+// Pre-save hook: Hash password with bcrypt cost >= 12 (Invariant 4)
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password') || !this.password) return next();
+  
+  // Guard against re-hashing already hashed passwords (e.g. bcrypt prefix $2a$ or $2b$)
+  if (typeof this.password === 'string' && (this.password.startsWith('$2a$') || this.password.startsWith('$2b$'))) {
+    return next();
+  }
+
+  try {
+    const salt = await bcrypt.genSalt(12);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Instance method: Safe candidate password comparison
+userSchema.methods.comparePassword = function (candidatePassword) {
+  if (!this.password) return Promise.resolve(false);
+  return bcrypt.compare(candidatePassword, this.password);
+};
+
+// Global serialization transforms: exclude sensitive fields from all outputs (Invariant 5)
+userSchema.set('toJSON', {
+  transform: (_doc, ret) => {
+    delete ret.password;
+    delete ret.__v;
+    return ret;
+  },
+});
+
+userSchema.set('toObject', {
+  transform: (_doc, ret) => {
+    delete ret.password;
+    delete ret.__v;
+    return ret;
+  },
+});
 
 module.exports = mongoose.model('User', userSchema);

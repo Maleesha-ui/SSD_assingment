@@ -220,3 +220,103 @@ access_log /var/log/nginx/access.log scrubbed_combined;
   - Setting `AUTH_OAUTH_DELIVERY=cookie` switches all OAuth logins to direct cookie mode without downtime or database rollbacks.
   - If schema rollback is required, run `node backend/scripts/rollback_v15.js` to drop `oauth_exchange_codes` and `refresh_tokens` collections.
 
+---
+
+# Security Advisory & Architecture Documentation: V03 Remediation
+
+## Vulnerability Overview: Plaintext Password Storage & Credential Leakage in `addStaff`
+
+| Field | Detail |
+|---|---|
+| **Vulnerability ID** | V03 (Critical) |
+| **CWE Classification** | CWE-256: Plaintext Storage of a Password / CWE-312: Cleartext Storage of Sensitive Information / CWE-532: Insertion of Sensitive Information into Log / Output |
+| **OWASP Category** | A02:2021 — Cryptographic Failures |
+| **CVSS v3.1 Score** | 9.1 (Critical) `CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H` |
+| **Remediation Status** | Complete & Enforced via Mongoose Lifecycle Hooks |
+
+---
+
+### 1. Root Cause Analysis
+Prior to remediation, the administrative staff creation handler ([`backend/controllers/adminController.js:244-259`](file:///d:/SLIIT/YEAR%2004/Secure%20Software%20Development/Assignment/SSD_assingment/backend/controllers/adminController.js#L244-L259)) received cleartext passwords in `req.body.password` and passed them directly to `User.create({ ..., password, ... })`. 
+
+Concurrently, the Mongoose `User` model ([`backend/models/User.js`](file:///d:/SLIIT/YEAR%2004/Secure%20Software%20Development/Assignment/SSD_assingment/backend/models/User.js)):
+1. Lacked a `pre('save')` hook to automatically compute password hashes.
+2. Omitted `select: false` on the `password` field definition, causing all database reads to retrieve the raw password.
+3. Lacked serialization sanitizers (`toJSON` / `toObject`), causing `res.status(201).json({ user })` to serialize the password directly into the HTTP response body.
+
+As a result, staff passwords were saved in plaintext in MongoDB and echoed in cleartext to the browser.
+
+---
+
+### 2. Remediation Implementation
+1. **Mongoose `pre('save')` Hook with Bcrypt (Cost = 12)**:
+   - Configured in [`backend/models/User.js`](file:///d:/SLIIT/YEAR%2004/Secure%20Software%20Development/Assignment/SSD_assingment/backend/models/User.js). Any document save where `isModified('password')` is true automatically hashes with `bcrypt.genSalt(12)`.
+   - Includes a safeguard verifying if the string already has a `$2a$` or `$2b$` prefix to avoid accidental double-hashing.
+2. **Schema Protection (`select: false`)**:
+   - `password` field in `User` model has `select: false`. Standard `User.find()` or `User.findById()` queries never include passwords.
+   - Handlers requiring password verification (e.g. `login`, `stepUpAuth`) explicitly select `+password`.
+3. **Safe Comparison Method**:
+   - `user.comparePassword(candidatePassword)` implemented on the schema using constant-time `bcrypt.compare`.
+4. **Serialization Stripping**:
+   - `toJSON` and `toObject` transforms on the schema automatically delete `ret.password` and `ret.__v`.
+5. **Controller Output Sanitization**:
+   - `addStaff` in [`backend/controllers/adminController.js`](file:///d:/SLIIT/YEAR%2004/Secure%20Software%20Development/Assignment/SSD_assingment/backend/controllers/adminController.js) explicitly strips `password` before returning HTTP 201.
+6. **Data Migration Script**:
+   - [`backend/scripts/v03-migrate-plaintext-passwords.js`](file:///d:/SLIIT/YEAR%2004/Secure%20Software%20Development/Assignment/SSD_assingment/backend/scripts/v03-migrate-plaintext-passwords.js) scans existing MongoDB records, hashes any unhashed passwords with bcrypt cost 12, and flags `passwordResetRequired: true`.
+
+---
+
+# Security Advisory & Architecture Documentation: V04 Remediation
+
+## Vulnerability Overview: Weak JWT Secret (`JWT_SECRET=123`) & Token Forgery Risk
+
+| Field | Detail |
+|---|---|
+| **Vulnerability ID** | V04 (Critical) |
+| **CWE Classification** | CWE-326: Inadequate Encryption Strength / CWE-798: Use of Hard-coded Credentials |
+| **OWASP Category** | A02:2021 — Cryptographic Failures |
+| **CVSS v3.1 Score** | 9.8 (Critical) `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H` |
+| **Remediation Status** | Complete & Enforced at Boot |
+
+---
+
+### 1. Root Cause Analysis
+[`backend/.env`](file:///d:/SLIIT/YEAR%2004/Secure%20Software%20Development/Assignment/SSD_assingment/backend/.env) configured `JWT_SECRET=123`. A 3-byte secret has only 24 bits of cryptographic entropy, far below the cryptographic threshold of 256 bits (32 bytes). An attacker knowing or brute-forcing this trivial secret could forge valid tokens with `role: 'admin'`, completely bypassing authentication and authorization checks. Furthermore, the application had no boot-time entropy check, allowing the server to operate with insecure secrets.
+
+---
+
+### 2. Remediation Implementation
+1. **256-Bit Cryptographic Key**:
+   - Replaced weak secret with a 64-hex-character string generated via `crypto.randomBytes(32).toString('hex')`.
+2. **Startup Fail-Fast Validation**:
+   - Added validation in [`backend/app.js`](file:///d:/SLIIT/YEAR%2004/Secure%20Software%20Development/Assignment/SSD_assingment/backend/app.js) verifying `Buffer.byteLength(process.env.JWT_SECRET, 'utf8') >= 32` and `JWT_SECRET !== '123'`. The server aborts startup immediately if the secret is weak or missing.
+3. **Zero-Downtime Secret Rotation Support (`JWT_SECRET_PREVIOUS`)**:
+   - Both [`backend/middleware/auth.js`](file:///d:/SLIIT/YEAR%2004/Secure%20Software%20Development/Assignment/SSD_assingment/backend/middleware/auth.js) and [`backend/middleware/authMiddleware.js`](file:///d:/SLIIT/YEAR%2004/Secure%20Software%20Development/Assignment/SSD_assingment/backend/middleware/authMiddleware.js) verify against `JWT_SECRET`. If signature verification fails and `JWT_SECRET_PREVIOUS` is present, it attempts verification with the previous key during a 24-hour grace window.
+
+---
+
+## 3. Production Secret Rotation Runbook (Zero-Downtime)
+
+To rotate the JWT secret in production without invalidating active user sessions:
+
+### Phase 1: Preparation (Generate New Secret)
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+### Phase 2: Staged Deployment (Dual-Secret Grace Period)
+1. In the production environment configuration (`.env` or Cloud Secrets Manager):
+   - Set `JWT_SECRET_PREVIOUS=<current_active_secret>`
+   - Set `JWT_SECRET=<newly_generated_64_hex_secret>`
+2. Deploy/restart the backend application.
+3. **Behavior during Phase 2:**
+   - All **new** tokens issued upon login or refresh are signed with `JWT_SECRET` (new key).
+   - Existing tokens signed with `JWT_SECRET_PREVIOUS` continue to be accepted until their expiry (1 hour).
+
+### Phase 3: Finalization (Drop Previous Secret)
+1. Wait 24 hours (or $\ge$ maximum token lifespan).
+2. Remove `JWT_SECRET_PREVIOUS` from environment configuration.
+3. Redeploy/restart backend application.
+4. All tokens signed with the old secret are permanently revoked.
+
+

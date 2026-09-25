@@ -244,15 +244,37 @@ exports.approveLeaveRequest = async (req, res) => {
 exports.addStaff = async (req, res) => {
   try {
     const { name, email, password, staffDetails } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required for staff registration.' });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+    const existingUser = await User.findOne({ email: normalizedEmail });
+    if (existingUser) {
+      return res.status(409).json({ message: 'User with this email already exists.' });
+    }
+
+    // User.create automatically invokes pre('save') hook hashing password with bcrypt cost 12
     const user = await User.create({
-      name,
-      email,
+      name: (name || '').trim(),
+      email: normalizedEmail,
       password, 
       role: 'staff',
       staffDetails,
+      status: 'active',
+      isProfileComplete: true,
+      authProvider: 'local',
+      provisionedBy: req.user ? req.user._id : null,
     });
+
     await Staff.create({ userId: user._id });
-    res.status(201).json({ message: 'Staff added successfully', user });
+
+    // Ensure password is never exposed in response (Invariant 5)
+    const sanitizedUser = user.toObject ? user.toObject() : { ...user };
+    delete sanitizedUser.password;
+    delete sanitizedUser.__v;
+
+    res.status(201).json({ message: 'Staff added successfully', user: sanitizedUser });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

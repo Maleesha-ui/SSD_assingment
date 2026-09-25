@@ -2,7 +2,11 @@ const express = require('express');
 const router = express.Router();
 
 const InventoryOrderController = require('../controllers/InventoryOrderControllers');
-const { model } = require('mongoose');
+const { protect, authorize } = require('../middleware/auth');
+
+// All inventory order operations require valid JWT and Admin/Manager role
+router.use(protect);
+router.use(authorize('admin', 'manager', 'funeral_manager'));
 
 router.get('/', InventoryOrderController.getAllInventoryOrders); // Get all inventory orders
 router.get('/:id', InventoryOrderController.getInventoryOrderById); // Get inventory order by ID

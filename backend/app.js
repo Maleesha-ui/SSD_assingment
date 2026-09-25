@@ -24,6 +24,18 @@ const maintenanceRoutes = require("./routes/MaintenanceRoutes");
 // Load env vars
 dotenv.config();
 
+// V04 Startup Validation: Invariant 6 (JWT secret >= 32 bytes / 256 bits, forbidden defaults)
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret || Buffer.byteLength(jwtSecret, 'utf8') < 32 || jwtSecret === '123') {
+  const errorMsg = 'CRITICAL SECURITY ERROR: JWT_SECRET must be set and provide >= 32 bytes (256 bits) of cryptographic entropy. Weak secrets like "123" are forbidden.';
+  console.error(errorMsg);
+  if (process.env.NODE_ENV !== 'test') {
+    process.exit(1);
+  } else {
+    throw new Error(errorMsg);
+  }
+}
+
 // Passport & Session
 const session = require('express-session');
 const passport = require('passport');

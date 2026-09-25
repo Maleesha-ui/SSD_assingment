@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const MaintenanceController = require("../controllers/MaintenanceController");
+const { protect, authorize } = require("../middleware/auth");
+
+// All maintenance operations require valid JWT and Admin/Manager role
+router.use(protect);
+router.use(authorize('admin', 'manager', 'funeral_manager'));
 
 
 

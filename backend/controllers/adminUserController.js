@@ -20,7 +20,7 @@ exports.stepUpAuth = async (req, res) => {
       return res.status(400).json({ message: 'Password is required for step-up authentication.' });
     }
 
-    const adminUser = await User.findById(req.user._id);
+    const adminUser = await User.findById(req.user._id).select('+password');
     if (!adminUser || !adminUser.password) {
       return res.status(401).json({ message: 'Authentication failed.' });
     }
