@@ -472,6 +472,7 @@ const DashboardPage = () => {
               <UsersTable
                 users={data.users}
                 onExportPdf={generateUsersPdfReport}
+                onRefresh={fetchDashboardData}
               />
             )}
             {tabValue === 2 && (

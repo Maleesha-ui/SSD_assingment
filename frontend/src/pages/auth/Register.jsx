@@ -12,10 +12,6 @@ import {
   InputAdornment,
   IconButton,
   Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Divider,
   CircularProgress,
   Fade,
@@ -28,46 +24,48 @@ import {
   Visibility,
   VisibilityOff,
   HowToReg as RegisterIcon,
-  Badge as RoleIcon,
   Phone,
   Home,
-  DriveEta,
-  Work,
   Spa,
 } from '@mui/icons-material';
 import api from '../../services/api';
 import GoogleAuthButton from '../../components/auth/GoogleAuthButton';
 
+/**
+ * Public Self-Registration Component
+ * Invariant 1 & Section 5.1 / 9:
+ * - Public self-registration only registers 'customer' role.
+ * - NO role selector or privileged intake fields exist in this form or DOM.
+ */
 const Register = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: '',
-    confirmPassword: '',
-    userType: 'customer',
     phone: '',
     address: '',
-    driverDetails: {
-      licenseNumber: '',
-      vehicleType: '',
-      availability: 'available',
-    },
-    staffDetails: {
-      employeeId: '',
-      department: '',
-      availability: 'available',
-    },
+    password: '',
+    confirmPassword: '',
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const departments = ['Operations', 'Logistics', 'Customer Service', 'Maintenance'];
-
   const validateForm = () => {
+    if (!formData.name.trim()) {
+      setError('Please provide your full name.');
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address.');
+      return false;
+    }
+
     // Password strength: at least 8 characters, 1 uppercase, 1 number
     const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
     if (!passwordRegex.test(formData.password)) {
@@ -78,7 +76,8 @@ const Register = () => {
       setError('Passwords do not match');
       return false;
     }
-    // Phone number validation: simple format check (e.g., 123-456-7890 or 1234567890)
+
+    // Phone format check if provided
     const phoneRegex = /^\d{10}$|^\d{3}-\d{3}-\d{4}$/;
     if (formData.phone && !phoneRegex.test(formData.phone)) {
       setError('Phone number must be in the format 123-456-7890 or 1234567890');
@@ -90,32 +89,28 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
 
     if (!validateForm()) return;
 
     setLoading(true);
     try {
-      const userData = {
-        name: formData.name,
-        email: formData.email,
+      // Invariant 1: Strictly public customer payload only. No role/userType field is sent.
+      const payload = {
+        name: formData.name.trim(),
+        email: formData.email.toLowerCase().trim(),
         password: formData.password,
-        userType: formData.userType,
-        phone: formData.phone,
-        address: formData.address,
+        phone: formData.phone.trim(),
+        address: formData.address.trim(),
       };
 
-      if (formData.userType === 'driver') {
-        userData.driverDetails = formData.driverDetails;
-      }
-
-     if (formData.userType === 'staff' || formData.userType === 'manager' || formData.userType === 'admin') {
-      userData.staffDetails = formData.staffDetails;
-    }
-
-      await api.post('/auth/register', userData);
-      navigate('/login');
-    } catch (error) {
-      setError(error.response?.data?.message || 'Registration failed');
+      await api.post('/auth/register', payload);
+      setSuccess('Account created successfully! Redirecting to sign in...');
+      setTimeout(() => {
+        navigate('/login');
+      }, 1500);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -145,7 +140,8 @@ const Register = () => {
             justifyContent: 'center',
             alignItems: 'center',
             p: 8,
-            background: 'linear-gradient(135deg, rgba(27, 42, 61, 0.92) 0%, rgba(17, 29, 43, 0.95) 100%), url("https://images.unsplash.com/photo-1507643179173-441f81b72784?w=1920&q=80") center/cover no-repeat',
+            background:
+              'linear-gradient(135deg, rgba(27, 42, 61, 0.92) 0%, rgba(17, 29, 43, 0.95) 100%), url("https://images.unsplash.com/photo-1507643179173-441f81b72784?w=1920&q=80") center/cover no-repeat',
             color: 'white',
             position: 'relative',
             overflow: 'hidden',
@@ -155,75 +151,47 @@ const Register = () => {
             <Fade in={true} timeout={800}>
               <Box>
                 <Spa sx={{ fontSize: 90, mb: 3, color: '#C9A961' }} />
-                <Typography 
-                  variant="h2" 
-                  sx={{ 
-                    mb: 2, 
+                <Typography
+                  variant="h2"
+                  sx={{
+                    mb: 2,
                     fontFamily: '"Playfair Display", serif',
                     fontWeight: 600,
                     letterSpacing: 1,
-                    color: '#ffffff'
+                    color: '#ffffff',
                   }}
                 >
                   Eternal Rest
                 </Typography>
-                <Typography 
-                  variant="h5" 
-                  sx={{ 
-                    mb: 3, 
+                <Typography
+                  variant="h5"
+                  sx={{
+                    mb: 3,
                     fontWeight: 400,
                     letterSpacing: 1,
-                    color: '#C9A961'
+                    color: '#C9A961',
                   }}
                 >
                   Funeral Management System
                 </Typography>
-                <Typography 
-                  variant="body1" 
-                  align="center" 
-                  sx={{ 
-                    maxWidth: 450, 
+                <Typography
+                  variant="body1"
+                  sx={{
+                    maxWidth: 480,
                     mx: 'auto',
-                    opacity: 0.85,
+                    color: '#D8D4CF',
                     lineHeight: 1.8,
                     fontSize: '1.05rem',
-                    color: 'rgba(255,255,255,0.9)'
                   }}
                 >
-                  Join our compassionate network to help families during their time of need with dignity, reverence, and utmost care.
+                  Honoring lives with elegance, reverence, and unconditional dignity. Create your family account to manage memorial arrangements.
                 </Typography>
               </Box>
             </Fade>
           </Box>
-          
-          {/* Decorative Elements */}
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '10%',
-              left: '10%',
-              width: 200,
-              height: 200,
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(201, 169, 97, 0.12) 0%, transparent 70%)',
-              zIndex: 1,
-            }}
-          />
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: '15%',
-              right: '15%',
-              width: 300,
-              height: 300,
-              borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(201, 169, 97, 0.08) 0%, transparent 70%)',
-              zIndex: 1,
-            }}
-          />
         </Grid>
 
-        {/* Right side - Registration Form */}
+        {/* Right side - Customer Registration Form */}
         <Grid
           item
           xs={12}
@@ -232,824 +200,271 @@ const Register = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            p: { xs: 2, sm: 4 },
-            background: '#F8F6F3',
-            position: 'relative',
-            overflow: 'hidden',
+            p: { xs: 2, sm: 4, md: 6 },
+            backgroundColor: '#F8F6F3',
+            overflowY: 'auto',
           }}
         >
-          <Slide direction="left" in={true} timeout={600}>
+          <Slide direction="up" in={true} mountOnEnter unmountOnExit>
             <Card
               sx={{
-                maxWidth: 540,
                 width: '100%',
+                maxWidth: 520,
                 borderRadius: 4,
-                boxShadow: '0 20px 60px rgba(27, 42, 61, 0.08)',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.08)',
+                border: '1px solid rgba(201, 169, 97, 0.2)',
                 backgroundColor: '#ffffff',
-                border: '1px solid rgba(27, 42, 61, 0.06)',
-                overflowY: 'auto',
                 maxHeight: '92vh',
-                position: 'relative',
-                zIndex: 1,
+                overflowY: 'auto',
               }}
               elevation={0}
             >
-            <CardContent sx={{ p: { xs: 3, sm: 5 } }}>
-              <Typography
-                variant="h3"
-                align="center"
-                gutterBottom
-                sx={{
-                  fontFamily: '"Playfair Display", serif',
-                  fontWeight: 600,
-                  color: '#1B2A3D',
-                  mb: 1,
-                }}
-              >
-                Create Account
-              </Typography>
-              <Typography
-                variant="body1"
-                align="center"
-                sx={{
-                  color: '#5A6C7D',
-                  mb: 4,
-                }}
-              >
-                Join our compassionate network
-              </Typography>
+              <CardContent sx={{ p: { xs: 3, sm: 5 } }}>
+                <Typography
+                  variant="h3"
+                  align="center"
+                  gutterBottom
+                  sx={{
+                    fontFamily: '"Playfair Display", serif',
+                    fontWeight: 600,
+                    color: '#1B2A3D',
+                    mb: 1,
+                  }}
+                >
+                  Create Account
+                </Typography>
+                <Typography
+                  variant="body1"
+                  align="center"
+                  sx={{
+                    color: '#5A6C7D',
+                    mb: 4,
+                  }}
+                >
+                  Join our compassionate family network
+                </Typography>
 
-              {error && (
-                <Fade in={!!error}>
-                  <Alert
-                    severity="error"
-                    sx={{
-                      mb: 3,
-                      backgroundColor: '#ffebee',
-                      color: '#c62828',
-                      borderRadius: 2,
-                    }}
-                  >
-                    {error}
-                  </Alert>
-                </Fade>
-              )}
+                {error && (
+                  <Fade in={!!error}>
+                    <Alert
+                      severity="error"
+                      sx={{
+                        mb: 3,
+                        backgroundColor: '#ffebee',
+                        color: '#c62828',
+                        borderRadius: 2,
+                      }}
+                    >
+                      {error}
+                    </Alert>
+                  </Fade>
+                )}
 
-              <form onSubmit={handleSubmit}>
-                <Stack spacing={2.5}>
-                  <FormControl fullWidth>
-                    <InputLabel sx={{ color: '#5a6c7d' }}>Account Type</InputLabel>
-                    <Select
-                      value={formData.userType}
-                      onChange={(e) => setFormData({ ...formData, userType: e.target.value })}
+                {success && (
+                  <Fade in={!!success}>
+                    <Alert
+                      severity="success"
+                      sx={{
+                        mb: 3,
+                        borderRadius: 2,
+                      }}
+                    >
+                      {success}
+                    </Alert>
+                  </Fade>
+                )}
+
+                <form onSubmit={handleSubmit} noValidate>
+                  <Stack spacing={2.5}>
+                    <TextField
+                      fullWidth
+                      id="name"
+                      label="Full Name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       required
-                      sx={{
-                        borderRadius: 2,
-                        '& .MuiOutlinedInput-root': {
-                          borderRadius: 2,
-                          '& fieldset': {
-                            borderColor: '#e9ecef',
-                          },
-                          '&:hover fieldset': {
-                            borderColor: '#8b7355',
-                          },
-                          '&.Mui-focused fieldset': {
-                            borderColor: '#8b7355',
-                            borderWidth: 2,
-                          },
-                        },
-                        '& .MuiInputLabel-root': {
-                          color: '#5a6c7d',
-                        },
-                        '& .MuiInputLabel-root.Mui-focused': {
-                          color: '#8b7355',
-                        },
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <PersonIcon sx={{ color: '#8b7355' }} />
+                          </InputAdornment>
+                        ),
                       }}
-                      startAdornment={
-                        <InputAdornment position="start" sx={{ ml: 1 }}>
-                          <RoleIcon sx={{ color: '#8b7355' }} />
-                        </InputAdornment>
-                      }
+                    />
+
+                    <TextField
+                      fullWidth
+                      id="email"
+                      label="Email Address"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      required
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <EmailIcon sx={{ color: '#8b7355' }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+
+                    <TextField
+                      fullWidth
+                      id="phone"
+                      label="Phone Number (Optional)"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Phone sx={{ color: '#8b7355' }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+
+                    <TextField
+                      fullWidth
+                      id="address"
+                      label="Residential Address (Optional)"
+                      value={formData.address}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Home sx={{ color: '#8b7355' }} />
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+
+                    <TextField
+                      fullWidth
+                      id="password"
+                      label="Password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      required
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <LockIcon sx={{ color: '#8b7355' }} />
+                          </InputAdornment>
+                        ),
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => setShowPassword(!showPassword)}
+                              sx={{ color: '#8b7355' }}
+                              edge="end"
+                            >
+                              {showPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+
+                    <TextField
+                      fullWidth
+                      id="confirmPassword"
+                      label="Confirm Password"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={formData.confirmPassword}
+                      onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                      required
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <LockIcon sx={{ color: '#8b7355' }} />
+                          </InputAdornment>
+                        ),
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              sx={{ color: '#8b7355' }}
+                              edge="end"
+                            >
+                              {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+
+                    <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      size="large"
+                      startIcon={<RegisterIcon />}
+                      disabled={loading}
+                      sx={{
+                        mt: 2,
+                        py: 1.5,
+                        fontSize: '1rem',
+                        fontWeight: 500,
+                        borderRadius: '50px',
+                        background: 'linear-gradient(135deg, #1B2A3D 0%, #243648 100%)',
+                        color: '#ffffff',
+                        boxShadow: '0 4px 15px rgba(27, 42, 61, 0.25)',
+                        '&:hover': {
+                          background: 'linear-gradient(135deg, #243648 0%, #111D2B 100%)',
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 6px 20px rgba(27, 42, 61, 0.35)',
+                        },
+                        transition: 'all 0.3s ease',
+                      }}
                     >
-                      <MenuItem value="customer">Family Member</MenuItem>
-                      <MenuItem value="staff">Funeral Staff</MenuItem>
-                      <MenuItem value="driver">Hearse Driver</MenuItem>
-                      <MenuItem value="manager">Funeral Manager</MenuItem>
-                      <MenuItem value="admin">Admin</MenuItem>
-                    </Select>
-                  </FormControl>
+                      {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Create Customer Account'}
+                    </Button>
 
-                  <Divider sx={{ my: 2, borderColor: '#e0e0e0' }} />
-
-                  <TextField
-                    fullWidth
-                    label="Full Name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        borderRadius: 2,
-                        '& fieldset': {
-                          borderColor: '#e9ecef',
-                        },
-                        '&:hover fieldset': {
-                          borderColor: '#8b7355',
-                        },
-                        '&.Mui-focused fieldset': {
-                          borderColor: '#8b7355',
-                          borderWidth: 2,
-                        },
-                      },
-                      '& .MuiInputLabel-root': {
-                        color: '#5a6c7d',
-                      },
-                      '& .MuiInputLabel-root.Mui-focused': {
-                        color: '#8b7355',
-                      },
-                    }}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <PersonIcon sx={{ color: '#8b7355' }} />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-
-                  <TextField
-                    fullWidth
-                    label="Email Address"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        borderRadius: 2,
-                        '& fieldset': {
-                          borderColor: '#e9ecef',
-                        },
-                        '&:hover fieldset': {
-                          borderColor: '#8b7355',
-                        },
-                        '&.Mui-focused fieldset': {
-                          borderColor: '#8b7355',
-                          borderWidth: 2,
-                        },
-                      },
-                      '& .MuiInputLabel-root': {
-                        color: '#5a6c7d',
-                      },
-                      '& .MuiInputLabel-root.Mui-focused': {
-                        color: '#8b7355',
-                      },
-                    }}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <EmailIcon sx={{ color: '#8b7355' }} />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-
-                  <TextField
-                    fullWidth
-                    label="Phone Number"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        borderRadius: 2,
-                        '& fieldset': {
-                          borderColor: '#e9ecef',
-                        },
-                        '&:hover fieldset': {
-                          borderColor: '#8b7355',
-                        },
-                        '&.Mui-focused fieldset': {
-                          borderColor: '#8b7355',
-                          borderWidth: 2,
-                        },
-                      },
-                      '& .MuiInputLabel-root': {
-                        color: '#5a6c7d',
-                      },
-                      '& .MuiInputLabel-root.Mui-focused': {
-                        color: '#8b7355',
-                      },
-                    }}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Phone sx={{ color: '#8b7355' }} />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-
-                  <TextField
-                    fullWidth
-                    label="Address"
-                    value={formData.address}
-                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        borderRadius: 2,
-                        '& fieldset': {
-                          borderColor: '#e9ecef',
-                        },
-                        '&:hover fieldset': {
-                          borderColor: '#8b7355',
-                        },
-                        '&.Mui-focused fieldset': {
-                          borderColor: '#8b7355',
-                          borderWidth: 2,
-                        },
-                      },
-                      '& .MuiInputLabel-root': {
-                        color: '#5a6c7d',
-                      },
-                      '& .MuiInputLabel-root.Mui-focused': {
-                        color: '#8b7355',
-                      },
-                    }}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Home sx={{ color: '#8b7355' }} />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-
-                  {formData.userType === 'driver' && (
-                    <>
-                      <Divider sx={{ my: 2, borderColor: '#e9ecef' }} />
-                      <Typography variant="subtitle1" sx={{ color: '#616161' }}>
-                        Hearse Driver Information
+                    <Box sx={{ display: 'flex', alignItems: 'center', my: 1.5 }}>
+                      <Divider sx={{ flexGrow: 1, borderColor: '#E8E4DF' }} />
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          px: 2,
+                          color: '#8C9BA5',
+                          fontWeight: 600,
+                          letterSpacing: 0.5,
+                        }}
+                      >
+                        OR CONTINUE WITH
                       </Typography>
-                      <TextField
-                        fullWidth
-                        label="Driver License Number"
-                        value={formData.driverDetails.licenseNumber}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            driverDetails: {
-                              ...formData.driverDetails,
-                              licenseNumber: e.target.value,
-                            },
-                          })
-                        }
-                        required
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            '& fieldset': {
-                              borderColor: '#e0e0e0',
-                            },
-                            '&:hover fieldset': {
-                              borderColor: '#bdbdbd',
-                            },
-                          },
-                        }}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <DriveEta sx={{ color: '#757575' }} />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                      <TextField
-                        fullWidth
-                        label="Vehicle Type"
-                        value={formData.driverDetails.vehicleType}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            driverDetails: {
-                              ...formData.driverDetails,
-                              vehicleType: e.target.value,
-                            },
-                          })
-                        }
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            '& fieldset': {
-                              borderColor: '#e0e0e0',
-                            },
-                            '&:hover fieldset': {
-                              borderColor: '#bdbdbd',
-                            },
-                          },
-                        }}
-                      />
-                      <FormControl fullWidth>
-                        <InputLabel sx={{ color: '#757575' }}>Availability</InputLabel>
-                        <Select
-                          value={formData.driverDetails.availability}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              driverDetails: {
-                                ...formData.driverDetails,
-                                availability: e.target.value,
-                              },
-                            })
-                          }
-                          required
-                          sx={{
-                            '& .MuiOutlinedInput-root': {
-                              '& fieldset': {
-                                borderColor: '#e0e0e0',
-                              },
-                              '&:hover fieldset': {
-                                borderColor: '#bdbdbd',
-                              },
-                            },
-                          }}
-                        >
-                          <MenuItem value="available">Available</MenuItem>
-                          <MenuItem value="unavailable">Unavailable</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </>
-                  )}
+                      <Divider sx={{ flexGrow: 1, borderColor: '#E8E4DF' }} />
+                    </Box>
 
-                  {formData.userType === 'staff' || formData.userType === 'manager' && (
-                    <>
-                      <Divider sx={{ my: 2, borderColor: '#e9ecef' }} />
-                      <Typography variant="subtitle1" sx={{ color: '#616161' }}>
-                        Staff Information
-                      </Typography>
-                      <TextField
-                        fullWidth
-                        label="Employee ID"
-                        value={formData.staffDetails.employeeId}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            staffDetails: {
-                              ...formData.staffDetails,
-                              employeeId: e.target.value,
-                            },
-                          })
-                        }
-                        required
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            '& fieldset': {
-                              borderColor: '#e0e0e0',
-                            },
-                            '&:hover fieldset': {
-                              borderColor: '#bdbdbd',
-                            },
-                          },
-                        }}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <Work sx={{ color: '#757575' }} />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                      <FormControl fullWidth>
-                        <InputLabel sx={{ color: '#757575' }}>Department</InputLabel>
-                        <Select
-                          value={formData.staffDetails.department}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              staffDetails: {
-                                ...formData.staffDetails,
-                                department: e.target.value,
-                              },
-                            })
-                          }
-                          required
-                          sx={{
-                            '& .MuiOutlinedInput-root': {
-                              '& fieldset': {
-                                borderColor: '#e0e0e0',
-                              },
-                              '&:hover fieldset': {
-                                borderColor: '#bdbdbd',
-                              },
-                            },
-                          }}
-                        >
-                          {departments.map((dept) => (
-                            <MenuItem key={dept} value={dept}>
-                              {dept}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      <FormControl fullWidth>
-                        <InputLabel sx={{ color: '#757575' }}>Availability</InputLabel>
-                        <Select
-                          value={formData.staffDetails.availability}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              staffDetails: {
-                                ...formData.staffDetails,
-                                availability: e.target.value,
-                              },
-                            })
-                          }
-                          required
-                          sx={{
-                            '& .MuiOutlinedInput-root': {
-                              '& fieldset': {
-                                borderColor: '#e0e0e0',
-                              },
-                              '&:hover fieldset': {
-                                borderColor: '#bdbdbd',
-                              },
-                            },
-                          }}
-                        >
-                          <MenuItem value="available">Available</MenuItem>
-                          <MenuItem value="unavailable">Unavailable</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </>
-                  )}
+                    <GoogleAuthButton text="Sign up with Google" />
 
-                  {formData.userType === 'manager' && (
-                    <>
-                      <Divider sx={{ my: 2, borderColor: '#e9ecef' }} />
-                      <Typography variant="subtitle1" sx={{ color: '#616161' }}>
-                        Staff Information
-                      </Typography>
-                      <TextField
-                        fullWidth
-                        label="Employee ID"
-                        value={formData.staffDetails.employeeId}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            staffDetails: {
-                              ...formData.staffDetails,
-                              employeeId: e.target.value,
-                            },
-                          })
-                        }
-                        required
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            '& fieldset': {
-                              borderColor: '#e0e0e0',
-                            },
-                            '&:hover fieldset': {
-                              borderColor: '#bdbdbd',
-                            },
-                          },
-                        }}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <Work sx={{ color: '#757575' }} />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                      <FormControl fullWidth>
-                        <InputLabel sx={{ color: '#757575' }}>Department</InputLabel>
-                        <Select
-                          value={formData.staffDetails.department}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              staffDetails: {
-                                ...formData.staffDetails,
-                                department: e.target.value,
-                              },
-                            })
-                          }
-                          required
-                          sx={{
-                            '& .MuiOutlinedInput-root': {
-                              '& fieldset': {
-                                borderColor: '#e0e0e0',
-                              },
-                              '&:hover fieldset': {
-                                borderColor: '#bdbdbd',
-                              },
-                            },
-                          }}
-                        >
-                          {departments.map((dept) => (
-                            <MenuItem key={dept} value={dept}>
-                              {dept}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      <FormControl fullWidth>
-                        <InputLabel sx={{ color: '#757575' }}>Availability</InputLabel>
-                        <Select
-                          value={formData.staffDetails.availability}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              staffDetails: {
-                                ...formData.staffDetails,
-                                availability: e.target.value,
-                              },
-                            })
-                          }
-                          required
-                          sx={{
-                            '& .MuiOutlinedInput-root': {
-                              '& fieldset': {
-                                borderColor: '#e0e0e0',
-                              },
-                              '&:hover fieldset': {
-                                borderColor: '#bdbdbd',
-                              },
-                            },
-                          }}
-                        >
-                          <MenuItem value="available">Available</MenuItem>
-                          <MenuItem value="unavailable">Unavailable</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </>
-                  )}
-
-                  {formData.userType === 'admin' && (
-                    <>
-                      <Divider sx={{ my: 2, borderColor: '#e9ecef' }} />
-                      <Typography variant="subtitle1" sx={{ color: '#616161' }}>
-                        Staff Information
-                      </Typography>
-                      <TextField
-                        fullWidth
-                        label="Employee ID"
-                        value={formData.staffDetails.employeeId}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            staffDetails: {
-                              ...formData.staffDetails,
-                              employeeId: e.target.value,
-                            },
-                          })
-                        }
-                        required
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            '& fieldset': {
-                              borderColor: '#e0e0e0',
-                            },
-                            '&:hover fieldset': {
-                              borderColor: '#bdbdbd',
-                            },
-                          },
-                        }}
-                        InputProps={{
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <Work sx={{ color: '#757575' }} />
-                            </InputAdornment>
-                          ),
-                        }}
-                      />
-                      <FormControl fullWidth>
-                        <InputLabel sx={{ color: '#757575' }}>Department</InputLabel>
-                        <Select
-                          value={formData.staffDetails.department}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              staffDetails: {
-                                ...formData.staffDetails,
-                                department: e.target.value,
-                              },
-                            })
-                          }
-                          required
-                          sx={{
-                            '& .MuiOutlinedInput-root': {
-                              '& fieldset': {
-                                borderColor: '#e0e0e0',
-                              },
-                              '&:hover fieldset': {
-                                borderColor: '#bdbdbd',
-                              },
-                            },
-                          }}
-                        >
-                          {departments.map((dept) => (
-                            <MenuItem key={dept} value={dept}>
-                              {dept}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      <FormControl fullWidth>
-                        <InputLabel sx={{ color: '#757575' }}>Availability</InputLabel>
-                        <Select
-                          value={formData.staffDetails.availability}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              staffDetails: {
-                                ...formData.staffDetails,
-                                availability: e.target.value,
-                              },
-                            })
-                          }
-                          required
-                          sx={{
-                            '& .MuiOutlinedInput-root': {
-                              '& fieldset': {
-                                borderColor: '#e0e0e0',
-                              },
-                              '&:hover fieldset': {
-                                borderColor: '#bdbdbd',
-                              },
-                            },
-                          }}
-                        >
-                          <MenuItem value="available">Available</MenuItem>
-                          <MenuItem value="unavailable">Unavailable</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </>
-                  )}
-
-                  <Divider sx={{ my: 2, borderColor: '#e0e0e0' }} />
-
-                  <TextField
-                    fullWidth
-                    label="Password"
-                    type={showPassword ? 'text' : 'password'}
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    required
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        borderRadius: 2,
-                        '& fieldset': {
-                          borderColor: '#e9ecef',
-                        },
-                        '&:hover fieldset': {
-                          borderColor: '#8b7355',
-                        },
-                        '&.Mui-focused fieldset': {
-                          borderColor: '#8b7355',
-                          borderWidth: 2,
-                        },
-                      },
-                      '& .MuiInputLabel-root': {
-                        color: '#5a6c7d',
-                      },
-                      '& .MuiInputLabel-root.Mui-focused': {
-                        color: '#8b7355',
-                      },
-                    }}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <LockIcon sx={{ color: '#8b7355' }} />
-                        </InputAdornment>
-                      ),
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={() => setShowPassword(!showPassword)}
-                            sx={{ color: '#8b7355' }}
-                          >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-
-                  <TextField
-                    fullWidth
-                    label="Confirm Password"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    value={formData.confirmPassword}
-                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                    required
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        borderRadius: 2,
-                        '& fieldset': {
-                          borderColor: '#e9ecef',
-                        },
-                        '&:hover fieldset': {
-                          borderColor: '#8b7355',
-                        },
-                        '&.Mui-focused fieldset': {
-                          borderColor: '#8b7355',
-                          borderWidth: 2,
-                        },
-                      },
-                      '& .MuiInputLabel-root': {
-                        color: '#5a6c7d',
-                      },
-                      '& .MuiInputLabel-root.Mui-focused': {
-                        color: '#8b7355',
-                      },
-                    }}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <LockIcon sx={{ color: '#8b7355' }} />
-                        </InputAdornment>
-                      ),
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            sx={{ color: '#8b7355' }}
-                          >
-                            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-
-                  <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    size="large"
-                    startIcon={<RegisterIcon />}
-                    disabled={loading}
-                    sx={{
-                      mt: 3,
-                      py: 1.6,
-                      fontSize: '1rem',
-                      fontWeight: 500,
-                      borderRadius: '50px',
-                      background: 'linear-gradient(135deg, #1B2A3D 0%, #243648 100%)',
-                      color: '#ffffff',
-                      boxShadow: '0 4px 15px rgba(27, 42, 61, 0.25)',
-                      '&:hover': {
-                        background: 'linear-gradient(135deg, #243648 0%, #111D2B 100%)',
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 6px 20px rgba(27, 42, 61, 0.35)',
-                      },
-                      transition: 'all 0.3s ease',
-                    }}
-                  >
-                    {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Create Account'}
-                  </Button>
-
-                  <Box sx={{ display: 'flex', alignItems: 'center', my: 1.5 }}>
-                    <Divider sx={{ flexGrow: 1, borderColor: '#E8E4DF' }} />
                     <Typography
-                      variant="caption"
+                      variant="body2"
+                      align="center"
                       sx={{
-                        px: 2,
-                        color: '#8C9BA5',
-                        fontWeight: 600,
-                        letterSpacing: 0.5,
+                        mt: 2,
+                        color: '#5A6C7D',
+                        fontSize: '0.95rem',
                       }}
                     >
-                      OR SIGN UP WITH
+                      Already have an account?{' '}
+                      <Link
+                        to="/login"
+                        style={{
+                          color: '#C9A961',
+                          textDecoration: 'none',
+                          fontWeight: 600,
+                        }}
+                      >
+                        Sign in here
+                      </Link>
                     </Typography>
-                    <Divider sx={{ flexGrow: 1, borderColor: '#E8E4DF' }} />
-                  </Box>
-
-                  <GoogleAuthButton text="Sign up with Google" />
-
-                  <Typography
-                    variant="body2"
-                    align="center"
-                    sx={{
-                      mt: 3,
-                      color: '#5A6C7D',
-                      fontSize: '0.95rem',
-                    }}
-                  >
-                    Already have an account?{' '}
-                    <Link
-                      to="/login"
-                      style={{
-                        color: '#C9A961',
-                        textDecoration: 'none',
-                        fontWeight: 600,
-                      }}
-                    >
-                      Sign in here
-                    </Link>
-                  </Typography>
-                </Stack>
-              </form>
-            </CardContent>
-          </Card>
+                  </Stack>
+                </form>
+              </CardContent>
+            </Card>
           </Slide>
         </Grid>
       </Grid>

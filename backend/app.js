@@ -67,6 +67,8 @@ try {
   app.use('/api/sales', require('./routes/salesRoutes'));
   app.use('/api/orders', require('./routes/orderRoutes'));
   app.use('/api/reports', require('./routes/reportRoutes'));
+  app.use('/api/admin/users', require('./routes/adminUserRoutes'));
+  app.use('/admin/users', require('./routes/adminUserRoutes'));
   app.use('/api/admin', require('./routes/adminRoutes'));
   app.use('/api/users', require('./routes/userRoutes'));
   app.use('/api/feedback', require('./routes/feedbackRoutes'));
@@ -93,6 +95,10 @@ app.use(require('./middleware/errorHandler'));
 // Start the server
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app;

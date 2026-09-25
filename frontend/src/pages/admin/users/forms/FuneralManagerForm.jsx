@@ -1,0 +1,255 @@
+import React, { useState, useEffect } from 'react';
+import {
+  Grid,
+  TextField,
+  MenuItem,
+  Button,
+  Box,
+  Typography,
+  Divider,
+  Alert,
+  CircularProgress,
+} from '@mui/material';
+import api from '../../../../services/api';
+
+const FuneralManagerForm = ({ onSuccess, onCancel }) => {
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    dateOfBirth: '',
+    employeeId: `MGR-${Math.floor(1000 + Math.random() * 9000)}`,
+    managedBranch: 'Eternal Rest Main Sanctuary & Branch',
+    reportingTo: '',
+    hireDate: new Date().toISOString().split('T')[0],
+    yearsOfExperience: 3,
+    managementCertifications: [{ name: 'Certified Funeral Service Practitioner (CFSP)', expiry: '' }],
+    emergencyContact: { name: '', relation: '', phone: '' },
+    password: '',
+  });
+
+  const [supervisors, setSupervisors] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchSupervisors = async () => {
+      try {
+        const res = await api.get('/admin/users');
+        const eligible = res.data.filter(
+          (u) => u.role === 'admin' || u.role === 'funeral_manager' || u.role === 'manager'
+        );
+        setSupervisors(eligible);
+        if (eligible.length > 0) {
+          setFormData((prev) => ({ ...prev, reportingTo: eligible[0]._id }));
+        }
+      } catch (err) {
+        console.error('Failed to load eligible reporting managers:', err);
+      }
+    };
+    fetchSupervisors();
+  }, []);
+
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleNestedChange = (parent, field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [parent]: { ...prev[parent], [field]: value },
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    if (Number(formData.yearsOfExperience) < 0) {
+      setError('Years of experience must be 0 or higher.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await api.post('/admin/users/funeral-manager', formData);
+      onSuccess(res.data);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to provision funeral manager.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+      <Typography variant="subtitle2" color="primary" fontWeight={600} gutterBottom>
+        1. Manager Information & Branch Leadership
+      </Typography>
+      <Grid container spacing={2} sx={{ mb: 2 }}>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            required
+            label="Full Name"
+            value={formData.fullName}
+            onChange={(e) => handleChange('fullName', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            required
+            type="email"
+            label="Email Address"
+            value={formData.email}
+            onChange={(e) => handleChange('email', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            label="Phone Number"
+            value={formData.phone}
+            onChange={(e) => handleChange('phone', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            type="date"
+            label="Date of Birth"
+            InputLabelProps={{ shrink: true }}
+            value={formData.dateOfBirth}
+            onChange={(e) => handleChange('dateOfBirth', e.target.value)}
+          />
+        </Grid>
+      </Grid>
+
+      <Divider sx={{ my: 2 }} />
+
+      <Typography variant="subtitle2" color="primary" fontWeight={600} gutterBottom>
+        2. Governance & Operational Hierarchy
+      </Typography>
+      <Grid container spacing={2} sx={{ mb: 2 }}>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            fullWidth
+            required
+            label="Employee ID"
+            value={formData.employeeId}
+            onChange={(e) => handleChange('employeeId', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            fullWidth
+            required
+            label="Managed Branch"
+            value={formData.managedBranch}
+            onChange={(e) => handleChange('managedBranch', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            select
+            fullWidth
+            required
+            label="Reporting To (Supervisor)"
+            value={formData.reportingTo}
+            onChange={(e) => handleChange('reportingTo', e.target.value)}
+            helperText="Must report to an active admin or general manager"
+          >
+            {supervisors.map((s) => (
+              <MenuItem key={s._id} value={s._id}>
+                {s.name} ({s.role})
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            required
+            type="number"
+            label="Years of Experience"
+            inputProps={{ min: 0 }}
+            value={formData.yearsOfExperience}
+            onChange={(e) => handleChange('yearsOfExperience', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            required
+            type="date"
+            label="Hire Date"
+            InputLabelProps={{ shrink: true }}
+            value={formData.hireDate}
+            onChange={(e) => handleChange('hireDate', e.target.value)}
+          />
+        </Grid>
+      </Grid>
+
+      <Divider sx={{ my: 2 }} />
+
+      <Typography variant="subtitle2" color="primary" fontWeight={600} gutterBottom>
+        3. Emergency Contact & Initial Password
+      </Typography>
+      <Grid container spacing={2} sx={{ mb: 2 }}>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            fullWidth
+            label="Emergency Contact Name"
+            value={formData.emergencyContact.name}
+            onChange={(e) => handleNestedChange('emergencyContact', 'name', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            fullWidth
+            label="Relationship"
+            value={formData.emergencyContact.relation}
+            onChange={(e) => handleNestedChange('emergencyContact', 'relation', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            fullWidth
+            label="Emergency Phone"
+            value={formData.emergencyContact.phone}
+            onChange={(e) => handleNestedChange('emergencyContact', 'phone', e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            type="password"
+            label="Initial Password (leave blank to auto-generate)"
+            value={formData.password}
+            onChange={(e) => handleChange('password', e.target.value)}
+          />
+        </Grid>
+      </Grid>
+
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
+        <Button onClick={onCancel} disabled={loading} color="inherit">
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={loading}
+          sx={{ bgcolor: '#1B2A3D', '&:hover': { bgcolor: '#2C3E50' } }}
+          startIcon={loading && <CircularProgress size={18} color="inherit" />}
+        >
+          {loading ? 'Provisioning...' : 'Provision Funeral Manager'}
+        </Button>
+      </Box>
+    </form>
+  );
+};
+
+export default FuneralManagerForm;

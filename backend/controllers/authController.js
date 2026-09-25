@@ -1,14 +1,7 @@
 const User = require('../models/User');
-const Staff = require('../models/Staff');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-
-// Generate a unique ID for a specific role
-const generateUniqueId = (role, prefix) => {
-  const timestamp = Date.now().toString();
-  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-  return `${prefix}-${timestamp.slice(-6)}-${random}`;
-};
+const { processInviteForUser } = require('../utils/inviteHandler');
 
 const generateToken = (id, role = 'customer') => {
   return jwt.sign({ id, role }, process.env.JWT_SECRET, {
@@ -16,88 +9,60 @@ const generateToken = (id, role = 'customer') => {
   });
 };
 
+/**
+ * Public Self-Registration (Email + Password)
+ * Invariant 1: Public registration NEVER reads role from the request body.
+ * Server assigns role = 'customer' and status = 'active'.
+ * Returns sanitized user object (no password hash, no internal flags).
+ */
 exports.register = async (req, res) => {
   try {
-    const { 
-      name, email, password, userType, phone, address,
-      driverDetails, staffDetails, adminDetails, managerDetails
-    } = req.body;
+    const { name, fullName, email, password, phone, address } = req.body;
 
+    const displayName = (name || fullName || '').trim();
     const normalizedEmail = email ? email.toLowerCase().trim() : '';
+
+    if (!displayName || !normalizedEmail || !password) {
+      return res.status(400).json({ message: 'Name, email, and password are required fields.' });
+    }
 
     const userExists = await User.findOne({ email: normalizedEmail });
     if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(409).json({ message: 'User with this email already exists' });
     }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Hardened User Object: strictly customer, active
     const userData = {
-      name,
+      name: displayName,
       email: normalizedEmail,
       password: hashedPassword,
-      role: userType || 'customer', 
-      phone,
-      address,
+      role: 'customer', // Strictly hardcoded server-side
+      status: 'active',
+      phone: phone ? phone.trim() : '',
+      address: address ? address.trim() : '',
       authProvider: 'local',
       isProfileComplete: true,
     };
 
-    switch(userType) {
-      case 'staff':
-        const staffId = staffDetails?.employeeId || generateUniqueId('staff', 'STF');
-        userData.staffDetails = {
-          staffId,
-          department: staffDetails?.department || '',
-          designation: 'Staff',
-          joinedDate: new Date()
-        };
-        break;
-        
-      case 'admin':
-        userData.adminDetails = {
-          adminId: generateUniqueId('admin', 'ADM'),
-          accessLevel: adminDetails?.accessLevel || 'full',
-          lastLogin: new Date()
-        };
-        break;
-        
-      case 'manager':
-        userData.managerDetails = {
-          managerId: generateUniqueId('manager', 'MGR'),
-          department: managerDetails?.department || '',
-          reportingTo: managerDetails?.reportingTo || ''
-        };
-        break;
-        
-      case 'driver':
-        userData.driverDetails = driverDetails || {
-          licenseNumber: driverDetails?.licenseNumber || '',
-          vehicleAssigned: driverDetails?.vehicleAssigned || ''
-        };
-        break;
-    }
-
     const user = await User.create(userData);
 
-    if (userType === 'staff' || userType === 'manager') {
-      await Staff.create({ userId: user._id });
-    }
-
-    if (user) {
-      res.status(201).json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        isProfileComplete: user.isProfileComplete,
-        token: generateToken(user._id, user.role),
-      });
-    }
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      status: user.status,
+      phone: user.phone,
+      address: user.address,
+      isProfileComplete: user.isProfileComplete,
+      token: generateToken(user._id, user.role),
+    });
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message || 'Server error during registration' });
   }
 };
 
@@ -109,6 +74,10 @@ exports.login = async (req, res) => {
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    if (user.status === 'suspended') {
+      return res.status(403).json({ message: 'Account is suspended. Contact administrator.' });
     }
 
     if (!user.password && user.googleId) {
@@ -123,14 +92,11 @@ exports.login = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        status: user.status,
         avatar: user.avatar,
         phone: user.phone,
         address: user.address,
         isProfileComplete: user.isProfileComplete,
-        ...(user.role === 'driver' && { driverDetails: user.driverDetails }),
-        ...(user.role === 'staff' && { staffDetails: user.staffDetails }),
-        ...(user.role === 'admin' && { adminDetails: user.adminDetails }),
-        ...(user.role === 'manager' && { managerDetails: user.managerDetails }),
         token: generateToken(user._id, user.role),
       });
     } else {
@@ -146,7 +112,13 @@ exports.login = async (req, res) => {
 // @access Private
 exports.getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select('-password');
+    const user = await User.findById(req.user._id)
+      .select('-password')
+      .populate('staffProfile')
+      .populate('driverProfile')
+      .populate('managerProfile')
+      .populate('adminProfile');
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -156,14 +128,19 @@ exports.getMe = async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      status: user.status,
       avatar: user.avatar,
       phone: user.phone,
       address: user.address,
       isProfileComplete: user.isProfileComplete,
-      ...(user.role === 'driver' && { driverDetails: user.driverDetails }),
-      ...(user.role === 'staff' && { staffDetails: user.staffDetails }),
-      ...(user.role === 'admin' && { adminDetails: user.adminDetails }),
-      ...(user.role === 'manager' && { managerDetails: user.managerDetails }),
+      staffProfile: user.staffProfile,
+      driverProfile: user.driverProfile,
+      managerProfile: user.managerProfile,
+      adminProfile: user.adminProfile,
+      ...(user.staffDetails && { staffDetails: user.staffDetails }),
+      ...(user.driverDetails && { driverDetails: user.driverDetails }),
+      ...(user.adminDetails && { adminDetails: user.adminDetails }),
+      ...(user.managerDetails && { managerDetails: user.managerDetails }),
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -173,6 +150,7 @@ exports.getMe = async (req, res) => {
 // @desc Complete profile after Google OAuth registration
 // @route PUT /api/auth/complete-profile
 // @access Private
+// Hardened: DOES NOT PERMIT ROLE ELEVATION OR MODIFICATION
 exports.completeProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
@@ -180,17 +158,7 @@ exports.completeProfile = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const { name, role, phone, address, driverDetails, staffDetails } = req.body;
-
-    // Strict validation to prevent Privilege Escalation (OWASP A01: Broken Access Control)
-    const allowedSelfRoles = ['customer', 'staff', 'driver'];
-    const targetRole = role || user.role || 'customer';
-
-    if (!allowedSelfRoles.includes(targetRole)) {
-      return res.status(403).json({ 
-        message: 'Unauthorized role assignment. Administrative roles cannot be self-selected.' 
-      });
-    }
+    const { name, phone, address } = req.body;
 
     if (name && name.trim()) {
       user.name = name.trim();
@@ -200,28 +168,6 @@ exports.completeProfile = async (req, res) => {
     }
     if (address) {
       user.address = address.trim();
-    }
-
-    user.role = targetRole;
-
-    if (targetRole === 'staff') {
-      const staffId = staffDetails?.employeeId || generateUniqueId('staff', 'STF');
-      user.staffDetails = {
-        staffId,
-        department: staffDetails?.department || 'Operations',
-        designation: 'Staff',
-        joinedDate: new Date()
-      };
-      await Staff.findOneAndUpdate(
-        { userId: user._id },
-        { userId: user._id },
-        { upsert: true, new: true }
-      );
-    } else if (targetRole === 'driver') {
-      user.driverDetails = {
-        licenseNumber: driverDetails?.licenseNumber || '',
-        vehicleAssigned: driverDetails?.vehicleAssigned || ''
-      };
     }
 
     user.isProfileComplete = true;
@@ -237,12 +183,11 @@ exports.completeProfile = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        status: user.status,
         avatar: user.avatar,
         phone: user.phone,
         address: user.address,
         isProfileComplete: user.isProfileComplete,
-        ...(user.role === 'driver' && { driverDetails: user.driverDetails }),
-        ...(user.role === 'staff' && { staffDetails: user.staffDetails }),
       }
     });
   } catch (error) {
@@ -251,7 +196,7 @@ exports.completeProfile = async (req, res) => {
   }
 };
 
-// @desc Authenticate with Google ID Token (from @react-oauth/google component)
+// @desc Authenticate with Google ID Token
 // @route POST /api/auth/google-token
 // @access Public
 exports.googleTokenAuth = async (req, res) => {
@@ -274,6 +219,11 @@ exports.googleTokenAuth = async (req, res) => {
       return res.status(400).json({ message: 'Invalid Google token payload' });
     }
 
+    // Reject tokens without a verified email (Section 10)
+    if (payload.email_verified === false) {
+      return res.status(403).json({ message: 'Google email must be verified.' });
+    }
+
     const googleId = payload.sub;
     const email = payload.email.toLowerCase().trim();
     const name = payload.name || payload.given_name || email.split('@')[0];
@@ -292,14 +242,15 @@ exports.googleTokenAuth = async (req, res) => {
         user.isProfileComplete = true;
         await user.save();
       } else {
-        // 3. Create new user
+        // 3. Create new user with server-side literal role = 'customer'
         isNewUser = true;
         user = await User.create({
           googleId,
           name,
           email,
           avatar,
-          role: 'customer',
+          role: 'customer', // Invariant 1: server-side hardcoded literal
+          status: 'active',
           authProvider: 'google',
           isProfileComplete: false,
         });
@@ -310,6 +261,10 @@ exports.googleTokenAuth = async (req, res) => {
         await user.save();
       }
     }
+
+    // 4. Invite Flow Check (Section 5.2 & 5.7 & Section 10):
+    // If the Google email matches an unconsumed PendingInvite, promote role inside atomic operation
+    await processInviteForUser(user, email, req);
 
     const token = generateToken(user._id, user.role);
 
@@ -322,14 +277,11 @@ exports.googleTokenAuth = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        status: user.status,
         avatar: user.avatar,
         phone: user.phone,
         address: user.address,
         isProfileComplete: user.isProfileComplete,
-        ...(user.role === 'driver' && { driverDetails: user.driverDetails }),
-        ...(user.role === 'staff' && { staffDetails: user.staffDetails }),
-        ...(user.role === 'admin' && { adminDetails: user.adminDetails }),
-        ...(user.role === 'manager' && { managerDetails: user.managerDetails }),
       }
     });
   } catch (error) {

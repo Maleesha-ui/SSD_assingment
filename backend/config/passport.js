@@ -1,5 +1,6 @@
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/User');
+const { processInviteForUser } = require('../utils/inviteHandler');
 
 module.exports = function(passport) {
   const backendUrl = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 5000}`;
@@ -32,6 +33,7 @@ module.exports = function(passport) {
               user.avatar = photoUrl;
               await user.save();
             }
+            await processInviteForUser(user, email, req);
             return done(null, user);
           }
 
@@ -42,13 +44,13 @@ module.exports = function(passport) {
             if (!user.avatar && photoUrl) {
               user.avatar = photoUrl;
             }
-            // Existing local user already completed initial registration
             user.isProfileComplete = true;
             await user.save();
+            await processInviteForUser(user, email, req);
             return done(null, user);
           }
 
-          // 3. Brand new user signup via Google
+          // 3. Brand new user signup via Google - role is hardcoded literal 'customer'
           const displayName = profile.displayName || 
             `${profile.name?.givenName || ''} ${profile.name?.familyName || ''}`.trim() || 
             email.split('@')[0];
@@ -58,10 +60,14 @@ module.exports = function(passport) {
             name: displayName,
             email: email,
             avatar: photoUrl,
-            role: 'customer', // safe default role
+            role: 'customer', // Invariant 1: server-side hardcoded literal
+            status: 'active',
             authProvider: 'google',
-            isProfileComplete: false, // Flag indicating new user needs to complete profile
+            isProfileComplete: false,
           });
+
+          // 4. If email matches a pending admin invite, upgrade role inside transaction
+          await processInviteForUser(newUser, email, req);
 
           return done(null, newUser);
         } catch (err) {

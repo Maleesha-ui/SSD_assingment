@@ -10,11 +10,12 @@ const {
   googleCallbackHandler 
 } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
+const { validateDto, publicRegisterDto } = require('../middleware/validate');
 
 const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
 
-// Standard local authentication routes
-router.post('/register', register);
+// Invariant 1 & 3: DTO Whitelisting rejects unknown fields (e.g. role, isAdmin, permissions) with 400
+router.post('/register', validateDto(publicRegisterDto), register);
 router.post('/login', login);
 
 // Profile and session management routes
