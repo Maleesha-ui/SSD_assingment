@@ -11,6 +11,9 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import DashboardLayout from "./components/Layout/DashboardLayout";
 import Register from "./pages/auth/Register";
 import Login from "./pages/auth/Login";
+import CompleteProfile from "./pages/auth/CompleteProfile";
+import AuthCallback from "./pages/auth/AuthCallback";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import Dashboard from "./pages/Dashboard";
 import OrderForm from "./pages/orders/OrderForm";
 import OrderTracking from "./pages/orders/OrderTracking";
@@ -118,20 +121,25 @@ const PublicLayout = () => (
   </>
 );
 
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '452663214771-g886a0fghi69aqfbhfrs5oh0u0pqevo2.apps.googleusercontent.com';
+
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <AuthProvider>
-          <BrowserRouter>
-            <CssBaseline />
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <ThemeProvider theme={theme}>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <AuthProvider>
+            <BrowserRouter>
+              <CssBaseline />
 
-            <ErrorBoundary>
-              <Routes>
-                <Route path="/" element={<Navigate to="/home" replace />} />
-                {/* Auth Routes */}
-                <Route path="/register" element={<Register />} />
-                <Route path="/login" element={<Login />} />
+              <ErrorBoundary>
+                <Routes>
+                  <Route path="/" element={<Navigate to="/home" replace />} />
+                  {/* Auth Routes */}
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/complete-profile" element={<CompleteProfile />} />
+                  <Route path="/auth/callback" element={<AuthCallback />} />
 
                 {/* Protected Routes */}
                 <Route element={<ProtectedRoute />}>
@@ -216,6 +224,7 @@ function App() {
         </AuthProvider>
       </LocalizationProvider>
     </ThemeProvider>
+  </GoogleOAuthProvider>
   );
 }
 

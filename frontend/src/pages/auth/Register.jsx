@@ -36,6 +36,7 @@ import {
   Spa,
 } from '@mui/icons-material';
 import api from '../../services/api';
+import GoogleAuthButton from '../../components/auth/GoogleAuthButton';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -1005,6 +1006,24 @@ const Register = () => {
                   >
                     {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Create Account'}
                   </Button>
+
+                  <Box sx={{ display: 'flex', alignItems: 'center', my: 1.5 }}>
+                    <Divider sx={{ flexGrow: 1, borderColor: '#E8E4DF' }} />
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        px: 2,
+                        color: '#8C9BA5',
+                        fontWeight: 600,
+                        letterSpacing: 0.5,
+                      }}
+                    >
+                      OR SIGN UP WITH
+                    </Typography>
+                    <Divider sx={{ flexGrow: 1, borderColor: '#E8E4DF' }} />
+                  </Box>
+
+                  <GoogleAuthButton text="Sign up with Google" />
 
                   <Typography
                     variant="body2"

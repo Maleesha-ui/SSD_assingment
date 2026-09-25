@@ -2,11 +2,33 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+  password: { 
+    type: String, 
+    required: function() { 
+      // Password is required for traditional local registration, but optional for OAuth accounts
+      return !this.googleId; 
+    } 
+  },
+  googleId: { 
+    type: String, 
+    unique: true, 
+    sparse: true 
+  },
+  avatar: { type: String },
+  authProvider: {
+    type: String,
+    enum: ['local', 'google'],
+    default: 'local'
+  },
+  isProfileComplete: {
+    type: Boolean,
+    default: false
+  },
   role: { 
     type: String, 
     enum: ['admin', 'manager', 'staff', 'driver', 'customer'], 
+    default: 'customer',
     required: true 
   },
   phone: { type: String },

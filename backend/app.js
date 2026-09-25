@@ -24,15 +24,39 @@ const maintenanceRoutes = require("./routes/MaintenanceRoutes");
 // Load env vars
 dotenv.config();
 
+// Passport & Session
+const session = require('express-session');
+const passport = require('passport');
+require('./config/passport')(passport);
+
 // Connect to database
 connectDB();
 
 const app = express();
 
 // Middleware
-app.use(cors());
+const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+app.use(cors({
+  origin: [clientUrl, 'http://localhost:3000', 'http://127.0.0.1:3000'],
+  credentials: true
+}));
 app.use(express.json());
 app.use(morgan('dev'));
+
+// Session middleware for OAuth state verification
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'funeral_mgmt_session_secret_key_2024',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000
+  }
+}));
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Routes
 try {
