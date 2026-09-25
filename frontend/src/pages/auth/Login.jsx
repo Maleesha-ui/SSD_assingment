@@ -43,7 +43,7 @@ const Login = () => {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const expired = params.get('expired');
+    const expired = params.get('expired') || params.get('timeout');
     const restricted = params.get('restricted');
     const err = params.get('error');
 

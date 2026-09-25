@@ -9,8 +9,17 @@ import {
   Divider,
   Alert,
   CircularProgress,
+  InputAdornment,
 } from '@mui/material';
-import { Security as SecurityIcon, WarningAmber as WarningIcon } from '@mui/icons-material';
+import {
+  Security as SecurityIcon,
+  WarningAmber as WarningIcon,
+  Badge as BadgeIcon,
+  Email as EmailIcon,
+  Phone as PhoneIcon,
+  Business as OfficeIcon,
+  Lock as LockIcon,
+} from '@mui/icons-material';
 import api from '../../../../services/api';
 import StepUpAuthDialog from '../StepUpAuthDialog';
 
@@ -80,7 +89,7 @@ const AdminForm = ({ onSuccess, onCancel }) => {
   return (
     <>
       <form onSubmit={handleInitialSubmit}>
-        {/* Section 5.6 High-Privilege Red Banner */}
+        {/* High-Privilege Red Banner */}
         <Alert
           severity="error"
           icon={<WarningIcon fontSize="inherit" />}
@@ -88,25 +97,29 @@ const AdminForm = ({ onSuccess, onCancel }) => {
             mb: 3,
             bgcolor: '#FFF2F2',
             border: '1px solid #FFCDD2',
-            borderRadius: 2,
+            borderRadius: '12px',
             color: '#B71C1C',
             '& .MuiAlert-icon': { color: '#D32F2F' },
           }}
         >
           <Typography variant="subtitle2" fontWeight={700}>
-            HIGH-PRIVILEGE ADMINISTRATIVE ACTION
+            HIGH-PRIVILEGE SECURITY CONTROL
           </Typography>
-          <Typography variant="body2">
-            Creating an Administrator grants elevated access across the funeral platform. Re-authentication (MFA / Password Step-up) is strictly enforced at the server boundary. The new administrator will be mandated to change their password and register MFA on first login.
+          <Typography variant="body2" sx={{ fontSize: '0.85rem', mt: 0.3 }}>
+            Creating an Administrator grants platform governance permissions. Step-Up authentication is strictly enforced. The provisioned administrator will be mandated to change their credentials and enroll MFA upon first sign in.
           </Typography>
         </Alert>
 
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2.5, borderRadius: '10px' }} onClose={() => setError('')}>
+            {error}
+          </Alert>
+        )}
 
-        <Typography variant="subtitle2" color="error" fontWeight={600} gutterBottom>
-          1. Administrator Credentials & Tier
+        <Typography variant="subtitle2" sx={{ color: '#DC2626', fontWeight: 700, mb: 1.5, letterSpacing: '0.3px' }}>
+          1. Administrator Credentials & Governance Tier
         </Typography>
-        <Grid container spacing={2} sx={{ mb: 2 }}>
+        <Grid container spacing={2} sx={{ mb: 2.5 }}>
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -114,6 +127,7 @@ const AdminForm = ({ onSuccess, onCancel }) => {
               label="Full Name"
               value={formData.fullName}
               onChange={(e) => handleChange('fullName', e.target.value)}
+              InputProps={{ sx: { borderRadius: '10px' } }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -124,6 +138,14 @@ const AdminForm = ({ onSuccess, onCancel }) => {
               label="Email Address"
               value={formData.email}
               onChange={(e) => handleChange('email', e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <EmailIcon sx={{ color: '#94A3B8' }} />
+                  </InputAdornment>
+                ),
+                sx: { borderRadius: '10px' },
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -133,6 +155,14 @@ const AdminForm = ({ onSuccess, onCancel }) => {
               label="Employee ID"
               value={formData.employeeId}
               onChange={(e) => handleChange('employeeId', e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <BadgeIcon sx={{ color: '#94A3B8' }} />
+                  </InputAdornment>
+                ),
+                sx: { borderRadius: '10px' },
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -143,6 +173,7 @@ const AdminForm = ({ onSuccess, onCancel }) => {
               label="Administrative Access Tier"
               value={formData.accessTier}
               onChange={(e) => handleChange('accessTier', e.target.value)}
+              InputProps={{ sx: { borderRadius: '10px' } }}
             >
               <MenuItem value="super_admin">Super Administrator (Full System)</MenuItem>
               <MenuItem value="ops_admin">Operations Administrator</MenuItem>
@@ -151,10 +182,10 @@ const AdminForm = ({ onSuccess, onCancel }) => {
           </Grid>
         </Grid>
 
-        <Divider sx={{ my: 2 }} />
+        <Divider sx={{ my: 2.5, borderColor: '#E2E8F0' }} />
 
-        <Typography variant="subtitle2" color="error" fontWeight={600} gutterBottom>
-          2. Operational Details & Initial Credentials
+        <Typography variant="subtitle2" sx={{ color: '#DC2626', fontWeight: 700, mb: 1.5, letterSpacing: '0.3px' }}>
+          2. Operational Details & Credentials
         </Typography>
         <Grid container spacing={2} sx={{ mb: 2 }}>
           <Grid item xs={12} sm={6}>
@@ -163,6 +194,14 @@ const AdminForm = ({ onSuccess, onCancel }) => {
               label="Phone Number"
               value={formData.phone}
               onChange={(e) => handleChange('phone', e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PhoneIcon sx={{ color: '#94A3B8' }} />
+                  </InputAdornment>
+                ),
+                sx: { borderRadius: '10px' },
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -171,6 +210,14 @@ const AdminForm = ({ onSuccess, onCancel }) => {
               label="Assigned Office / Branch"
               value={formData.managedBranch}
               onChange={(e) => handleChange('managedBranch', e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <OfficeIcon sx={{ color: '#94A3B8' }} />
+                  </InputAdornment>
+                ),
+                sx: { borderRadius: '10px' },
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -179,6 +226,7 @@ const AdminForm = ({ onSuccess, onCancel }) => {
               label="Emergency Contact Name"
               value={formData.emergencyContact.name}
               onChange={(e) => handleNestedChange('emergencyContact', 'name', e.target.value)}
+              InputProps={{ sx: { borderRadius: '10px' } }}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -187,6 +235,7 @@ const AdminForm = ({ onSuccess, onCancel }) => {
               label="Relationship"
               value={formData.emergencyContact.relation}
               onChange={(e) => handleNestedChange('emergencyContact', 'relation', e.target.value)}
+              InputProps={{ sx: { borderRadius: '10px' } }}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
@@ -195,6 +244,7 @@ const AdminForm = ({ onSuccess, onCancel }) => {
               label="Emergency Phone"
               value={formData.emergencyContact.phone}
               onChange={(e) => handleNestedChange('emergencyContact', 'phone', e.target.value)}
+              InputProps={{ sx: { borderRadius: '10px' } }}
             />
           </Grid>
           <Grid item xs={12}>
@@ -205,12 +255,32 @@ const AdminForm = ({ onSuccess, onCancel }) => {
               value={formData.password}
               onChange={(e) => handleChange('password', e.target.value)}
               helperText="The provisioned admin will be strictly prompted to update their password immediately upon initial authentication."
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LockIcon sx={{ color: '#94A3B8' }} />
+                  </InputAdornment>
+                ),
+                sx: { borderRadius: '10px' },
+              }}
             />
           </Grid>
         </Grid>
 
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
-          <Button onClick={onCancel} disabled={loading} color="inherit">
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1.5, mt: 3, pt: 2, borderTop: '1px solid #E2E8F0' }}>
+          <Button
+            onClick={onCancel}
+            disabled={loading}
+            variant="outlined"
+            sx={{
+              color: '#64748B',
+              borderColor: '#CBD5E1',
+              borderRadius: '8px',
+              textTransform: 'none',
+              fontWeight: 600,
+              '&:hover': { bgcolor: '#F8FAFC' },
+            }}
+          >
             Cancel
           </Button>
           <Button
@@ -219,6 +289,14 @@ const AdminForm = ({ onSuccess, onCancel }) => {
             color="error"
             disabled={loading}
             startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <SecurityIcon />}
+            sx={{
+              bgcolor: '#DC2626',
+              borderRadius: '8px',
+              textTransform: 'none',
+              fontWeight: 600,
+              px: 2.5,
+              '&:hover': { bgcolor: '#B91C1C' },
+            }}
           >
             {loading ? 'Authorizing & Provisioning...' : 'Authenticate & Provision Admin'}
           </Button>

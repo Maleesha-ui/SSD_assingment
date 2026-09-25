@@ -9,7 +9,16 @@ import {
   Divider,
   Alert,
   CircularProgress,
+  InputAdornment,
 } from '@mui/material';
+import {
+  Person as PersonIcon,
+  Email as EmailIcon,
+  Phone as PhoneIcon,
+  Badge as BadgeIcon,
+  Business as OfficeIcon,
+  Lock as LockIcon,
+} from '@mui/icons-material';
 import api from '../../../../services/api';
 
 const FuneralStaffForm = ({ onSuccess, onCancel }) => {
@@ -43,19 +52,6 @@ const FuneralStaffForm = ({ onSuccess, onCancel }) => {
     }));
   };
 
-  const handleCertChange = (index, field, value) => {
-    const updated = [...formData.certifications];
-    updated[index][field] = value;
-    setFormData((prev) => ({ ...prev, certifications: updated }));
-  };
-
-  const addCertRow = () => {
-    setFormData((prev) => ({
-      ...prev,
-      certifications: [...prev.certifications, { name: '', expiry: '' }],
-    }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -86,9 +82,13 @@ const FuneralStaffForm = ({ onSuccess, onCancel }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2.5, borderRadius: '10px' }} onClose={() => setError('')}>
+          {error}
+        </Alert>
+      )}
 
-      <Typography variant="subtitle2" color="primary" fontWeight={600} gutterBottom>
+      <Typography variant="subtitle2" sx={{ color: '#4F46E5', fontWeight: 700, mb: 1.5, letterSpacing: '0.3px' }}>
         1. Personal & Contact Details
       </Typography>
       <Grid container spacing={2} sx={{ mb: 2 }}>
@@ -99,6 +99,14 @@ const FuneralStaffForm = ({ onSuccess, onCancel }) => {
             label="Full Name"
             value={formData.fullName}
             onChange={(e) => handleChange('fullName', e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <PersonIcon sx={{ color: '#94A3B8' }} />
+                </InputAdornment>
+              ),
+              sx: { borderRadius: '10px' },
+            }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -109,6 +117,14 @@ const FuneralStaffForm = ({ onSuccess, onCancel }) => {
             label="Email Address"
             value={formData.email}
             onChange={(e) => handleChange('email', e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <EmailIcon sx={{ color: '#94A3B8' }} />
+                </InputAdornment>
+              ),
+              sx: { borderRadius: '10px' },
+            }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -117,6 +133,14 @@ const FuneralStaffForm = ({ onSuccess, onCancel }) => {
             label="Phone Number"
             value={formData.phone}
             onChange={(e) => handleChange('phone', e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <PhoneIcon sx={{ color: '#94A3B8' }} />
+                </InputAdornment>
+              ),
+              sx: { borderRadius: '10px' },
+            }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
@@ -127,13 +151,14 @@ const FuneralStaffForm = ({ onSuccess, onCancel }) => {
             InputLabelProps={{ shrink: true }}
             value={formData.dateOfBirth}
             onChange={(e) => handleChange('dateOfBirth', e.target.value)}
+            InputProps={{ sx: { borderRadius: '10px' } }}
           />
         </Grid>
       </Grid>
 
-      <Divider sx={{ my: 2 }} />
+      <Divider sx={{ my: 2.5, borderColor: '#E2E8F0' }} />
 
-      <Typography variant="subtitle2" color="primary" fontWeight={600} gutterBottom>
+      <Typography variant="subtitle2" sx={{ color: '#4F46E5', fontWeight: 700, mb: 1.5, letterSpacing: '0.3px' }}>
         2. Employment & Assignment
       </Typography>
       <Grid container spacing={2} sx={{ mb: 2 }}>
@@ -144,6 +169,14 @@ const FuneralStaffForm = ({ onSuccess, onCancel }) => {
             label="Employee ID"
             value={formData.employeeId}
             onChange={(e) => handleChange('employeeId', e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <BadgeIcon sx={{ color: '#94A3B8' }} />
+                </InputAdornment>
+              ),
+              sx: { borderRadius: '10px' },
+            }}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
@@ -153,6 +186,7 @@ const FuneralStaffForm = ({ onSuccess, onCancel }) => {
             label="Department"
             value={formData.department}
             onChange={(e) => handleChange('department', e.target.value)}
+            InputProps={{ sx: { borderRadius: '10px' } }}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
@@ -162,6 +196,14 @@ const FuneralStaffForm = ({ onSuccess, onCancel }) => {
             label="Branch / Location"
             value={formData.branch}
             onChange={(e) => handleChange('branch', e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <OfficeIcon sx={{ color: '#94A3B8' }} />
+                </InputAdornment>
+              ),
+              sx: { borderRadius: '10px' },
+            }}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
@@ -173,6 +215,7 @@ const FuneralStaffForm = ({ onSuccess, onCancel }) => {
             InputLabelProps={{ shrink: true }}
             value={formData.hireDate}
             onChange={(e) => handleChange('hireDate', e.target.value)}
+            InputProps={{ sx: { borderRadius: '10px' } }}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
@@ -183,6 +226,7 @@ const FuneralStaffForm = ({ onSuccess, onCancel }) => {
             label="Employment Type"
             value={formData.employmentType}
             onChange={(e) => handleChange('employmentType', e.target.value)}
+            InputProps={{ sx: { borderRadius: '10px' } }}
           >
             <MenuItem value="full-time">Full-time</MenuItem>
             <MenuItem value="part-time">Part-time</MenuItem>
@@ -197,6 +241,7 @@ const FuneralStaffForm = ({ onSuccess, onCancel }) => {
             label="Work Shift"
             value={formData.shift}
             onChange={(e) => handleChange('shift', e.target.value)}
+            InputProps={{ sx: { borderRadius: '10px' } }}
           >
             <MenuItem value="morning">Morning Shift</MenuItem>
             <MenuItem value="evening">Evening Shift</MenuItem>
@@ -206,9 +251,9 @@ const FuneralStaffForm = ({ onSuccess, onCancel }) => {
         </Grid>
       </Grid>
 
-      <Divider sx={{ my: 2 }} />
+      <Divider sx={{ my: 2.5, borderColor: '#E2E8F0' }} />
 
-      <Typography variant="subtitle2" color="primary" fontWeight={600} gutterBottom>
+      <Typography variant="subtitle2" sx={{ color: '#4F46E5', fontWeight: 700, mb: 1.5, letterSpacing: '0.3px' }}>
         3. Emergency Contact & Initial Password
       </Typography>
       <Grid container spacing={2} sx={{ mb: 2 }}>
@@ -218,6 +263,7 @@ const FuneralStaffForm = ({ onSuccess, onCancel }) => {
             label="Emergency Contact Name"
             value={formData.emergencyContact.name}
             onChange={(e) => handleNestedChange('emergencyContact', 'name', e.target.value)}
+            InputProps={{ sx: { borderRadius: '10px' } }}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
@@ -226,6 +272,7 @@ const FuneralStaffForm = ({ onSuccess, onCancel }) => {
             label="Relationship"
             value={formData.emergencyContact.relation}
             onChange={(e) => handleNestedChange('emergencyContact', 'relation', e.target.value)}
+            InputProps={{ sx: { borderRadius: '10px' } }}
           />
         </Grid>
         <Grid item xs={12} sm={4}>
@@ -234,6 +281,7 @@ const FuneralStaffForm = ({ onSuccess, onCancel }) => {
             label="Emergency Phone"
             value={formData.emergencyContact.phone}
             onChange={(e) => handleNestedChange('emergencyContact', 'phone', e.target.value)}
+            InputProps={{ sx: { borderRadius: '10px' } }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -244,20 +292,47 @@ const FuneralStaffForm = ({ onSuccess, onCancel }) => {
             value={formData.password}
             onChange={(e) => handleChange('password', e.target.value)}
             helperText="Default auto-generated secure password will be provided if left blank."
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LockIcon sx={{ color: '#94A3B8' }} />
+                </InputAdornment>
+              ),
+              sx: { borderRadius: '10px' },
+            }}
           />
         </Grid>
       </Grid>
 
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
-        <Button onClick={onCancel} disabled={loading} color="inherit">
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1.5, mt: 3, pt: 2, borderTop: '1px solid #E2E8F0' }}>
+        <Button
+          onClick={onCancel}
+          disabled={loading}
+          variant="outlined"
+          sx={{
+            color: '#64748B',
+            borderColor: '#CBD5E1',
+            borderRadius: '8px',
+            textTransform: 'none',
+            fontWeight: 600,
+            '&:hover': { bgcolor: '#F8FAFC' },
+          }}
+        >
           Cancel
         </Button>
         <Button
           type="submit"
           variant="contained"
           disabled={loading}
-          sx={{ bgcolor: '#1B2A3D', '&:hover': { bgcolor: '#2C3E50' } }}
           startIcon={loading && <CircularProgress size={18} color="inherit" />}
+          sx={{
+            bgcolor: '#1B2A3D',
+            borderRadius: '8px',
+            textTransform: 'none',
+            fontWeight: 600,
+            px: 2.8,
+            '&:hover': { bgcolor: '#2C3E50' },
+          }}
         >
           {loading ? 'Provisioning...' : 'Provision Funeral Staff'}
         </Button>
