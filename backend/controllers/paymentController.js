@@ -152,8 +152,17 @@ const paymentController = {
 
   getPaymentHistory: async (req, res) => {
     try {
-      const payments = await Payment.find().populate('orderId');
-      res.json(payments);
+      // Regular users can only see their own payment history
+      if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+        const payments = await Payment.find({ 'orderId.user': req.user._id })
+          .populate('orderId')
+          .sort('-createdAt');
+        res.json(payments);
+      } else {
+        // Admin/manager can see all payment history
+        const payments = await Payment.find().populate('orderId').sort('-createdAt');
+        res.json(payments);
+      }
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
@@ -164,7 +173,7 @@ const paymentController = {
       const payment = await Payment.findById(req.params.id)
         .populate({
           path: 'orderId',
-          select: 'orderNumber totalAmount status',
+          select: 'orderNumber totalAmount status user',
           populate: {
             path: 'user',
             select: 'name email'
@@ -174,6 +183,11 @@ const paymentController = {
 
       if (!payment) {
         return res.status(404).json({ message: 'Payment not found' });
+      }
+
+      // Check if user is admin/manager or payment owner
+      if (req.user.role !== 'admin' && req.user.role !== 'manager' && payment.orderId.user.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: 'Not authorized to view this payment' });
       }
 
       res.json(payment);
@@ -206,6 +220,11 @@ const paymentController = {
   // Get payments by user ID
   getUserPayments: async (req, res) => {
     try {
+      // Check if user is admin/manager or requesting their own payments
+      if (req.user.role !== 'admin' && req.user.role !== 'manager' && req.params.userId !== req.user._id.toString()) {
+        return res.status(403).json({ message: 'Not authorized to view these payments' });
+      }
+
       const payments = await Payment.find({ 'orderId.user': req.params.userId })
         .populate({
           path: 'orderId',

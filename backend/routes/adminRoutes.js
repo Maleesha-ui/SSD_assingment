@@ -42,7 +42,7 @@ router.post('/package/new-package', protect, admin, createPackage);
 router.put('/package/update-package/:id', protect, admin, updatePackage);
 router.delete('/package/:id', protect, admin, deletePackage);
 
-router.get('/debug', (req, res) => {
+router.get('/debug', protect, admin, (req, res) => {
   res.json({ message: 'Admin API is working correctly' });
 });
 

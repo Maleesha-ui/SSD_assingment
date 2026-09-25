@@ -1,15 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middleware/auth');
-const { getAllUsers, getUserProfile, updateUserProfile, deleteUserAccount } = require('../controllers/userController');
+const { protect, authorize } = require('../middleware/auth');
+const userController = require('../controllers/userController');
 
-router.get('/', protect, getAllUsers);
+// Get all users - admin only
+router.get('/', protect, authorize('admin'), userController.getAllUsers);
 
-router.get('/:userId', protect, getUserProfile);
+// Get user profile by ID - admin only (users should use their own profile endpoint)
+router.get('/:userId', protect, authorize('admin'), userController.getUserProfile);
 
-router.put('/update-profile', protect, updateUserProfile);
+// Get own profile - any authenticated user
+router.get('/profile/me', protect, userController.getOwnProfile);
 
-router.delete('/delete-account', protect, deleteUserAccount);
+// Update own profile - any authenticated user
+router.put('/update-profile', protect, userController.updateUserProfile);
+
+// Delete own account - any authenticated user
+router.delete('/delete-account', protect, userController.deleteUserAccount);
 
 router.get('/testing', async (req, res) => {
   try {

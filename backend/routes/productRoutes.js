@@ -9,7 +9,10 @@ router.use((req, res, next) => {
   next();
 });
 
+// Public endpoint - anyone can view products
+router.get('/', getAllProducts);
+
+// Admin only - create products
 router.post('/', protect, admin, createProduct);
-router.get('/', protect, getAllProducts);
 
 module.exports = router; 

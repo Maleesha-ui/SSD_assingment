@@ -23,6 +23,12 @@ const orderController = {
       if (!order) {
         return res.status(404).json({ message: 'Order not found' });
       }
+
+      // Check if user is admin/manager or order owner
+      if (req.user.role !== 'admin' && req.user.role !== 'manager' && order.user.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: 'Not authorized to view this order' });
+      }
+
       res.json(order);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -85,12 +91,23 @@ const orderController = {
 
   updateOrder: async (req, res) => {
     try {
-      const order = await Order.findByIdAndUpdate(
+      const order = await Order.findById(req.params.id);
+      
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+
+      // Check if user is admin/manager or order owner
+      if (req.user.role !== 'admin' && req.user.role !== 'manager' && order.user.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: 'Not authorized to update this order' });
+      }
+
+      const updatedOrder = await Order.findByIdAndUpdate(
         req.params.id, 
         req.body, 
         { new: true }
       );
-      res.json(order);
+      res.json(updatedOrder);
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
@@ -98,6 +115,17 @@ const orderController = {
 
   deleteOrder: async (req, res) => {
     try {
+      const order = await Order.findById(req.params.id);
+      
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+
+      // Check if user is admin/manager or order owner
+      if (req.user.role !== 'admin' && req.user.role !== 'manager' && order.user.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: 'Not authorized to delete this order' });
+      }
+
       await Order.findByIdAndDelete(req.params.id);
       res.json({ message: 'Order deleted' });
     } catch (error) {
