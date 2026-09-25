@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Box, 
   Container, 
@@ -14,7 +14,19 @@ import {
   Fade,
   Slide
 } from '@mui/material';
-import { ArrowForward, Star, LocalFlorist, Favorite, EventAvailable, SupportAgent, Church, NaturePeople, CalendarMonth, Psychology } from '@mui/icons-material';
+import { 
+  ArrowForward, 
+  Star, 
+  LocalFlorist, 
+  Favorite, 
+  EventAvailable, 
+  SupportAgent, 
+  Church, 
+  NaturePeople, 
+  CalendarMonth, 
+  Psychology,
+  Lock
+} from '@mui/icons-material';
 import "./Home.css"; 
 import "./Packages.css";
 import "./PackageDetails.css";
@@ -22,11 +34,23 @@ import "../components/Header.css";
 import "../components/Footer.css"; 
 
 import api from "../services/api";
+import { useAuth } from '../context/AuthContext';
 
 const Home = ({ onServiceClick = () => {} }) => {
   const [packages, setPackages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const { user, token } = useAuth();
+  const isAuthenticated = !!(user && token);
+
+  const handleRestrictedAction = (destination) => {
+    if (isAuthenticated) {
+      navigate(destination);
+    } else {
+      navigate('/login?restricted=true');
+    }
+  };
   
   useEffect(() => {
     const fetchPackages = async () => {
@@ -113,11 +137,10 @@ const Home = ({ onServiceClick = () => {} }) => {
                 </Typography>
                 <Box className="hero-buttons">
                   <Button 
-                    component={Link}
-                    to="/packages"
+                    onClick={() => handleRestrictedAction('/packages')}
                     variant="contained"
                     size="large"
-                    endIcon={<ArrowForward />}
+                    endIcon={isAuthenticated ? <ArrowForward /> : <Lock sx={{ fontSize: 18 }} />}
                     className="btn-primary"
                     sx={{ 
                       px: 4,
@@ -129,8 +152,7 @@ const Home = ({ onServiceClick = () => {} }) => {
                     View Packages
                   </Button>
                   <Button 
-                    component={Link}
-                    to="/contact-us"
+                    onClick={() => handleRestrictedAction('/contact-us')}
                     variant="outlined"
                     size="large"
                     className="btn-outline"
@@ -324,7 +346,18 @@ const Home = ({ onServiceClick = () => {} }) => {
               {packages.map((pkg, index) => (
                 <Grid item xs={12} md={4} key={pkg._id}>
                   <Fade in={true} timeout={600 + index * 200}>
-                    <Card className="package-card">
+                    <Card 
+                      className="package-card"
+                      onClick={() => handleRestrictedAction(`/package/${encodeURIComponent(pkg.name)}`)}
+                      sx={{ 
+                        cursor: 'pointer',
+                        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                        '&:hover': {
+                          transform: 'translateY(-6px)',
+                          boxShadow: '0 12px 28px rgba(27, 42, 61, 0.15)'
+                        }
+                      }}
+                    >
                       <CardContent className="package-content">
                         <Box className="package-icon-wrapper">
                           <Box className="package-icon">
@@ -378,12 +411,52 @@ const Home = ({ onServiceClick = () => {} }) => {
                             ))}
                           </Box>
                         )}
+                        <Button
+                          variant="outlined"
+                          fullWidth
+                          size="small"
+                          endIcon={isAuthenticated ? <ArrowForward sx={{ fontSize: 16 }} /> : <Lock sx={{ fontSize: 16 }} />}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRestrictedAction(`/package/${encodeURIComponent(pkg.name)}`);
+                          }}
+                          sx={{
+                            mt: 2.5,
+                            borderColor: '#C9A961',
+                            color: '#1B2A3D',
+                            fontWeight: 600,
+                            textTransform: 'none',
+                            borderRadius: 2,
+                            '&:hover': {
+                              backgroundColor: '#C9A961',
+                              borderColor: '#C9A961',
+                              color: 'white',
+                            }
+                          }}
+                        >
+                          {isAuthenticated ? 'View Package Details' : 'Sign In to View Details'}
+                        </Button>
                       </CardContent>
                     </Card>
                   </Fade>
                 </Grid>
               ))}
             </Grid>
+          )}
+
+          {packages.length > 0 && (
+            <Box sx={{ textAlign: 'center', mt: 5 }}>
+              <Button
+                variant="contained"
+                size="large"
+                endIcon={isAuthenticated ? <ArrowForward /> : <Lock sx={{ fontSize: 18 }} />}
+                onClick={() => handleRestrictedAction('/packages')}
+                className="btn-primary"
+                sx={{ px: 4, py: 1.3 }}
+              >
+                {isAuthenticated ? 'View All Packages' : 'Sign In to View All Packages'}
+              </Button>
+            </Box>
           )}
         </Container>
       </Box>
@@ -410,7 +483,14 @@ const Home = ({ onServiceClick = () => {} }) => {
                 <Fade in={true} timeout={800 + index * 150}>
                   <Card 
                     className="service-card"
-                    onClick={() => onServiceClick(service.click)}
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        navigate('/login?restricted=true');
+                      } else {
+                        onServiceClick(service.click);
+                        navigate('/packages');
+                      }
+                    }}
                     sx={{ 
                       cursor: 'pointer',
                       height: '100%',
@@ -502,18 +582,18 @@ const Home = ({ onServiceClick = () => {} }) => {
               Let us help you create a beautiful tribute that honors your loved one's memory with dignity and grace.
             </Typography>
             <Button 
-              component={Link}
-              to="/contact-us"
+              onClick={() => handleRestrictedAction('/contact-us')}
               variant="contained"
               size="large"
               className="btn-secondary"
+              endIcon={isAuthenticated ? <ArrowForward /> : <Lock sx={{ fontSize: 18 }} />}
               sx={{ 
                 px: 5,
                 py: 1.5,
                 fontSize: '1.05rem'
               }}
             >
-              Get Started Today
+              {isAuthenticated ? 'Get Started Today' : 'Sign In to Get Started'}
             </Button>
           </Box>
         </Container>

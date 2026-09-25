@@ -74,10 +74,14 @@ const Header = () => {
         {!isMobile && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <NavLink to="/">Home</NavLink>
-            <NavLink to="/packages">Packages</NavLink>
-            <NavLink to="/about-us">About Us</NavLink>
-            <NavLink to="/funeral-procedures">Funeral Procedures</NavLink>
-            <NavLink to="/contact-us">Contact Us</NavLink>
+            {user && token && (
+              <>
+                <NavLink to="/packages">Packages</NavLink>
+                <NavLink to="/about-us">About Us</NavLink>
+                <NavLink to="/funeral-procedures">Funeral Procedures</NavLink>
+                <NavLink to="/contact-us">Contact Us</NavLink>
+              </>
+            )}
             
             {user && token ? (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, ml: 2 }}>
@@ -112,16 +116,19 @@ const Header = () => {
                   startIcon={<LogoutIcon sx={{ fontSize: 18 }} />}
                   sx={{
                     color: '#ffffff',
+                    backgroundColor: '#C53030',
                     fontWeight: 600,
                     borderRadius: '50px',
-                    border: '1.5px solid rgba(201, 169, 97, 0.5)',
+                    border: '1.5px solid #C53030',
                     padding: '6px 18px',
                     fontSize: '0.875rem',
                     textTransform: 'none',
+                    boxShadow: '0 2px 8px rgba(197, 48, 48, 0.25)',
+                    transition: 'all 0.25s ease',
                     '&:hover': {
-                      backgroundColor: '#C53030',
-                      borderColor: '#C53030',
-                      boxShadow: '0 4px 12px rgba(197, 48, 48, 0.3)',
+                      backgroundColor: '#A82828',
+                      borderColor: '#A82828',
+                      boxShadow: '0 4px 12px rgba(197, 48, 48, 0.4)',
                     }
                   }}
                 >
@@ -132,17 +139,21 @@ const Header = () => {
               <Button
                 component={Link}
                 to="/login"
-                startIcon={<AccountCircle sx={{ color: '#C9A961' }} />}
+                startIcon={<AccountCircle sx={{ color: '#ffffff' }} />}
                 sx={{
                   color: '#ffffff',
+                  backgroundColor: '#C9A961',
                   marginLeft: 2,
                   fontWeight: 500,
                   borderRadius: '50px',
-                  border: '1px solid rgba(201, 169, 97, 0.4)',
+                  border: '1.5px solid #C9A961',
                   padding: '6px 18px',
+                  boxShadow: '0 2px 8px rgba(201, 169, 97, 0.25)',
+                  transition: 'all 0.25s ease',
                   '&:hover': {
-                    backgroundColor: 'rgba(201, 169, 97, 0.2)',
-                    borderColor: '#C9A961'
+                    backgroundColor: '#B5954D',
+                    borderColor: '#B5954D',
+                    boxShadow: '0 4px 12px rgba(201, 169, 97, 0.4)'
                   }
                 }}
               >

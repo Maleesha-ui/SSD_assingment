@@ -33,6 +33,7 @@ import GoogleAuthButton from '../../components/auth/GoogleAuthButton';
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const [infoMessage, setInfoMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
@@ -43,10 +44,16 @@ const Login = () => {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const expired = params.get('expired');
+    const restricted = params.get('restricted');
     const err = params.get('error');
 
     if (expired) {
       setError('Your login session has timed out (1 hour limit). Please sign in again.');
+      return;
+    }
+
+    if (restricted) {
+      setInfoMessage('Please sign in or create an account to view funeral packages and access services.');
       return;
     }
 
@@ -75,6 +82,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setInfoMessage('');
 
     if (!validateForm()) return;
 
@@ -289,6 +297,27 @@ const Login = () => {
                 >
                   Sign in to your account
                 </Typography>
+
+                {infoMessage && (
+                  <Fade in={!!infoMessage}>
+                    <Alert
+                      severity="info"
+                      sx={{
+                        mb: 3,
+                        backgroundColor: 'rgba(201, 169, 97, 0.12)',
+                        color: '#1B2A3D',
+                        borderRadius: 2,
+                        border: '1px solid rgba(201, 169, 97, 0.4)',
+                        fontWeight: 500,
+                        '& .MuiAlert-icon': {
+                          color: '#C9A961'
+                        }
+                      }}
+                    >
+                      {infoMessage}
+                    </Alert>
+                  </Fade>
+                )}
 
                 {error && (
                   <Fade in={!!error}>

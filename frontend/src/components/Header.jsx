@@ -84,13 +84,17 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = [
-    { to: '/', label: 'Home' },
-    { to: '/packages', label: 'Packages' },
-    { to: '/about-us', label: 'About Us' },
-    { to: '/funeral-procedures', label: 'Procedures' },
-    { to: '/contact-us', label: 'Contact' }
-  ];
+  const navLinks = (user && token)
+    ? [
+        { to: '/', label: 'Home' },
+        { to: '/packages', label: 'Packages' },
+        { to: '/about-us', label: 'About Us' },
+        { to: '/funeral-procedures', label: 'Procedures' },
+        { to: '/contact-us', label: 'Contact' }
+      ]
+    : [
+        { to: '/', label: 'Home' }
+      ];
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -197,11 +201,12 @@ const Header = () => {
               }}
               sx={{
                 borderRadius: 2,
-                backgroundColor: '#FFF5F5',
-                border: '1px solid #FED7D7',
-                color: '#C53030',
+                backgroundColor: '#C53030',
+                border: '1px solid #C53030',
+                color: '#FFFFFF',
                 '&:hover': {
-                  backgroundColor: '#C53030',
+                  backgroundColor: '#A82828',
+                  borderColor: '#A82828',
                   color: '#FFFFFF',
                 },
               }}
@@ -328,20 +333,22 @@ const Header = () => {
                     onClick={handleLogout}
                     startIcon={<LogoutIcon sx={{ fontSize: 18 }} />}
                     sx={{
-                      color: scrolled ? '#FFFFFF' : '#1B2A3D',
+                      color: '#FFFFFF',
+                      backgroundColor: '#C53030',
                       fontWeight: 600,
                       borderRadius: '50px',
                       padding: '7px 20px',
-                      border: `1.5px solid ${scrolled ? 'rgba(201, 169, 97, 0.6)' : '#1B2A3D'}`,
+                      border: '1.5px solid #C53030',
                       fontSize: '0.875rem',
                       textTransform: 'none',
                       transition: 'all 0.3s ease',
+                      boxShadow: '0 2px 8px rgba(197, 48, 48, 0.25)',
                       '&:hover': {
-                        backgroundColor: '#C53030',
+                        backgroundColor: '#A82828',
                         color: '#FFFFFF',
-                        borderColor: '#C53030',
+                        borderColor: '#A82828',
                         transform: 'translateY(-2px)',
-                        boxShadow: '0 4px 12px rgba(197, 48, 48, 0.3)',
+                        boxShadow: '0 4px 14px rgba(197, 48, 48, 0.4)',
                       },
                     }}
                   >
@@ -354,20 +361,22 @@ const Header = () => {
                   to="/login"
                   startIcon={<AccountCircle />}
                   sx={{
-                    color: scrolled ? '#FFFFFF' : '#1B2A3D',
+                    color: '#FFFFFF',
+                    backgroundColor: '#C9A961',
                     marginLeft: 2,
-                    fontWeight: 500,
+                    fontWeight: 600,
                     borderRadius: '50px',
                     padding: '8px 24px',
-                    border: `2px solid ${scrolled ? 'rgba(201, 169, 97, 0.6)' : '#1B2A3D'}`,
+                    border: '2px solid #C9A961',
                     fontSize: '0.9rem',
                     transition: 'all 0.3s ease',
+                    boxShadow: '0 2px 8px rgba(201, 169, 97, 0.25)',
                     '&:hover': {
-                      backgroundColor: '#C9A961',
+                      backgroundColor: '#B5954D',
                       color: 'white',
-                      borderColor: '#C9A961',
+                      borderColor: '#B5954D',
                       transform: 'translateY(-2px)',
-                      boxShadow: '0 4px 15px rgba(201, 169, 97, 0.3)'
+                      boxShadow: '0 4px 15px rgba(201, 169, 97, 0.45)'
                     }
                   }}
                 >
