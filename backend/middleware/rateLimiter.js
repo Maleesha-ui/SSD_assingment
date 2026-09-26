@@ -60,8 +60,59 @@ function createRateLimiter(options = {}) {
 
 const authRateLimiter = createRateLimiter({ max: 20, windowMs: 60 * 1000 });
 
+/**
+ * User endpoints rate limiter (V10 Remediation)
+ * Invariant 10: 60 req/min for authenticated user, 10 req/min for unauthenticated IP
+ */
+const userEndpointRateLimiter = (options = { windowMs: 60 * 1000, authMax: 60, unauthMax: 10 }) => {
+  const hits = new Map();
+  const jwt = require('jsonwebtoken');
+
+  return (req, res, next) => {
+    let userId = req.user ? req.user._id?.toString() : null;
+
+    if (!userId && req.headers.authorization?.startsWith('Bearer ')) {
+      try {
+        const token = req.headers.authorization.split(' ')[1];
+        const decoded = jwt.decode(token);
+        if (decoded && (decoded.id || decoded._id)) {
+          userId = (decoded.id || decoded._id).toString();
+        }
+      } catch {
+        // Fallback to IP if decoding fails
+      }
+    }
+
+    const isAuth = Boolean(userId);
+    const key = isAuth ? `user_${userId}` : `ip_${req.ip || req.connection?.remoteAddress || 'unknown'}`;
+    const max = isAuth ? options.authMax : options.unauthMax;
+    const now = Date.now();
+
+    let record = hits.get(key);
+    if (!record) {
+      record = { timestamps: [] };
+      hits.set(key, record);
+    }
+
+    record.timestamps = record.timestamps.filter((ts) => now - ts < options.windowMs);
+
+    if (record.timestamps.length >= max) {
+      const retryAfter = Math.ceil((options.windowMs - (now - record.timestamps[0])) / 1000);
+      res.setHeader('Retry-After', retryAfter);
+      return res.status(429).json({
+        message: 'Too many requests on user endpoints. Please try again later.',
+        retryAfterSeconds: retryAfter,
+      });
+    }
+
+    record.timestamps.push(now);
+    next();
+  };
+};
+
 module.exports = {
   privilegedRateLimiter,
   authRateLimiter,
   createRateLimiter,
+  userEndpointRateLimiter,
 };

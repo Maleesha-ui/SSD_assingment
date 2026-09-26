@@ -279,6 +279,104 @@ const createInviteDto = {
   },
 };
 
+const VALID_USER_ROLES = [
+  'customer',
+  'funeral_staff',
+  'hearse_driver',
+  'funeral_manager',
+  'admin',
+  'staff',
+  'driver',
+  'manager',
+];
+
+const ALLOWED_DIRECTORY_PARAMS = ['role', 'branch', 'status', 'q', 'page', 'limit', 'sort'];
+const ALLOWED_SORT_FIELDS = ['createdAt', 'name', 'fullName', 'role', '-createdAt', '-name', '-fullName', '-role'];
+
+/**
+ * Directory Query Hardening Middleware (V10 Remediation)
+ * - Invariant 11: Pagination is enforced, max limit 100
+ * - Whitelists query parameters; unknown params rejected with 400
+ * - Whitelists sort fields; invalid sort rejected with 400
+ * - Validates role enum; invalid role rejected with 400
+ */
+const validateDirectoryQuery = (req, res, next) => {
+  const queryKeys = Object.keys(req.query || {});
+
+  // 1. Whitelist query parameters
+  for (const key of queryKeys) {
+    if (!ALLOWED_DIRECTORY_PARAMS.includes(key)) {
+      return res.status(400).json({
+        message: `Query parameter '${key}' is unrecognized or not allowed.`,
+        error: 'INVALID_QUERY_PARAMETER',
+        field: key,
+      });
+    }
+  }
+
+  // 2. Validate role if supplied
+  if (req.query.role && !VALID_USER_ROLES.includes(req.query.role)) {
+    return res.status(400).json({
+      message: `Invalid role filter '${req.query.role}'. Must be one of: ${VALID_USER_ROLES.join(', ')}`,
+      error: 'INVALID_ROLE_FILTER',
+    });
+  }
+
+  // 3. Validate sort if supplied
+  if (req.query.sort && !ALLOWED_SORT_FIELDS.includes(req.query.sort)) {
+    return res.status(400).json({
+      message: `Invalid sort field '${req.query.sort}'. Allowed: createdAt, name, fullName, role`,
+      error: 'INVALID_SORT_FIELD',
+    });
+  }
+
+  // 4. Validate and cap pagination
+  let page = parseInt(req.query.page, 10);
+  if (isNaN(page) || page < 1) {
+    page = 1;
+  }
+
+  let limit = parseInt(req.query.limit, 10);
+  if (isNaN(limit) || limit < 1) {
+    limit = 20;
+  } else if (limit > 100) {
+    limit = 100; // Cap limit at 100 (Invariant 11)
+  }
+
+  req.sanitizedQuery = {
+    ...req.query,
+    page,
+    limit,
+    sort: req.query.sort || '-createdAt',
+  };
+
+  next();
+};
+
+const selfUpdateUserDto = {
+  allowedFields: ['name', 'fullName', 'phone', 'address', 'avatar'],
+  requiredFields: [],
+  validators: {
+    name: (val) => {
+      if (typeof val !== 'string' || val.trim().length === 0) return 'Name cannot be empty.';
+      return null;
+    },
+  },
+};
+
+const adminUpdateUserDto = {
+  allowedFields: ['name', 'fullName', 'phone', 'address', 'avatar', 'status', 'isProfileComplete'],
+  requiredFields: [],
+  validators: {
+    status: (val) => {
+      if (val && !['active', 'pending_invite', 'suspended'].includes(val)) {
+        return 'Status must be active, pending_invite, or suspended.';
+      }
+      return null;
+    },
+  },
+};
+
 module.exports = {
   validateDto,
   publicRegisterDto,
@@ -287,4 +385,7 @@ module.exports = {
   createFuneralManagerDto,
   createAdminDto,
   createInviteDto,
+  validateDirectoryQuery,
+  selfUpdateUserDto,
+  adminUpdateUserDto,
 };

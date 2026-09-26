@@ -220,3 +220,74 @@ access_log /var/log/nginx/access.log scrubbed_combined;
   - Setting `AUTH_OAUTH_DELIVERY=cookie` switches all OAuth logins to direct cookie mode without downtime or database rollbacks.
   - If schema rollback is required, run `node backend/scripts/rollback_v15.js` to drop `oauth_exchange_codes` and `refresh_tokens` collections.
 
+---
+
+# Security Advisory & Architecture Documentation: V10 Remediation
+
+## Vulnerability Overview: Missing Authorization on User Profiles & Directory (IDOR / Directory Exfiltration)
+
+| Field | Detail |
+|---|---|
+| **Vulnerability ID** | V10 (High) |
+| **CWE Classification** | CWE-862: Missing Authorization / CWE-639: Authorization Bypass Through User-Controlled Key (IDOR) / CWE-200: Exposure of Sensitive Information |
+| **OWASP Category** | A01:2021 — Broken Access Control |
+| **CVSS v3.1 Score** | 7.1 (High) `CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:L/A:N` |
+| **Remediation Status** | Complete & Verified across Middleware, Controller, Serializer, and Schema |
+
+---
+
+### 1. Root Cause Analysis
+
+Prior to remediation, the `/api/users` and `/api/users/:userId` endpoints mounted in `routes/userRoutes.js` enforced only baseline authentication (`protect`) without role-based access control (RBAC) or object ownership verification:
+1. `GET /api/users` executed an unbounded `User.find()` query that dumped all user documents and populated order histories to any authenticated caller, including standard customers, drivers, and external users.
+2. `GET /api/users/:userId` blindly trusted the client-supplied `:userId` URL route parameter, querying `User.findById(userId)` without verifying whether the caller owned the profile (`req.user._id === userId`) or possessed an administrative role (`admin` or `manager`).
+3. Responses were un-scoped: sensitive internal attributes (`passwordResetRequired`, internal roles, order histories) were returned directly in the JSON response payload.
+4. Non-ObjectId values triggered uncaught Mongoose `CastError` exceptions (yielding 500 status codes with internal schema error strings), while nonexistent IDs returned 404, creating a differential existence oracle that allowed attackers to enumerate valid account IDs.
+
+---
+
+### 2. Remediation Architecture & Security Invariants
+
+The remediation implements a multi-layered defense-in-depth model across the request lifecycle:
+
+```
+[Inbound Request] ──► [userEndpointRateLimiter] (60/min Auth, 10/min Unauth)
+                   ──► [protect] (Verify JWT & User Status)
+                   ──► Routing Boundary:
+                         ├── GET /api/users:
+                         │     ├── [authorize('admin', 'manager')] (RBAC Guard)
+                         │     ├── [validateDirectoryQuery] (Whitelist & Pagination Cap <= 100)
+                         │     ├── [getAllUsers]
+                         │     ├── [AuditLog: user.directory.read]
+                         │     └── [serializeUser(user, viewer)]
+                         └── GET/PUT/PATCH/DELETE /api/users/:userId:
+                               ├── [requireSelfOrRole('admin', 'manager')] (Ownership + Anti-Oracle 403)
+                               ├── [validateDto(selfUpdateUserDto)] (Strict Whitelist: No role/email/status tampering)
+                               ├── [AuditLog: user.profile.read.other / update / delete]
+                               └── [serializeUser(user, viewer)]
+```
+
+#### Security Invariants Enforced:
+1. **Deny by Default:** Any route under `/api/users*` without explicit permission fails closed with `401 Unauthorized` or `403 Forbidden`.
+2. **Directory Restriction:** `GET /api/users` is strictly gated behind `protect, authorize('admin', 'manager')`. Low-privilege customers and staff cannot query the directory.
+3. **Self-or-Admin/Manager Guard:** `GET/PUT/PATCH /api/users/:userId` requires that `String(req.user._id) === String(targetId)` OR `['admin', 'manager'].includes(req.user.role)`.
+4. **Anti-Enumeration Uniform Denial:** When unauthorized callers query existing or nonexistent user IDs, the server responds with an identical `403 Forbidden` (`{"message":"Forbidden: Insufficient privileges."}`), eliminating existence oracles.
+5. **Database Exception Suppression:** Malformed ObjectIds return `400 Bad Request` (`{"message":"Invalid user ID format."}`) before reaching Mongoose queries.
+6. **Role-Aware Output Serialization:** `serializeUser(user, viewer)` strips sensitive security internals (`password`, `passwordResetRequired`, MFA secrets, tokens) and restricts profile attributes to the viewer's legitimate operational scope.
+7. **Schema-Level Defense-in-Depth:** In `models/User.js`, `password`, `phone`, and `passwordResetRequired` are configured with `select: false`, and a schema-level `toJSON` transform automatically purges `password`, `passwordResetRequired`, and `__v`.
+8. **Enforced Pagination & Query Hardening:** Directory query parameters (`role`, `branch`, `status`, `q`, `page`, `limit`, `sort`) are strictly whitelisted. Pagination is capped at `limit = 100` (default 20).
+9. **Comprehensive Audit Logging:** High-risk actions (`user.directory.read`, `user.profile.read.other`, `user.profile.update`, `user.delete`) are recorded with `actorId`, `targetUserId`, `ip`, `userAgent`, and `requestId`.
+10. **Rate Limiting:** Sliding-window rate limiters cap traffic on `/api/users*` to 60 req/min for authenticated users and 10 req/min for unauthenticated IPs.
+
+---
+
+### 3. Operator Guidance & Monitoring
+
+1. **Alert on 403 Spikes on `/api/users*`:**
+   - Sudden increases in HTTP 403 status codes from customer accounts targeting `/api/users` or `/api/users/:userId` indicate automated horizontal IDOR probing or directory harvesting attempts.
+2. **Alert on 429 Rate Limit Hits:**
+   - Excessive 429 responses on user endpoints indicate scraping or brute-force scanning activity from the source IP or user identity.
+3. **Audit Log Inspection:**
+   - Periodically review `AuditLog` entries where `action == 'user.profile.read.other'` to ensure administrators and managers access user profiles only for legitimate support and scheduling workflows.
+
+

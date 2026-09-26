@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true, index: true },
   password: { 
     type: String, 
+    select: false,
     required: function() { 
       // Password is required for traditional local registration, but optional for OAuth accounts
       return !this.googleId; 
@@ -52,7 +53,12 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  phone: { type: String, trim: true },
+  passwordResetRequired: {
+    type: Boolean,
+    default: false,
+    select: false
+  },
+  phone: { type: String, trim: true, select: false },
   address: { type: String, trim: true },
   
   // Normalized Role Profile References (Section 6)
@@ -125,5 +131,14 @@ const userSchema = new mongoose.Schema({
   },
   orders: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
 }, { timestamps: true });
+
+userSchema.set('toJSON', {
+  transform: (_doc, ret) => {
+    delete ret.password;
+    delete ret.passwordResetRequired;
+    delete ret.__v;
+    return ret;
+  },
+});
 
 module.exports = mongoose.model('User', userSchema);

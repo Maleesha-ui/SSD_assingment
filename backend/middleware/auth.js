@@ -123,12 +123,51 @@ const authorize = (...roles) => {
       return res.status(401).json({ message: 'User not found' });
     }
     
-    if (!roles.includes(req.user.role)) {
+    const roleMatches = roles.includes(req.user.role) ||
+      (roles.includes('manager') && req.user.role === 'funeral_manager') ||
+      (roles.includes('staff') && req.user.role === 'funeral_staff') ||
+      (roles.includes('driver') && req.user.role === 'hearse_driver');
+
+    if (!roleMatches) {
       return res.status(403).json({ 
         message: 'Forbidden: Insufficient privileges.' 
       });
     }
     
+    next();
+  };
+};
+
+/**
+ * Self or Role authorization guard (V10 Remediation)
+ * Invariants 3 & 4: Caller must be self (req.user._id === targetId) or have specified role
+ * Invariant 5: Invalid ObjectId returns 400 Bad Request
+ * Invariant 6: Uniform 403 Forbidden prevents existence leakage
+ */
+const requireSelfOrRole = (...roles) => {
+  const mongoose = require('mongoose');
+  return (req, res, next) => {
+    const targetId = req.params.userId || req.params.id;
+    if (!targetId || !mongoose.Types.ObjectId.isValid(targetId)) {
+      return res.status(400).json({ message: 'Invalid user ID format.' });
+    }
+
+    if (!req.user) {
+      return res.status(401).json({ message: 'Not authorized, no user context' });
+    }
+
+    const isSelf = String(req.user._id) === String(targetId);
+    const hasRole = roles.includes(req.user.role) ||
+      (roles.includes('manager') && req.user.role === 'funeral_manager') ||
+      (roles.includes('staff') && req.user.role === 'funeral_staff') ||
+      (roles.includes('driver') && req.user.role === 'hearse_driver');
+
+    if (!isSelf && !hasRole) {
+      return res.status(403).json({ message: 'Forbidden: Insufficient privileges.' });
+    }
+
+    req.targetUserId = targetId;
+    req.isSelf = isSelf;
     next();
   };
 };
@@ -141,5 +180,6 @@ module.exports = {
   staff,
   driver,
   customer,
-  authorize
+  authorize,
+  requireSelfOrRole,
 };

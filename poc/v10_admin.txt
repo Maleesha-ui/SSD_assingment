@@ -1,0 +1,2519 @@
+======================================================================
+Probe 1: Admin GET /api/users (Directory Access)
+======================================================================
+GET /api/users HTTP/1.1
+Host: localhost:5000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhYjZhYjNjMWIzMTNlNWViNzBkNTM1YyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5MDM5NDg5NywiZXhwIjoxNzkwMzk4NDk3fQ.L_uDf53Px4_cSdFBAz8PBaNVqtpOn8L1bfi6PS_GBds
+
+HTTP/1.1 200
+x-powered-by: Express
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-frame-options: DENY
+vary: Origin
+access-control-allow-credentials: true
+content-type: application/json; charset=utf-8
+content-length: 26146
+etag: W/"6622-pFX4cZxIssLgdmN+ntw6Ww2B3yk"
+date: Sat, 26 Sep 2026 03:54:58 GMT
+connection: keep-alive
+keep-alive: timeout=5
+
+[
+  {
+    "_id": "67e394bcfb18f94406a61680",
+    "name": "tharushi",
+    "email": "tha@gmail.com",
+    "role": "admin",
+    "createdAt": "2025-03-26T05:46:36.419Z",
+    "updatedAt": "2025-03-26T05:46:36.419Z",
+    "__v": 0
+  },
+  {
+    "_id": "67e39577fb18f94406a6169a",
+    "name": "Tharushi",
+    "email": "nawodyat09@gmail.com",
+    "role": "user",
+    "createdAt": "2025-03-26T05:49:43.472Z",
+    "updatedAt": "2025-03-26T05:49:43.472Z",
+    "__v": 0
+  },
+  {
+    "_id": "67e3983ffb18f94406a6169e",
+    "name": "Admin User",
+    "email": "ad@example.com",
+    "role": "user",
+    "createdAt": "2025-03-26T06:01:35.603Z",
+    "updatedAt": "2025-03-26T06:01:35.603Z",
+    "__v": 0
+  },
+  {
+    "_id": "67e39951fb18f94406a616a3",
+    "name": "Admin User",
+    "email": "th@gmail.com",
+    "role": "admin",
+    "createdAt": "2025-03-26T06:06:09.692Z",
+    "updatedAt": "2025-03-26T06:06:09.692Z",
+    "__v": 0
+  },
+  {
+    "_id": "67e39e3afb18f94406a61709",
+    "name": "tharushi",
+    "email": "mki@gmail.com",
+    "role": "user",
+    "createdAt": "2025-03-26T06:27:06.869Z",
+    "updatedAt": "2025-03-26T06:27:06.869Z",
+    "__v": 0
+  },
+  {
+    "_id": "67e3a0a4fb18f94406a6175a",
+    "name": "nawody",
+    "email": "na@gmail.com",
+    "role": "admin",
+    "createdAt": "2025-03-26T06:37:24.694Z",
+    "updatedAt": "2025-03-26T06:37:24.694Z",
+    "__v": 0
+  },
+  {
+    "_id": "67e435dbfb18f94406a61821",
+    "name": "Reshma Rizvie",
+    "email": "reshma@gmail.com",
+    "role": "user",
+    "createdAt": "2025-03-26T17:14:03.932Z",
+    "updatedAt": "2025-03-26T17:14:03.932Z",
+    "__v": 0
+  },
+  {
+    "_id": "67ea8afb2b795c1aa022fbf4",
+    "name": "Vihi Bandara",
+    "email": "vihinsa2@gmail.com",
+    "role": "customer",
+    "phone": "0714397766",
+    "address": "239/10 Uduwana Temple Road, Uduwana",
+    "createdAt": "2025-03-31T12:30:51.949Z",
+    "updatedAt": "2025-03-31T12:30:51.949Z",
+    "__v": 0
+  },
+  {
+    "_id": "67eaa0202b795c1aa022fc2d",
+    "name": "K.M.V. Thejan Bandara",
+    "email": "vihinsabandara@gmail.com",
+    "role": "admin",
+    "phone": "0713293907",
+    "address": "239/9 Uduwana Temple Road, Uduwana",
+    "createdAt": "2025-03-31T14:01:04.516Z",
+    "updatedAt": "2025-03-31T14:01:04.516Z",
+    "__v": 0
+  },
+  {
+    "_id": "67eb1c16e51e261825cf3377",
+    "name": "Tharushi",
+    "email": "tnndj@gmail.com",
+    "role": "customer",
+    "phone": "0761326941",
+    "address": "23",
+    "feedback": [],
+    "createdAt": "2025-03-31T22:49:58.024Z",
+    "updatedAt": "2025-03-31T22:49:58.024Z",
+    "__v": 0
+  },
+  {
+    "_id": "67eb1c49e51e261825cf337a",
+    "name": "Tharushi",
+    "email": "Tharushi@gmail.com",
+    "role": "customer",
+    "phone": "0761326941",
+    "address": "67",
+    "feedback": [],
+    "createdAt": "2025-03-31T22:50:49.754Z",
+    "updatedAt": "2025-03-31T22:50:49.754Z",
+    "__v": 0
+  },
+  {
+    "_id": "67ebb4e0e51e261825cf33d6",
+    "name": "th",
+    "email": "abc@gmail.com",
+    "role": "admin",
+    "phone": "0786543267",
+    "address": "56",
+    "feedback": [],
+    "createdAt": "2025-04-01T09:41:52.650Z",
+    "updatedAt": "2025-04-01T09:41:52.650Z",
+    "__v": 0
+  },
+  {
+    "_id": "67ec042cdadceee07a188bba",
+    "name": "imalsha",
+    "email": "imalsha@gmail.com",
+    "role": "customer",
+    "phone": "0765432142",
+    "address": "78/1 kandy",
+    "feedback": [],
+    "createdAt": "2025-04-01T15:20:12.287Z",
+    "updatedAt": "2025-04-01T15:20:12.287Z",
+    "__v": 0
+  },
+  {
+    "_id": "67ec04c5dadceee07a188bbe",
+    "name": "asd",
+    "email": "asd@gmail.com",
+    "role": "customer",
+    "phone": "0768769098",
+    "address": "78/9",
+    "feedback": [],
+    "createdAt": "2025-04-01T15:22:45.147Z",
+    "updatedAt": "2025-04-01T15:22:45.147Z",
+    "__v": 0
+  },
+  {
+    "_id": "67ed82d7a00ec496972f83a0",
+    "name": "zxc",
+    "email": "zxc@gmail.com",
+    "role": "driver",
+    "phone": "0761326787",
+    "address": "89",
+    "driverDetails": {
+      "licenseNumber": "abc",
+      "vehicleType": "",
+      "availability": "available"
+    },
+    "feedback": [],
+    "createdAt": "2025-04-02T18:32:55.920Z",
+    "updatedAt": "2025-04-02T18:32:55.920Z",
+    "__v": 0
+  },
+  {
+    "_id": "67ed83ada00ec496972f83a6",
+    "name": "tyu",
+    "email": "tyu@gmail.com",
+    "role": "staff",
+    "phone": "0765678765",
+    "address": "78",
+    "staffDetails": {
+      "employeeId": "345",
+      "department": "etr",
+      "availability": "available"
+    },
+    "feedback": [],
+    "createdAt": "2025-04-02T18:36:29.480Z",
+    "updatedAt": "2025-04-02T18:36:29.480Z",
+    "__v": 0
+  },
+  {
+    "_id": "681891a08f07d4482605b959",
+    "name": "user7",
+    "email": "vihinsa7@gmail.com",
+    "role": "user",
+    "createdAt": "2025-05-05T10:23:28.665Z",
+    "updatedAt": "2025-05-05T10:23:28.665Z",
+    "__v": 0
+  },
+  {
+    "_id": "681895391c1ad7a00a2258b7",
+    "name": "admin7",
+    "email": "admin7@gmail.com",
+    "role": "admin",
+    "phone": "0713293907",
+    "address": "239/9 Uduwana Temple Road, Uduwana",
+    "feedback": [],
+    "createdAt": "2025-05-05T10:38:49.957Z",
+    "updatedAt": "2025-05-05T10:38:49.957Z",
+    "__v": 0
+  },
+  {
+    "_id": "681e23868dbff200ad9ba063",
+    "name": "Suneth",
+    "email": "suneth09@gmail.com",
+    "role": "customer",
+    "phone": "0761326949",
+    "address": "78 hatharaliyadda",
+    "feedback": [],
+    "createdAt": "2025-05-09T15:47:18.164Z",
+    "updatedAt": "2025-05-09T15:47:18.164Z",
+    "__v": 0
+  },
+  {
+    "_id": "681e24d48dbff200ad9ba08b",
+    "name": "Sudharma",
+    "email": "sudharma1@gmail.com",
+    "role": "admin",
+    "phone": "0760464626",
+    "address": "78/2 kandy",
+    "feedback": [],
+    "createdAt": "2025-05-09T15:52:52.512Z",
+    "updatedAt": "2025-05-09T15:52:52.512Z",
+    "__v": 0
+  },
+  {
+    "_id": "681ef6b2730097469c62a753",
+    "name": "Kaveesha",
+    "email": "kavee1@gmail.com",
+    "role": "customer",
+    "phone": "0761345241",
+    "address": "98/1",
+    "feedback": [],
+    "createdAt": "2025-05-10T06:48:18.479Z",
+    "updatedAt": "2025-05-10T06:48:18.479Z",
+    "__v": 0
+  },
+  {
+    "_id": "68200de2cdb0eed049da3c5b",
+    "name": "Rohan",
+    "email": "rohan1@gmail.com",
+    "role": "customer",
+    "phone": "0765675434",
+    "address": "78/2 kandy",
+    "feedback": [],
+    "createdAt": "2025-05-11T02:39:30.617Z",
+    "updatedAt": "2025-05-11T02:39:30.617Z",
+    "__v": 0
+  },
+  {
+    "_id": "682010efcdb0eed049da3c70",
+    "name": "Tharusi",
+    "email": "Thr1@gmail.com",
+    "role": "admin",
+    "phone": "0761326941",
+    "address": "kandy",
+    "feedback": [],
+    "createdAt": "2025-05-11T02:52:31.134Z",
+    "updatedAt": "2025-05-11T02:52:31.134Z",
+    "__v": 0
+  },
+  {
+    "_id": "682044462f48aebf2283b716",
+    "name": "pabasara",
+    "email": "paba1@gmail.com",
+    "role": "customer",
+    "phone": "0765643432",
+    "address": "kandy",
+    "feedback": [],
+    "createdAt": "2025-05-11T06:31:34.558Z",
+    "updatedAt": "2025-05-11T06:31:34.558Z",
+    "__v": 0
+  },
+  {
+    "_id": "682060612f48aebf2283b752",
+    "name": "imalsha",
+    "email": "imalsha1@gmail.com",
+    "role": "driver",
+    "phone": "0767654543",
+    "address": "kandy",
+    "driverDetails": {
+      "licenseNumber": "900",
+      "vehicleType": "",
+      "availability": "available"
+    },
+    "feedback": [],
+    "createdAt": "2025-05-11T08:31:29.098Z",
+    "updatedAt": "2025-05-11T08:31:29.098Z",
+    "__v": 0
+  },
+  {
+    "_id": "682094c42f79810ddceea3ce",
+    "name": "nawo",
+    "email": "nawo1@gmail.com",
+    "role": "admin",
+    "phone": "0768909876",
+    "address": "kandy",
+    "feedback": [],
+    "createdAt": "2025-05-11T12:15:00.795Z",
+    "updatedAt": "2025-05-11T12:15:00.795Z",
+    "__v": 0
+  },
+  {
+    "_id": "6821c78a292780251f262707",
+    "name": "K.M.V. Thejan Bandara",
+    "email": "vihinsab@gmail.com",
+    "role": "customer",
+    "phone": "0713293979",
+    "address": "239/9 Uduwana Temple Road, Uduwana",
+    "feedback": [],
+    "createdAt": "2025-05-12T10:03:54.544Z",
+    "updatedAt": "2025-05-12T10:03:54.544Z",
+    "__v": 0
+  },
+  {
+    "_id": "6822ea9d6305e693610365c4",
+    "name": "Vihi Bandara",
+    "email": "vihinsa404@gmail.com",
+    "role": "staff",
+    "phone": "0714397766",
+    "address": "239/10 Uduwana Temple Road, Uduwana",
+    "staffDetails": {
+      "department": "Operations",
+      "_id": "6822ea9d6305e693610365c5",
+      "joinedDate": "2025-05-13T06:45:49.391Z"
+    },
+    "orders": [],
+    "createdAt": "2025-05-13T06:45:49.395Z",
+    "updatedAt": "2025-05-13T06:45:49.395Z",
+    "__v": 0
+  },
+  {
+    "_id": "6823090358656a2761d84034",
+    "name": "K.M.V. Thejan Bandar",
+    "email": "vihinsa002@gmail.com",
+    "role": "customer",
+    "phone": "0713293904",
+    "address": "239/9 Uduwana Temple Road, Uduwana",
+    "feedback": [],
+    "createdAt": "2025-05-13T08:55:31.993Z",
+    "updatedAt": "2025-05-13T16:39:36.934Z",
+    "__v": 0
+  },
+  {
+    "_id": "6823b9c8cd451e7c0034cf1b",
+    "name": "Vihi Bandara",
+    "email": "vihinsa202@gmail.com",
+    "role": "manager",
+    "phone": "0714397766",
+    "address": "239/10 Uduwana Temple Road, Uduwana",
+    "orders": [],
+    "createdAt": "2025-05-13T21:29:44.486Z",
+    "updatedAt": "2025-05-13T21:29:44.486Z",
+    "__v": 0
+  },
+  {
+    "_id": "6823d619441993fb30a3e781",
+    "name": "K.M.V. Thejan Bandara",
+    "email": "vihinsa005@gmail.com",
+    "role": "driver",
+    "phone": "0713293907",
+    "address": "239/9 Uduwana Temple Road, Uduwana",
+    "driverDetails": {
+      "licenseNumber": "1511156165121",
+      "_id": "6823d619441993fb30a3e782"
+    },
+    "orders": [],
+    "createdAt": "2025-05-13T23:30:33.648Z",
+    "updatedAt": "2025-05-13T23:30:33.648Z",
+    "__v": 0
+  },
+  {
+    "_id": "68246a8259cae8f0a85eb7b1",
+    "name": "imalsha",
+    "email": "ima@gmail.com",
+    "role": "driver",
+    "phone": "0769876543",
+    "address": "kandy",
+    "driverDetails": {
+      "licenseNumber": "123",
+      "_id": "68246a8259cae8f0a85eb7b2"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T10:03:46.054Z",
+    "updatedAt": "2025-05-14T10:03:46.054Z",
+    "__v": 0
+  },
+  {
+    "_id": "68246b5359cae8f0a85eb7e6",
+    "name": "ruwanthi",
+    "email": "ruwa@gmail.com",
+    "role": "manager",
+    "phone": "0765465432",
+    "address": "kandy",
+    "orders": [],
+    "createdAt": "2025-05-14T10:07:15.894Z",
+    "updatedAt": "2025-05-14T10:07:15.894Z",
+    "__v": 0
+  },
+  {
+    "_id": "68246ba953ea6d8d8aa32cd3",
+    "name": "K.M.V. Thejan Bandara",
+    "email": "vihinsa01@gmail.com",
+    "role": "staff",
+    "phone": "0713293909",
+    "address": "239/9 duwana Temple Road, Uduwana",
+    "staffDetails": {
+      "staffId": "STF-321151-051",
+      "designation": "Staff",
+      "department": "",
+      "joinedDate": "2025-05-14T10:08:41.151Z",
+      "_id": "68246ba953ea6d8d8aa32cd4"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T10:08:41.162Z",
+    "updatedAt": "2025-05-14T23:24:12.112Z",
+    "__v": 0
+  },
+  {
+    "_id": "68246c6e53ea6d8d8aa32cda",
+    "name": "K.M.V. Thejan Bandara",
+    "email": "vihinsa02@gmail.com",
+    "role": "admin",
+    "phone": "0713293907",
+    "address": "239/9 Uduwana Temple Road, Uduwana",
+    "adminDetails": {
+      "adminId": "ADM-518050-374",
+      "accessLevel": "full",
+      "lastLogin": "2025-05-14T10:11:58.050Z",
+      "_id": "68246c6e53ea6d8d8aa32cdb"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T10:11:58.052Z",
+    "updatedAt": "2025-05-14T10:11:58.052Z",
+    "__v": 0
+  },
+  {
+    "_id": "68247633fe4075ac538260d4",
+    "name": "K.M.V. Thejan Bandara",
+    "email": "vihinsa03@gmail.com",
+    "role": "staff",
+    "phone": "0713293907",
+    "address": "239/9 Uduwana Temple Road, Uduwana",
+    "staffDetails": {
+      "staffId": "STF-019239-168",
+      "designation": "Staff",
+      "department": "",
+      "joinedDate": "2025-05-14T10:53:39.239Z",
+      "_id": "68247633fe4075ac538260d5"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T10:53:39.247Z",
+    "updatedAt": "2025-05-14T10:53:39.247Z",
+    "__v": 0
+  },
+  {
+    "_id": "6824a5a159cae8f0a85eb83d",
+    "name": "reshma",
+    "email": "re@gmail.com",
+    "role": "staff",
+    "phone": "0768797654",
+    "address": "kandy",
+    "staffDetails": {
+      "department": "",
+      "_id": "6824a5a159cae8f0a85eb83e",
+      "joinedDate": "2025-05-14T14:16:01.395Z"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T14:16:01.398Z",
+    "updatedAt": "2025-05-14T14:16:01.398Z",
+    "__v": 0
+  },
+  {
+    "_id": "6824a87e59cae8f0a85eb84f",
+    "name": "Ima",
+    "email": "ima1@gmail.com",
+    "role": "staff",
+    "phone": "0768765432",
+    "address": "kandy",
+    "staffDetails": {
+      "department": "",
+      "_id": "6824a87e59cae8f0a85eb850",
+      "joinedDate": "2025-05-14T14:28:14.985Z"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T14:28:14.986Z",
+    "updatedAt": "2025-05-14T14:28:14.986Z",
+    "__v": 0
+  },
+  {
+    "_id": "6824f23e181aa34ff401f0a2",
+    "name": "herath ",
+    "email": "herath@gmail.com",
+    "role": "customer",
+    "phone": "0768987654",
+    "address": "kandy",
+    "orders": [],
+    "createdAt": "2025-05-14T19:42:54.839Z",
+    "updatedAt": "2025-05-14T19:55:30.838Z",
+    "__v": 0
+  },
+  {
+    "_id": "68251953e2f1e1f43ec9b1ff",
+    "name": "K.M.V. Thejan Bandara",
+    "email": "vihinsa001@gmail.com",
+    "role": "admin",
+    "phone": "0713293907",
+    "address": "239/9 Uduwana Temple Road, Uduwana",
+    "adminDetails": {
+      "adminId": "ADM-779453-357",
+      "accessLevel": "full",
+      "lastLogin": "2025-05-14T22:29:39.453Z",
+      "_id": "68251953e2f1e1f43ec9b200"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T22:29:39.455Z",
+    "updatedAt": "2025-05-14T22:29:39.455Z",
+    "__v": 0
+  },
+  {
+    "_id": "68251f37d0a1517cf64a2176",
+    "name": "T",
+    "email": "t1@gmail.com",
+    "role": "admin",
+    "phone": "0768765432",
+    "address": "kandy",
+    "adminDetails": {
+      "adminId": "ADM-287970-140",
+      "accessLevel": "full",
+      "lastLogin": "2025-05-14T22:54:47.970Z",
+      "_id": "68251f37d0a1517cf64a2177"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T22:54:47.972Z",
+    "updatedAt": "2025-05-14T22:54:47.972Z",
+    "__v": 0
+  },
+  {
+    "_id": "6825210dd0a1517cf64a2211",
+    "name": "reshma",
+    "email": "reshma12@gmail.com",
+    "role": "staff",
+    "phone": "0768765435",
+    "address": "kandy",
+    "staffDetails": {
+      "staffId": "12",
+      "designation": "Staff",
+      "department": "Logistics",
+      "joinedDate": "2025-05-14T23:02:37.661Z",
+      "_id": "6825210dd0a1517cf64a2212"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T23:02:37.662Z",
+    "updatedAt": "2025-05-15T06:07:02.860Z",
+    "__v": 0
+  },
+  {
+    "_id": "68252241d0a1517cf64a2252",
+    "name": "imalsha1",
+    "email": "imalsha12@gmail.com",
+    "role": "driver",
+    "phone": "0768765432",
+    "address": "kandy",
+    "driverDetails": {
+      "licenseNumber": "12",
+      "_id": "68252241d0a1517cf64a2253"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T23:07:45.049Z",
+    "updatedAt": "2025-05-14T23:07:45.049Z",
+    "__v": 0
+  },
+  {
+    "_id": "68252aa7157f3b311285d41f",
+    "name": "Rohan Nawarathna",
+    "email": "rohan123@gmail.com",
+    "role": "customer",
+    "phone": "0768765432",
+    "address": "kandy",
+    "orders": [],
+    "createdAt": "2025-05-14T23:43:35.561Z",
+    "updatedAt": "2025-05-14T23:43:35.561Z",
+    "__v": 0
+  },
+  {
+    "_id": "68255bb2157f3b311285d427",
+    "name": "Tharushi Nawodya",
+    "email": "Nawodyat09@gmail.com",
+    "role": "customer",
+    "phone": "0761326941",
+    "address": "kandy",
+    "orders": [],
+    "createdAt": "2025-05-15T03:12:50.649Z",
+    "updatedAt": "2025-05-15T03:12:50.649Z",
+    "__v": 0
+  },
+  {
+    "_id": "68257e584ee2de9120ecf261",
+    "name": "sa",
+    "email": "sa@gmail.com",
+    "role": "customer",
+    "phone": "0765676543",
+    "address": "kandy",
+    "orders": [],
+    "createdAt": "2025-05-15T05:40:40.729Z",
+    "updatedAt": "2025-05-15T05:40:40.729Z",
+    "__v": 0
+  },
+  {
+    "_id": "686fcb3fe70b4760467cf794",
+    "name": "Kamal",
+    "email": "kamal@gmail.com",
+    "role": "customer",
+    "phone": "0786576532",
+    "address": "kandy",
+    "orders": [],
+    "createdAt": "2025-07-10T14:16:31.754Z",
+    "updatedAt": "2025-07-10T14:16:31.754Z",
+    "__v": 0
+  },
+  {
+    "_id": "68707de8fa656eda74c76cc2",
+    "name": "maleesha",
+    "email": "maleesharansarani2001@gmail.com",
+    "role": "customer",
+    "phone": "0701103094",
+    "address": "nawalapitiya",
+    "orders": [],
+    "createdAt": "2025-07-11T02:58:48.537Z",
+    "updatedAt": "2025-07-11T02:58:48.537Z",
+    "__v": 0
+  },
+  {
+    "_id": "69aeff7e40f2d5ea67640db2",
+    "name": "Maneesha Epa",
+    "email": "maneeepa2001@gmail.com",
+    "role": "customer",
+    "phone": "0765394969",
+    "address": "Nawalapitiya",
+    "orders": [],
+    "createdAt": "2026-03-09T17:12:30.722Z",
+    "updatedAt": "2026-03-09T17:12:30.722Z",
+    "__v": 0
+  },
+  {
+    "_id": "69af814f40f2d5ea67640dcc",
+    "name": "maneesha ad",
+    "email": "maneesha@gmail.com",
+    "role": "customer",
+    "phone": "0765394969",
+    "address": "nawalapitiya",
+    "orders": [],
+    "createdAt": "2026-03-10T02:26:23.506Z",
+    "updatedAt": "2026-03-15T04:40:35.980Z",
+    "__v": 0
+  },
+  {
+    "_id": "69af851440f2d5ea67640e10",
+    "name": "kasun",
+    "email": "kasun@gmail.com",
+    "role": "staff",
+    "phone": "0765395459",
+    "address": "kandy",
+    "staffDetails": {
+      "staffId": "STF-548777-941",
+      "designation": "Staff",
+      "department": "",
+      "joinedDate": "2026-03-10T02:42:28.777Z",
+      "_id": "69af851540f2d5ea67640e11"
+    },
+    "orders": [],
+    "createdAt": "2026-03-10T02:42:29.075Z",
+    "updatedAt": "2026-03-10T02:42:29.075Z",
+    "__v": 0
+  },
+  {
+    "_id": "69af885f40f2d5ea67640e5a",
+    "name": "Sakila",
+    "email": "sakila@gmail.com",
+    "role": "driver",
+    "phone": "0765394969",
+    "address": "Kandy",
+    "driverDetails": {
+      "licenseNumber": "123456",
+      "_id": "69af885f40f2d5ea67640e5b"
+    },
+    "orders": [],
+    "createdAt": "2026-03-10T02:56:31.463Z",
+    "updatedAt": "2026-03-10T02:56:31.463Z",
+    "__v": 0
+  },
+  {
+    "_id": "69af8c6040f2d5ea67640eb3",
+    "name": "menaka",
+    "email": "menaka@gmail.com",
+    "role": "staff",
+    "phone": "0765394969",
+    "address": "nawalapitiya",
+    "staffDetails": {
+      "staffId": "123",
+      "designation": "Staff",
+      "department": "Maintenance",
+      "joinedDate": "2026-03-10T03:13:36.391Z",
+      "_id": "69af8c6040f2d5ea67640eb4"
+    },
+    "orders": [],
+    "createdAt": "2026-03-10T03:13:36.391Z",
+    "updatedAt": "2026-03-10T03:13:36.391Z",
+    "__v": 0
+  },
+  {
+    "_id": "69af8cc840f2d5ea67640ec7",
+    "name": "Ravidu",
+    "email": "ravidu@gmail.com",
+    "role": "admin",
+    "phone": "0765394969",
+    "address": "kandy",
+    "adminDetails": {
+      "adminId": "ADM-520460-990",
+      "accessLevel": "full",
+      "lastLogin": "2026-03-10T03:15:20.460Z",
+      "_id": "69af8cc840f2d5ea67640ec8"
+    },
+    "orders": [],
+    "createdAt": "2026-03-10T03:15:20.460Z",
+    "updatedAt": "2026-03-10T03:15:20.460Z",
+    "__v": 0
+  },
+  {
+    "_id": "69afa92c6a097d7e450f1d26",
+    "name": "admin",
+    "email": "admin@gmail.com",
+    "role": "admin",
+    "phone": "0765394969",
+    "address": "kandy",
+    "adminDetails": {
+      "adminId": "ADM-788936-101",
+      "accessLevel": "full",
+      "lastLogin": "2026-03-10T05:16:28.936Z",
+      "_id": "69afa92c6a097d7e450f1d27"
+    },
+    "orders": [],
+    "createdAt": "2026-03-10T05:16:28.940Z",
+    "updatedAt": "2026-03-10T05:16:28.940Z",
+    "__v": 0
+  },
+  {
+    "_id": "69afab196a097d7e450f1e2a",
+    "name": "staff",
+    "email": "staff@gmail.com",
+    "role": "staff",
+    "phone": "0765394969",
+    "address": "kandy",
+    "staffDetails": {
+      "staffId": "STF-281322-481",
+      "designation": "Staff",
+      "department": "",
+      "joinedDate": "2026-03-10T05:24:41.322Z",
+      "_id": "69afab196a097d7e450f1e2b"
+    },
+    "orders": [],
+    "createdAt": "2026-03-10T05:24:41.323Z",
+    "updatedAt": "2026-03-10T05:24:41.323Z",
+    "__v": 0
+  },
+  {
+    "_id": "69b43971ab4610531eb60cbb",
+    "name": "Driver",
+    "email": "driver@gmail.com",
+    "role": "driver",
+    "phone": "0765394969",
+    "address": "Kandy",
+    "driverDetails": {
+      "licenseNumber": "123456",
+      "_id": "69b43971ab4610531eb60cbc"
+    },
+    "orders": [],
+    "createdAt": "2026-03-13T16:21:05.418Z",
+    "updatedAt": "2026-03-13T16:21:05.418Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab29ca607075ff314a6801e",
+    "name": "maleesha",
+    "email": "maleesharansarani@gmail.com",
+    "role": "customer",
+    "phone": "1234567890",
+    "address": "jsj",
+    "orders": [],
+    "createdAt": "2026-09-22T15:20:06.518Z",
+    "updatedAt": "2026-09-22T15:20:06.518Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab2a08d723b52657090cbed",
+    "name": "KASUN SANJEEWA",
+    "email": "kasunsanjeewa2002@gmail.com",
+    "role": "customer",
+    "phone": "0778063196",
+    "address": "56/2, Kandy road, Hatharaliyadda",
+    "orders": [],
+    "createdAt": "2026-09-22T15:36:45.387Z",
+    "updatedAt": "2026-09-25T03:59:26.817Z",
+    "__v": 0,
+    "authProvider": "local",
+    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocJ-e51nqRItirVQkBGx0Z7JvAFcv2rKR0xj1oXWXtbrRc8mofgD=s96-c",
+    "googleId": "105654040931177960362",
+    "isProfileComplete": true
+  },
+  {
+    "_id": "6ab2a7d2005fd1a53c060c11",
+    "name": "Mywork New",
+    "email": "myworknew8@gmail.com",
+    "googleId": "107921904185566001633",
+    "image": "https://lh3.googleusercontent.com/a/ACg8ocLlCWT10DZAFITK75eKUI61dyIJpHsyzKzSfMl67KPN7g0jhQ=s96-c",
+    "role": "customer",
+    "orders": [],
+    "createdAt": "2026-09-22T16:07:46.094Z",
+    "updatedAt": "2026-09-25T03:59:50.908Z",
+    "__v": 0,
+    "authProvider": "local",
+    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocLlCWT10DZAFITK75eKUI61dyIJpHsyzKzSfMl67KPN7g0jhQ=s96-c",
+    "isProfileComplete": false
+  },
+  {
+    "_id": "6ab626f98bfd0e4df731e7e8",
+    "name": "Wijerathne kaluarachchilage",
+    "email": "kaluarachchilagewijerathne@gmail.com",
+    "googleId": "116131570722776463022",
+    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocI9bepsOxFhaGZPzLhbREsinl4IzkMTfa5KOKSdwj50yVDkOw=s96-c",
+    "authProvider": "google",
+    "isProfileComplete": true,
+    "role": "customer",
+    "orders": [],
+    "createdAt": "2026-09-25T07:47:05.869Z",
+    "updatedAt": "2026-09-25T07:47:17.873Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab628424aae5008a90a48fa",
+    "name": "maleesha",
+    "email": "maleesha@gmail.com",
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "admin",
+    "phone": "0779874563",
+    "address": "Navalapitiya",
+    "adminDetails": {
+      "adminId": "ADM-754402-451",
+      "accessLevel": "full",
+      "lastLogin": "2026-09-25T07:52:34.402Z",
+      "_id": "6ab628424aae5008a90a48fb"
+    },
+    "orders": [],
+    "createdAt": "2026-09-25T07:52:34.411Z",
+    "updatedAt": "2026-09-25T07:52:34.411Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab633238b4db6e4d44d921e",
+    "name": "new_google_1790325539287",
+    "email": "new_google_1790325539287@gmail.com",
+    "googleId": "google_new_google_1790325539287@gmail.com",
+    "role": "customer",
+    "status": "active",
+    "mfaEnabled": false,
+    "isDeleted": false,
+    "deletedAt": null,
+    "orders": [],
+    "createdAt": "2026-09-25T08:38:59.482Z",
+    "updatedAt": "2026-09-25T08:38:59.482Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab633238b4db6e4d44d9223",
+    "name": "invited_staff_1790325539582",
+    "email": "invited_staff_1790325539582@company.test",
+    "googleId": "google_invited_staff_1790325539582@company.test",
+    "role": "funeral_staff",
+    "status": "active",
+    "mfaEnabled": false,
+    "createdBy": "6ab633216bffbf582360fbd1",
+    "isDeleted": false,
+    "deletedAt": null,
+    "orders": [],
+    "createdAt": "2026-09-25T08:38:59.985Z",
+    "updatedAt": "2026-09-25T08:39:00.184Z",
+    "__v": 0,
+    "staffProfile": "6ab633248b4db6e4d44d9225"
+  },
+  {
+    "_id": "6ab633258b4db6e4d44d9232",
+    "name": "Authorized Operations Admin",
+    "email": "created_admin_1790325541082@eternalrest.test",
+    "role": "admin",
+    "status": "active",
+    "mfaEnabled": true,
+    "phone": "1234567890",
+    "createdBy": "6ab633216bffbf582360fbd1",
+    "isDeleted": false,
+    "deletedAt": null,
+    "adminDetails": {
+      "adminId": "ADM-1082",
+      "accessLevel": "limited",
+      "_id": "6ab633258b4db6e4d44d9233"
+    },
+    "orders": [],
+    "createdAt": "2026-09-25T08:39:01.358Z",
+    "updatedAt": "2026-09-25T08:39:01.571Z",
+    "__v": 0,
+    "adminProfile": "6ab633258b4db6e4d44d9235"
+  },
+  {
+    "_id": "6ab633268b4db6e4d44d9243",
+    "name": "race_invite_1790325542216",
+    "email": "race_invite_1790325542216@company.test",
+    "googleId": "google_race_invite_1790325542216@company.test",
+    "role": "funeral_manager",
+    "status": "active",
+    "mfaEnabled": false,
+    "createdBy": "6ab633216bffbf582360fbd1",
+    "isDeleted": false,
+    "deletedAt": null,
+    "orders": [],
+    "createdAt": "2026-09-25T08:39:02.615Z",
+    "updatedAt": "2026-09-25T08:39:02.815Z",
+    "__v": 0,
+    "managerProfile": "6ab633268b4db6e4d44d9245"
+  },
+  {
+    "_id": "6ab633a58b4db6e4d44d9251",
+    "name": "new_google_1790325668982",
+    "email": "new_google_1790325668982@gmail.com",
+    "googleId": "google_new_google_1790325668982@gmail.com",
+    "role": "customer",
+    "status": "active",
+    "mfaEnabled": false,
+    "isDeleted": false,
+    "deletedAt": null,
+    "orders": [],
+    "createdAt": "2026-09-25T08:41:09.197Z",
+    "updatedAt": "2026-09-25T08:41:09.197Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab633a58b4db6e4d44d9256",
+    "name": "invited_staff_1790325669298",
+    "email": "invited_staff_1790325669298@company.test",
+    "googleId": "google_invited_staff_1790325669298@company.test",
+    "role": "funeral_staff",
+    "status": "active",
+    "mfaEnabled": false,
+    "createdBy": "6ab633a2ba548cbb6723cb37",
+    "isDeleted": false,
+    "deletedAt": null,
+    "orders": [],
+    "createdAt": "2026-09-25T08:41:09.701Z",
+    "updatedAt": "2026-09-25T08:41:09.903Z",
+    "__v": 0,
+    "staffProfile": "6ab633a58b4db6e4d44d9258"
+  },
+  {
+    "_id": "6ab633a78b4db6e4d44d9265",
+    "name": "Authorized Operations Admin",
+    "email": "created_admin_1790325670796@eternalrest.test",
+    "role": "admin",
+    "status": "active",
+    "mfaEnabled": true,
+    "phone": "1234567890",
+    "createdBy": "6ab633a2ba548cbb6723cb37",
+    "isDeleted": false,
+    "deletedAt": null,
+    "adminDetails": {
+      "adminId": "ADM-0796",
+      "accessLevel": "limited",
+      "_id": "6ab633a78b4db6e4d44d9266"
+    },
+    "orders": [],
+    "createdAt": "2026-09-25T08:41:11.063Z",
+    "updatedAt": "2026-09-25T08:41:11.261Z",
+    "__v": 0,
+    "adminProfile": "6ab633a78b4db6e4d44d9268"
+  },
+  {
+    "_id": "6ab633a88b4db6e4d44d9276",
+    "name": "race_invite_1790325671894",
+    "email": "race_invite_1790325671894@company.test",
+    "googleId": "google_race_invite_1790325671894@company.test",
+    "role": "funeral_manager",
+    "status": "active",
+    "mfaEnabled": false,
+    "createdBy": "6ab633a2ba548cbb6723cb37",
+    "isDeleted": false,
+    "deletedAt": null,
+    "orders": [],
+    "createdAt": "2026-09-25T08:41:12.316Z",
+    "updatedAt": "2026-09-25T08:41:12.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab6408e7ebb2184cf5d5405",
+    "name": "sahan",
+    "email": "sahan@gmail.com",
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "hearse_driver",
+    "status": "active",
+    "mfaEnabled": false,
+    "phone": "1234567890",
+    "address": "Kegalle",
+    "provisionedBy": null,
+    "orders": [],
+    "createdAt": "2026-09-25T09:36:14.052Z",
+    "updatedAt": "2026-09-25T09:37:45.121Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab6415b7ebb2184cf5d5481",
+    "name": "bbbb",
+    "email": "bbb@gmail.com",
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "funeral_staff",
+    "status": "active",
+    "mfaEnabled": false,
+    "phone": "0771234567",
+    "provisionedBy": "6ab628424aae5008a90a48fa",
+    "orders": [],
+    "createdAt": "2026-09-25T09:39:39.985Z",
+    "updatedAt": "2026-09-25T09:39:40.195Z",
+    "__v": 0,
+    "staffProfile": "6ab6415c7ebb2184cf5d5483"
+  },
+  {
+    "_id": "6ab66a808bfd0e4df731e859",
+    "name": "Maleesha Ransarani",
+    "email": "malee@gmail.com",
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "customer",
+    "phone": "0801193948",
+    "address": "Thispane Kanda",
+    "orders": [],
+    "createdAt": "2026-09-25T12:35:12.765Z",
+    "updatedAt": "2026-09-25T12:35:12.765Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab692dc7448e788b8100725",
+    "name": "Admin User",
+    "email": "admin@example.com",
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "customer",
+    "status": "active",
+    "mfaEnabled": false,
+    "phone": "",
+    "address": "",
+    "provisionedBy": null,
+    "orders": [],
+    "createdAt": "2026-09-25T15:27:24.259Z",
+    "updatedAt": "2026-09-25T15:27:24.259Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab694c69260aa809be76296",
+    "name": "V15 Victim User",
+    "email": "v15_victim@example.com",
+    "googleId": "google_oauth_victim_12345",
+    "authProvider": "google",
+    "isProfileComplete": true,
+    "role": "customer",
+    "status": "active",
+    "mfaEnabled": false,
+    "provisionedBy": null,
+    "orders": [],
+    "createdAt": "2026-09-25T15:35:34.968Z",
+    "updatedAt": "2026-09-25T15:35:34.968Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab6a235cb599abddccb2ad3",
+    "email": "callback_test@example.com",
+    "__v": 0,
+    "authProvider": "google",
+    "createdAt": "2026-09-25T16:32:50.419Z",
+    "isProfileComplete": false,
+    "mfaEnabled": false,
+    "name": "Callback Tester",
+    "orders": [],
+    "provisionedBy": null,
+    "role": "customer",
+    "status": "active",
+    "updatedAt": "2026-09-25T16:32:50.419Z"
+  },
+  {
+    "_id": "6ab6aa827448e788b810080b",
+    "name": "Test Staff",
+    "email": "teststaff@example.com",
+    "authProvider": "local",
+    "isProfileComplete": false,
+    "role": "staff",
+    "status": "active",
+    "mfaEnabled": false,
+    "provisionedBy": null,
+    "staffDetails": {
+      "staffId": "STAFF001",
+      "_id": "6ab6aa827448e788b810080c",
+      "joinedDate": "2026-09-25T17:08:18.844Z"
+    },
+    "orders": [],
+    "createdAt": "2026-09-25T17:08:18.845Z",
+    "updatedAt": "2026-09-25T17:10:19.018Z",
+    "__v": 0,
+    "passwordResetRequired": true
+  },
+  {
+    "_id": "6ab6ab37a737f79c2f97fcd2",
+    "name": "New Test Staff",
+    "email": "newstaff@example.com",
+    "authProvider": "local",
+    "isProfileComplete": false,
+    "role": "staff",
+    "status": "active",
+    "mfaEnabled": false,
+    "provisionedBy": null,
+    "staffDetails": {
+      "staffId": "STAFF003",
+      "_id": "6ab6ab37a737f79c2f97fcd3",
+      "joinedDate": "2026-09-25T17:11:19.006Z"
+    },
+    "orders": [],
+    "createdAt": "2026-09-25T17:11:19.012Z",
+    "updatedAt": "2026-09-25T17:11:19.012Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab6ab3c1b313e5eb70d535c",
+    "name": "V03 V04 Test Admin",
+    "email": "v03_v04_test_admin@test.com",
+    "passwordResetRequired": false,
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "admin",
+    "status": "active",
+    "mfaEnabled": false,
+    "provisionedBy": null,
+    "orders": [],
+    "createdAt": "2026-09-25T17:11:24.706Z",
+    "updatedAt": "2026-09-25T17:11:24.706Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab6b00c266b85553bffe6ce",
+    "name": "V02 Test Admin",
+    "email": "v02_test_admin@test.com",
+    "passwordResetRequired": false,
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "admin",
+    "status": "active",
+    "mfaEnabled": false,
+    "provisionedBy": null,
+    "orders": [],
+    "createdAt": "2026-09-25T17:31:56.749Z",
+    "updatedAt": "2026-09-25T17:31:56.749Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab6b00e266b85553bffe6e6",
+    "name": "V02 Customer 1",
+    "email": "v02_test_cust1@test.com",
+    "passwordResetRequired": false,
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "customer",
+    "status": "active",
+    "mfaEnabled": false,
+    "provisionedBy": null,
+    "orders": [],
+    "createdAt": "2026-09-25T17:31:58.626Z",
+    "updatedAt": "2026-09-25T17:31:58.626Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab6b02686c7c18e43230f6e",
+    "name": "V02 Customer 2",
+    "email": "v02_test_cust2@test.com",
+    "passwordResetRequired": false,
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "customer",
+    "status": "active",
+    "mfaEnabled": false,
+    "provisionedBy": null,
+    "orders": [],
+    "createdAt": "2026-09-25T17:32:22.858Z",
+    "updatedAt": "2026-09-25T17:32:22.858Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab6b1257d5969e6fb3bfb31",
+    "name": "Attacker",
+    "email": "attacker@example.com",
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "customer",
+    "status": "active",
+    "mfaEnabled": false,
+    "phone": "",
+    "address": "",
+    "provisionedBy": null,
+    "orders": [],
+    "createdAt": "2026-09-25T17:36:37.255Z",
+    "updatedAt": "2026-09-25T17:36:37.255Z",
+    "__v": 0
+  }
+]
+
+======================================================================
+Probe 2: Admin GET /api/users/:anyId (Victim Profile Read)
+======================================================================
+GET /api/users/6ab694c69260aa809be76296 HTTP/1.1
+Host: localhost:5000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhYjZhYjNjMWIzMTNlNWViNzBkNTM1YyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc5MDM5NDg5NywiZXhwIjoxNzkwMzk4NDk3fQ.L_uDf53Px4_cSdFBAz8PBaNVqtpOn8L1bfi6PS_GBds
+
+HTTP/1.1 200
+x-powered-by: Express
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-frame-options: DENY
+vary: Origin
+access-control-allow-credentials: true
+content-type: application/json; charset=utf-8
+content-length: 371
+etag: W/"173-i3T48E2O14U8KSs3zNgvqNR1t5w"
+date: Sat, 26 Sep 2026 03:54:58 GMT
+connection: keep-alive
+keep-alive: timeout=5
+
+{
+  "_id": "6ab694c69260aa809be76296",
+  "name": "V15 Victim User",
+  "email": "v15_victim@example.com",
+  "googleId": "google_oauth_victim_12345",
+  "authProvider": "google",
+  "isProfileComplete": true,
+  "role": "customer",
+  "status": "active",
+  "mfaEnabled": false,
+  "provisionedBy": null,
+  "orders": [],
+  "createdAt": "2026-09-25T15:35:34.968Z",
+  "updatedAt": "2026-09-25T15:35:34.968Z",
+  "__v": 0,
+  "staffData": null
+}
+
+======================================================================
+Probe 3: Manager GET /api/users (Directory Access)
+======================================================================
+GET /api/users HTTP/1.1
+Host: localhost:5000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MjQ2YjUzNTljYWU4ZjBhODVlYjdlNiIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzkwMzk0ODk3LCJleHAiOjE3OTAzOTg0OTd9.9NNry37eKinXpYcP0OwhJ5H6j9iMTl0ByI7MFPiHVTw
+
+HTTP/1.1 200
+x-powered-by: Express
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-frame-options: DENY
+vary: Origin
+access-control-allow-credentials: true
+content-type: application/json; charset=utf-8
+content-length: 26146
+etag: W/"6622-pFX4cZxIssLgdmN+ntw6Ww2B3yk"
+date: Sat, 26 Sep 2026 03:54:58 GMT
+connection: keep-alive
+keep-alive: timeout=5
+
+[
+  {
+    "_id": "67e394bcfb18f94406a61680",
+    "name": "tharushi",
+    "email": "tha@gmail.com",
+    "role": "admin",
+    "createdAt": "2025-03-26T05:46:36.419Z",
+    "updatedAt": "2025-03-26T05:46:36.419Z",
+    "__v": 0
+  },
+  {
+    "_id": "67e39577fb18f94406a6169a",
+    "name": "Tharushi",
+    "email": "nawodyat09@gmail.com",
+    "role": "user",
+    "createdAt": "2025-03-26T05:49:43.472Z",
+    "updatedAt": "2025-03-26T05:49:43.472Z",
+    "__v": 0
+  },
+  {
+    "_id": "67e3983ffb18f94406a6169e",
+    "name": "Admin User",
+    "email": "ad@example.com",
+    "role": "user",
+    "createdAt": "2025-03-26T06:01:35.603Z",
+    "updatedAt": "2025-03-26T06:01:35.603Z",
+    "__v": 0
+  },
+  {
+    "_id": "67e39951fb18f94406a616a3",
+    "name": "Admin User",
+    "email": "th@gmail.com",
+    "role": "admin",
+    "createdAt": "2025-03-26T06:06:09.692Z",
+    "updatedAt": "2025-03-26T06:06:09.692Z",
+    "__v": 0
+  },
+  {
+    "_id": "67e39e3afb18f94406a61709",
+    "name": "tharushi",
+    "email": "mki@gmail.com",
+    "role": "user",
+    "createdAt": "2025-03-26T06:27:06.869Z",
+    "updatedAt": "2025-03-26T06:27:06.869Z",
+    "__v": 0
+  },
+  {
+    "_id": "67e3a0a4fb18f94406a6175a",
+    "name": "nawody",
+    "email": "na@gmail.com",
+    "role": "admin",
+    "createdAt": "2025-03-26T06:37:24.694Z",
+    "updatedAt": "2025-03-26T06:37:24.694Z",
+    "__v": 0
+  },
+  {
+    "_id": "67e435dbfb18f94406a61821",
+    "name": "Reshma Rizvie",
+    "email": "reshma@gmail.com",
+    "role": "user",
+    "createdAt": "2025-03-26T17:14:03.932Z",
+    "updatedAt": "2025-03-26T17:14:03.932Z",
+    "__v": 0
+  },
+  {
+    "_id": "67ea8afb2b795c1aa022fbf4",
+    "name": "Vihi Bandara",
+    "email": "vihinsa2@gmail.com",
+    "role": "customer",
+    "phone": "0714397766",
+    "address": "239/10 Uduwana Temple Road, Uduwana",
+    "createdAt": "2025-03-31T12:30:51.949Z",
+    "updatedAt": "2025-03-31T12:30:51.949Z",
+    "__v": 0
+  },
+  {
+    "_id": "67eaa0202b795c1aa022fc2d",
+    "name": "K.M.V. Thejan Bandara",
+    "email": "vihinsabandara@gmail.com",
+    "role": "admin",
+    "phone": "0713293907",
+    "address": "239/9 Uduwana Temple Road, Uduwana",
+    "createdAt": "2025-03-31T14:01:04.516Z",
+    "updatedAt": "2025-03-31T14:01:04.516Z",
+    "__v": 0
+  },
+  {
+    "_id": "67eb1c16e51e261825cf3377",
+    "name": "Tharushi",
+    "email": "tnndj@gmail.com",
+    "role": "customer",
+    "phone": "0761326941",
+    "address": "23",
+    "feedback": [],
+    "createdAt": "2025-03-31T22:49:58.024Z",
+    "updatedAt": "2025-03-31T22:49:58.024Z",
+    "__v": 0
+  },
+  {
+    "_id": "67eb1c49e51e261825cf337a",
+    "name": "Tharushi",
+    "email": "Tharushi@gmail.com",
+    "role": "customer",
+    "phone": "0761326941",
+    "address": "67",
+    "feedback": [],
+    "createdAt": "2025-03-31T22:50:49.754Z",
+    "updatedAt": "2025-03-31T22:50:49.754Z",
+    "__v": 0
+  },
+  {
+    "_id": "67ebb4e0e51e261825cf33d6",
+    "name": "th",
+    "email": "abc@gmail.com",
+    "role": "admin",
+    "phone": "0786543267",
+    "address": "56",
+    "feedback": [],
+    "createdAt": "2025-04-01T09:41:52.650Z",
+    "updatedAt": "2025-04-01T09:41:52.650Z",
+    "__v": 0
+  },
+  {
+    "_id": "67ec042cdadceee07a188bba",
+    "name": "imalsha",
+    "email": "imalsha@gmail.com",
+    "role": "customer",
+    "phone": "0765432142",
+    "address": "78/1 kandy",
+    "feedback": [],
+    "createdAt": "2025-04-01T15:20:12.287Z",
+    "updatedAt": "2025-04-01T15:20:12.287Z",
+    "__v": 0
+  },
+  {
+    "_id": "67ec04c5dadceee07a188bbe",
+    "name": "asd",
+    "email": "asd@gmail.com",
+    "role": "customer",
+    "phone": "0768769098",
+    "address": "78/9",
+    "feedback": [],
+    "createdAt": "2025-04-01T15:22:45.147Z",
+    "updatedAt": "2025-04-01T15:22:45.147Z",
+    "__v": 0
+  },
+  {
+    "_id": "67ed82d7a00ec496972f83a0",
+    "name": "zxc",
+    "email": "zxc@gmail.com",
+    "role": "driver",
+    "phone": "0761326787",
+    "address": "89",
+    "driverDetails": {
+      "licenseNumber": "abc",
+      "vehicleType": "",
+      "availability": "available"
+    },
+    "feedback": [],
+    "createdAt": "2025-04-02T18:32:55.920Z",
+    "updatedAt": "2025-04-02T18:32:55.920Z",
+    "__v": 0
+  },
+  {
+    "_id": "67ed83ada00ec496972f83a6",
+    "name": "tyu",
+    "email": "tyu@gmail.com",
+    "role": "staff",
+    "phone": "0765678765",
+    "address": "78",
+    "staffDetails": {
+      "employeeId": "345",
+      "department": "etr",
+      "availability": "available"
+    },
+    "feedback": [],
+    "createdAt": "2025-04-02T18:36:29.480Z",
+    "updatedAt": "2025-04-02T18:36:29.480Z",
+    "__v": 0
+  },
+  {
+    "_id": "681891a08f07d4482605b959",
+    "name": "user7",
+    "email": "vihinsa7@gmail.com",
+    "role": "user",
+    "createdAt": "2025-05-05T10:23:28.665Z",
+    "updatedAt": "2025-05-05T10:23:28.665Z",
+    "__v": 0
+  },
+  {
+    "_id": "681895391c1ad7a00a2258b7",
+    "name": "admin7",
+    "email": "admin7@gmail.com",
+    "role": "admin",
+    "phone": "0713293907",
+    "address": "239/9 Uduwana Temple Road, Uduwana",
+    "feedback": [],
+    "createdAt": "2025-05-05T10:38:49.957Z",
+    "updatedAt": "2025-05-05T10:38:49.957Z",
+    "__v": 0
+  },
+  {
+    "_id": "681e23868dbff200ad9ba063",
+    "name": "Suneth",
+    "email": "suneth09@gmail.com",
+    "role": "customer",
+    "phone": "0761326949",
+    "address": "78 hatharaliyadda",
+    "feedback": [],
+    "createdAt": "2025-05-09T15:47:18.164Z",
+    "updatedAt": "2025-05-09T15:47:18.164Z",
+    "__v": 0
+  },
+  {
+    "_id": "681e24d48dbff200ad9ba08b",
+    "name": "Sudharma",
+    "email": "sudharma1@gmail.com",
+    "role": "admin",
+    "phone": "0760464626",
+    "address": "78/2 kandy",
+    "feedback": [],
+    "createdAt": "2025-05-09T15:52:52.512Z",
+    "updatedAt": "2025-05-09T15:52:52.512Z",
+    "__v": 0
+  },
+  {
+    "_id": "681ef6b2730097469c62a753",
+    "name": "Kaveesha",
+    "email": "kavee1@gmail.com",
+    "role": "customer",
+    "phone": "0761345241",
+    "address": "98/1",
+    "feedback": [],
+    "createdAt": "2025-05-10T06:48:18.479Z",
+    "updatedAt": "2025-05-10T06:48:18.479Z",
+    "__v": 0
+  },
+  {
+    "_id": "68200de2cdb0eed049da3c5b",
+    "name": "Rohan",
+    "email": "rohan1@gmail.com",
+    "role": "customer",
+    "phone": "0765675434",
+    "address": "78/2 kandy",
+    "feedback": [],
+    "createdAt": "2025-05-11T02:39:30.617Z",
+    "updatedAt": "2025-05-11T02:39:30.617Z",
+    "__v": 0
+  },
+  {
+    "_id": "682010efcdb0eed049da3c70",
+    "name": "Tharusi",
+    "email": "Thr1@gmail.com",
+    "role": "admin",
+    "phone": "0761326941",
+    "address": "kandy",
+    "feedback": [],
+    "createdAt": "2025-05-11T02:52:31.134Z",
+    "updatedAt": "2025-05-11T02:52:31.134Z",
+    "__v": 0
+  },
+  {
+    "_id": "682044462f48aebf2283b716",
+    "name": "pabasara",
+    "email": "paba1@gmail.com",
+    "role": "customer",
+    "phone": "0765643432",
+    "address": "kandy",
+    "feedback": [],
+    "createdAt": "2025-05-11T06:31:34.558Z",
+    "updatedAt": "2025-05-11T06:31:34.558Z",
+    "__v": 0
+  },
+  {
+    "_id": "682060612f48aebf2283b752",
+    "name": "imalsha",
+    "email": "imalsha1@gmail.com",
+    "role": "driver",
+    "phone": "0767654543",
+    "address": "kandy",
+    "driverDetails": {
+      "licenseNumber": "900",
+      "vehicleType": "",
+      "availability": "available"
+    },
+    "feedback": [],
+    "createdAt": "2025-05-11T08:31:29.098Z",
+    "updatedAt": "2025-05-11T08:31:29.098Z",
+    "__v": 0
+  },
+  {
+    "_id": "682094c42f79810ddceea3ce",
+    "name": "nawo",
+    "email": "nawo1@gmail.com",
+    "role": "admin",
+    "phone": "0768909876",
+    "address": "kandy",
+    "feedback": [],
+    "createdAt": "2025-05-11T12:15:00.795Z",
+    "updatedAt": "2025-05-11T12:15:00.795Z",
+    "__v": 0
+  },
+  {
+    "_id": "6821c78a292780251f262707",
+    "name": "K.M.V. Thejan Bandara",
+    "email": "vihinsab@gmail.com",
+    "role": "customer",
+    "phone": "0713293979",
+    "address": "239/9 Uduwana Temple Road, Uduwana",
+    "feedback": [],
+    "createdAt": "2025-05-12T10:03:54.544Z",
+    "updatedAt": "2025-05-12T10:03:54.544Z",
+    "__v": 0
+  },
+  {
+    "_id": "6822ea9d6305e693610365c4",
+    "name": "Vihi Bandara",
+    "email": "vihinsa404@gmail.com",
+    "role": "staff",
+    "phone": "0714397766",
+    "address": "239/10 Uduwana Temple Road, Uduwana",
+    "staffDetails": {
+      "department": "Operations",
+      "_id": "6822ea9d6305e693610365c5",
+      "joinedDate": "2025-05-13T06:45:49.391Z"
+    },
+    "orders": [],
+    "createdAt": "2025-05-13T06:45:49.395Z",
+    "updatedAt": "2025-05-13T06:45:49.395Z",
+    "__v": 0
+  },
+  {
+    "_id": "6823090358656a2761d84034",
+    "name": "K.M.V. Thejan Bandar",
+    "email": "vihinsa002@gmail.com",
+    "role": "customer",
+    "phone": "0713293904",
+    "address": "239/9 Uduwana Temple Road, Uduwana",
+    "feedback": [],
+    "createdAt": "2025-05-13T08:55:31.993Z",
+    "updatedAt": "2025-05-13T16:39:36.934Z",
+    "__v": 0
+  },
+  {
+    "_id": "6823b9c8cd451e7c0034cf1b",
+    "name": "Vihi Bandara",
+    "email": "vihinsa202@gmail.com",
+    "role": "manager",
+    "phone": "0714397766",
+    "address": "239/10 Uduwana Temple Road, Uduwana",
+    "orders": [],
+    "createdAt": "2025-05-13T21:29:44.486Z",
+    "updatedAt": "2025-05-13T21:29:44.486Z",
+    "__v": 0
+  },
+  {
+    "_id": "6823d619441993fb30a3e781",
+    "name": "K.M.V. Thejan Bandara",
+    "email": "vihinsa005@gmail.com",
+    "role": "driver",
+    "phone": "0713293907",
+    "address": "239/9 Uduwana Temple Road, Uduwana",
+    "driverDetails": {
+      "licenseNumber": "1511156165121",
+      "_id": "6823d619441993fb30a3e782"
+    },
+    "orders": [],
+    "createdAt": "2025-05-13T23:30:33.648Z",
+    "updatedAt": "2025-05-13T23:30:33.648Z",
+    "__v": 0
+  },
+  {
+    "_id": "68246a8259cae8f0a85eb7b1",
+    "name": "imalsha",
+    "email": "ima@gmail.com",
+    "role": "driver",
+    "phone": "0769876543",
+    "address": "kandy",
+    "driverDetails": {
+      "licenseNumber": "123",
+      "_id": "68246a8259cae8f0a85eb7b2"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T10:03:46.054Z",
+    "updatedAt": "2025-05-14T10:03:46.054Z",
+    "__v": 0
+  },
+  {
+    "_id": "68246b5359cae8f0a85eb7e6",
+    "name": "ruwanthi",
+    "email": "ruwa@gmail.com",
+    "role": "manager",
+    "phone": "0765465432",
+    "address": "kandy",
+    "orders": [],
+    "createdAt": "2025-05-14T10:07:15.894Z",
+    "updatedAt": "2025-05-14T10:07:15.894Z",
+    "__v": 0
+  },
+  {
+    "_id": "68246ba953ea6d8d8aa32cd3",
+    "name": "K.M.V. Thejan Bandara",
+    "email": "vihinsa01@gmail.com",
+    "role": "staff",
+    "phone": "0713293909",
+    "address": "239/9 duwana Temple Road, Uduwana",
+    "staffDetails": {
+      "staffId": "STF-321151-051",
+      "designation": "Staff",
+      "department": "",
+      "joinedDate": "2025-05-14T10:08:41.151Z",
+      "_id": "68246ba953ea6d8d8aa32cd4"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T10:08:41.162Z",
+    "updatedAt": "2025-05-14T23:24:12.112Z",
+    "__v": 0
+  },
+  {
+    "_id": "68246c6e53ea6d8d8aa32cda",
+    "name": "K.M.V. Thejan Bandara",
+    "email": "vihinsa02@gmail.com",
+    "role": "admin",
+    "phone": "0713293907",
+    "address": "239/9 Uduwana Temple Road, Uduwana",
+    "adminDetails": {
+      "adminId": "ADM-518050-374",
+      "accessLevel": "full",
+      "lastLogin": "2025-05-14T10:11:58.050Z",
+      "_id": "68246c6e53ea6d8d8aa32cdb"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T10:11:58.052Z",
+    "updatedAt": "2025-05-14T10:11:58.052Z",
+    "__v": 0
+  },
+  {
+    "_id": "68247633fe4075ac538260d4",
+    "name": "K.M.V. Thejan Bandara",
+    "email": "vihinsa03@gmail.com",
+    "role": "staff",
+    "phone": "0713293907",
+    "address": "239/9 Uduwana Temple Road, Uduwana",
+    "staffDetails": {
+      "staffId": "STF-019239-168",
+      "designation": "Staff",
+      "department": "",
+      "joinedDate": "2025-05-14T10:53:39.239Z",
+      "_id": "68247633fe4075ac538260d5"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T10:53:39.247Z",
+    "updatedAt": "2025-05-14T10:53:39.247Z",
+    "__v": 0
+  },
+  {
+    "_id": "6824a5a159cae8f0a85eb83d",
+    "name": "reshma",
+    "email": "re@gmail.com",
+    "role": "staff",
+    "phone": "0768797654",
+    "address": "kandy",
+    "staffDetails": {
+      "department": "",
+      "_id": "6824a5a159cae8f0a85eb83e",
+      "joinedDate": "2025-05-14T14:16:01.395Z"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T14:16:01.398Z",
+    "updatedAt": "2025-05-14T14:16:01.398Z",
+    "__v": 0
+  },
+  {
+    "_id": "6824a87e59cae8f0a85eb84f",
+    "name": "Ima",
+    "email": "ima1@gmail.com",
+    "role": "staff",
+    "phone": "0768765432",
+    "address": "kandy",
+    "staffDetails": {
+      "department": "",
+      "_id": "6824a87e59cae8f0a85eb850",
+      "joinedDate": "2025-05-14T14:28:14.985Z"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T14:28:14.986Z",
+    "updatedAt": "2025-05-14T14:28:14.986Z",
+    "__v": 0
+  },
+  {
+    "_id": "6824f23e181aa34ff401f0a2",
+    "name": "herath ",
+    "email": "herath@gmail.com",
+    "role": "customer",
+    "phone": "0768987654",
+    "address": "kandy",
+    "orders": [],
+    "createdAt": "2025-05-14T19:42:54.839Z",
+    "updatedAt": "2025-05-14T19:55:30.838Z",
+    "__v": 0
+  },
+  {
+    "_id": "68251953e2f1e1f43ec9b1ff",
+    "name": "K.M.V. Thejan Bandara",
+    "email": "vihinsa001@gmail.com",
+    "role": "admin",
+    "phone": "0713293907",
+    "address": "239/9 Uduwana Temple Road, Uduwana",
+    "adminDetails": {
+      "adminId": "ADM-779453-357",
+      "accessLevel": "full",
+      "lastLogin": "2025-05-14T22:29:39.453Z",
+      "_id": "68251953e2f1e1f43ec9b200"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T22:29:39.455Z",
+    "updatedAt": "2025-05-14T22:29:39.455Z",
+    "__v": 0
+  },
+  {
+    "_id": "68251f37d0a1517cf64a2176",
+    "name": "T",
+    "email": "t1@gmail.com",
+    "role": "admin",
+    "phone": "0768765432",
+    "address": "kandy",
+    "adminDetails": {
+      "adminId": "ADM-287970-140",
+      "accessLevel": "full",
+      "lastLogin": "2025-05-14T22:54:47.970Z",
+      "_id": "68251f37d0a1517cf64a2177"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T22:54:47.972Z",
+    "updatedAt": "2025-05-14T22:54:47.972Z",
+    "__v": 0
+  },
+  {
+    "_id": "6825210dd0a1517cf64a2211",
+    "name": "reshma",
+    "email": "reshma12@gmail.com",
+    "role": "staff",
+    "phone": "0768765435",
+    "address": "kandy",
+    "staffDetails": {
+      "staffId": "12",
+      "designation": "Staff",
+      "department": "Logistics",
+      "joinedDate": "2025-05-14T23:02:37.661Z",
+      "_id": "6825210dd0a1517cf64a2212"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T23:02:37.662Z",
+    "updatedAt": "2025-05-15T06:07:02.860Z",
+    "__v": 0
+  },
+  {
+    "_id": "68252241d0a1517cf64a2252",
+    "name": "imalsha1",
+    "email": "imalsha12@gmail.com",
+    "role": "driver",
+    "phone": "0768765432",
+    "address": "kandy",
+    "driverDetails": {
+      "licenseNumber": "12",
+      "_id": "68252241d0a1517cf64a2253"
+    },
+    "orders": [],
+    "createdAt": "2025-05-14T23:07:45.049Z",
+    "updatedAt": "2025-05-14T23:07:45.049Z",
+    "__v": 0
+  },
+  {
+    "_id": "68252aa7157f3b311285d41f",
+    "name": "Rohan Nawarathna",
+    "email": "rohan123@gmail.com",
+    "role": "customer",
+    "phone": "0768765432",
+    "address": "kandy",
+    "orders": [],
+    "createdAt": "2025-05-14T23:43:35.561Z",
+    "updatedAt": "2025-05-14T23:43:35.561Z",
+    "__v": 0
+  },
+  {
+    "_id": "68255bb2157f3b311285d427",
+    "name": "Tharushi Nawodya",
+    "email": "Nawodyat09@gmail.com",
+    "role": "customer",
+    "phone": "0761326941",
+    "address": "kandy",
+    "orders": [],
+    "createdAt": "2025-05-15T03:12:50.649Z",
+    "updatedAt": "2025-05-15T03:12:50.649Z",
+    "__v": 0
+  },
+  {
+    "_id": "68257e584ee2de9120ecf261",
+    "name": "sa",
+    "email": "sa@gmail.com",
+    "role": "customer",
+    "phone": "0765676543",
+    "address": "kandy",
+    "orders": [],
+    "createdAt": "2025-05-15T05:40:40.729Z",
+    "updatedAt": "2025-05-15T05:40:40.729Z",
+    "__v": 0
+  },
+  {
+    "_id": "686fcb3fe70b4760467cf794",
+    "name": "Kamal",
+    "email": "kamal@gmail.com",
+    "role": "customer",
+    "phone": "0786576532",
+    "address": "kandy",
+    "orders": [],
+    "createdAt": "2025-07-10T14:16:31.754Z",
+    "updatedAt": "2025-07-10T14:16:31.754Z",
+    "__v": 0
+  },
+  {
+    "_id": "68707de8fa656eda74c76cc2",
+    "name": "maleesha",
+    "email": "maleesharansarani2001@gmail.com",
+    "role": "customer",
+    "phone": "0701103094",
+    "address": "nawalapitiya",
+    "orders": [],
+    "createdAt": "2025-07-11T02:58:48.537Z",
+    "updatedAt": "2025-07-11T02:58:48.537Z",
+    "__v": 0
+  },
+  {
+    "_id": "69aeff7e40f2d5ea67640db2",
+    "name": "Maneesha Epa",
+    "email": "maneeepa2001@gmail.com",
+    "role": "customer",
+    "phone": "0765394969",
+    "address": "Nawalapitiya",
+    "orders": [],
+    "createdAt": "2026-03-09T17:12:30.722Z",
+    "updatedAt": "2026-03-09T17:12:30.722Z",
+    "__v": 0
+  },
+  {
+    "_id": "69af814f40f2d5ea67640dcc",
+    "name": "maneesha ad",
+    "email": "maneesha@gmail.com",
+    "role": "customer",
+    "phone": "0765394969",
+    "address": "nawalapitiya",
+    "orders": [],
+    "createdAt": "2026-03-10T02:26:23.506Z",
+    "updatedAt": "2026-03-15T04:40:35.980Z",
+    "__v": 0
+  },
+  {
+    "_id": "69af851440f2d5ea67640e10",
+    "name": "kasun",
+    "email": "kasun@gmail.com",
+    "role": "staff",
+    "phone": "0765395459",
+    "address": "kandy",
+    "staffDetails": {
+      "staffId": "STF-548777-941",
+      "designation": "Staff",
+      "department": "",
+      "joinedDate": "2026-03-10T02:42:28.777Z",
+      "_id": "69af851540f2d5ea67640e11"
+    },
+    "orders": [],
+    "createdAt": "2026-03-10T02:42:29.075Z",
+    "updatedAt": "2026-03-10T02:42:29.075Z",
+    "__v": 0
+  },
+  {
+    "_id": "69af885f40f2d5ea67640e5a",
+    "name": "Sakila",
+    "email": "sakila@gmail.com",
+    "role": "driver",
+    "phone": "0765394969",
+    "address": "Kandy",
+    "driverDetails": {
+      "licenseNumber": "123456",
+      "_id": "69af885f40f2d5ea67640e5b"
+    },
+    "orders": [],
+    "createdAt": "2026-03-10T02:56:31.463Z",
+    "updatedAt": "2026-03-10T02:56:31.463Z",
+    "__v": 0
+  },
+  {
+    "_id": "69af8c6040f2d5ea67640eb3",
+    "name": "menaka",
+    "email": "menaka@gmail.com",
+    "role": "staff",
+    "phone": "0765394969",
+    "address": "nawalapitiya",
+    "staffDetails": {
+      "staffId": "123",
+      "designation": "Staff",
+      "department": "Maintenance",
+      "joinedDate": "2026-03-10T03:13:36.391Z",
+      "_id": "69af8c6040f2d5ea67640eb4"
+    },
+    "orders": [],
+    "createdAt": "2026-03-10T03:13:36.391Z",
+    "updatedAt": "2026-03-10T03:13:36.391Z",
+    "__v": 0
+  },
+  {
+    "_id": "69af8cc840f2d5ea67640ec7",
+    "name": "Ravidu",
+    "email": "ravidu@gmail.com",
+    "role": "admin",
+    "phone": "0765394969",
+    "address": "kandy",
+    "adminDetails": {
+      "adminId": "ADM-520460-990",
+      "accessLevel": "full",
+      "lastLogin": "2026-03-10T03:15:20.460Z",
+      "_id": "69af8cc840f2d5ea67640ec8"
+    },
+    "orders": [],
+    "createdAt": "2026-03-10T03:15:20.460Z",
+    "updatedAt": "2026-03-10T03:15:20.460Z",
+    "__v": 0
+  },
+  {
+    "_id": "69afa92c6a097d7e450f1d26",
+    "name": "admin",
+    "email": "admin@gmail.com",
+    "role": "admin",
+    "phone": "0765394969",
+    "address": "kandy",
+    "adminDetails": {
+      "adminId": "ADM-788936-101",
+      "accessLevel": "full",
+      "lastLogin": "2026-03-10T05:16:28.936Z",
+      "_id": "69afa92c6a097d7e450f1d27"
+    },
+    "orders": [],
+    "createdAt": "2026-03-10T05:16:28.940Z",
+    "updatedAt": "2026-03-10T05:16:28.940Z",
+    "__v": 0
+  },
+  {
+    "_id": "69afab196a097d7e450f1e2a",
+    "name": "staff",
+    "email": "staff@gmail.com",
+    "role": "staff",
+    "phone": "0765394969",
+    "address": "kandy",
+    "staffDetails": {
+      "staffId": "STF-281322-481",
+      "designation": "Staff",
+      "department": "",
+      "joinedDate": "2026-03-10T05:24:41.322Z",
+      "_id": "69afab196a097d7e450f1e2b"
+    },
+    "orders": [],
+    "createdAt": "2026-03-10T05:24:41.323Z",
+    "updatedAt": "2026-03-10T05:24:41.323Z",
+    "__v": 0
+  },
+  {
+    "_id": "69b43971ab4610531eb60cbb",
+    "name": "Driver",
+    "email": "driver@gmail.com",
+    "role": "driver",
+    "phone": "0765394969",
+    "address": "Kandy",
+    "driverDetails": {
+      "licenseNumber": "123456",
+      "_id": "69b43971ab4610531eb60cbc"
+    },
+    "orders": [],
+    "createdAt": "2026-03-13T16:21:05.418Z",
+    "updatedAt": "2026-03-13T16:21:05.418Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab29ca607075ff314a6801e",
+    "name": "maleesha",
+    "email": "maleesharansarani@gmail.com",
+    "role": "customer",
+    "phone": "1234567890",
+    "address": "jsj",
+    "orders": [],
+    "createdAt": "2026-09-22T15:20:06.518Z",
+    "updatedAt": "2026-09-22T15:20:06.518Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab2a08d723b52657090cbed",
+    "name": "KASUN SANJEEWA",
+    "email": "kasunsanjeewa2002@gmail.com",
+    "role": "customer",
+    "phone": "0778063196",
+    "address": "56/2, Kandy road, Hatharaliyadda",
+    "orders": [],
+    "createdAt": "2026-09-22T15:36:45.387Z",
+    "updatedAt": "2026-09-25T03:59:26.817Z",
+    "__v": 0,
+    "authProvider": "local",
+    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocJ-e51nqRItirVQkBGx0Z7JvAFcv2rKR0xj1oXWXtbrRc8mofgD=s96-c",
+    "googleId": "105654040931177960362",
+    "isProfileComplete": true
+  },
+  {
+    "_id": "6ab2a7d2005fd1a53c060c11",
+    "name": "Mywork New",
+    "email": "myworknew8@gmail.com",
+    "googleId": "107921904185566001633",
+    "image": "https://lh3.googleusercontent.com/a/ACg8ocLlCWT10DZAFITK75eKUI61dyIJpHsyzKzSfMl67KPN7g0jhQ=s96-c",
+    "role": "customer",
+    "orders": [],
+    "createdAt": "2026-09-22T16:07:46.094Z",
+    "updatedAt": "2026-09-25T03:59:50.908Z",
+    "__v": 0,
+    "authProvider": "local",
+    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocLlCWT10DZAFITK75eKUI61dyIJpHsyzKzSfMl67KPN7g0jhQ=s96-c",
+    "isProfileComplete": false
+  },
+  {
+    "_id": "6ab626f98bfd0e4df731e7e8",
+    "name": "Wijerathne kaluarachchilage",
+    "email": "kaluarachchilagewijerathne@gmail.com",
+    "googleId": "116131570722776463022",
+    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocI9bepsOxFhaGZPzLhbREsinl4IzkMTfa5KOKSdwj50yVDkOw=s96-c",
+    "authProvider": "google",
+    "isProfileComplete": true,
+    "role": "customer",
+    "orders": [],
+    "createdAt": "2026-09-25T07:47:05.869Z",
+    "updatedAt": "2026-09-25T07:47:17.873Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab628424aae5008a90a48fa",
+    "name": "maleesha",
+    "email": "maleesha@gmail.com",
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "admin",
+    "phone": "0779874563",
+    "address": "Navalapitiya",
+    "adminDetails": {
+      "adminId": "ADM-754402-451",
+      "accessLevel": "full",
+      "lastLogin": "2026-09-25T07:52:34.402Z",
+      "_id": "6ab628424aae5008a90a48fb"
+    },
+    "orders": [],
+    "createdAt": "2026-09-25T07:52:34.411Z",
+    "updatedAt": "2026-09-25T07:52:34.411Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab633238b4db6e4d44d921e",
+    "name": "new_google_1790325539287",
+    "email": "new_google_1790325539287@gmail.com",
+    "googleId": "google_new_google_1790325539287@gmail.com",
+    "role": "customer",
+    "status": "active",
+    "mfaEnabled": false,
+    "isDeleted": false,
+    "deletedAt": null,
+    "orders": [],
+    "createdAt": "2026-09-25T08:38:59.482Z",
+    "updatedAt": "2026-09-25T08:38:59.482Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab633238b4db6e4d44d9223",
+    "name": "invited_staff_1790325539582",
+    "email": "invited_staff_1790325539582@company.test",
+    "googleId": "google_invited_staff_1790325539582@company.test",
+    "role": "funeral_staff",
+    "status": "active",
+    "mfaEnabled": false,
+    "createdBy": "6ab633216bffbf582360fbd1",
+    "isDeleted": false,
+    "deletedAt": null,
+    "orders": [],
+    "createdAt": "2026-09-25T08:38:59.985Z",
+    "updatedAt": "2026-09-25T08:39:00.184Z",
+    "__v": 0,
+    "staffProfile": "6ab633248b4db6e4d44d9225"
+  },
+  {
+    "_id": "6ab633258b4db6e4d44d9232",
+    "name": "Authorized Operations Admin",
+    "email": "created_admin_1790325541082@eternalrest.test",
+    "role": "admin",
+    "status": "active",
+    "mfaEnabled": true,
+    "phone": "1234567890",
+    "createdBy": "6ab633216bffbf582360fbd1",
+    "isDeleted": false,
+    "deletedAt": null,
+    "adminDetails": {
+      "adminId": "ADM-1082",
+      "accessLevel": "limited",
+      "_id": "6ab633258b4db6e4d44d9233"
+    },
+    "orders": [],
+    "createdAt": "2026-09-25T08:39:01.358Z",
+    "updatedAt": "2026-09-25T08:39:01.571Z",
+    "__v": 0,
+    "adminProfile": "6ab633258b4db6e4d44d9235"
+  },
+  {
+    "_id": "6ab633268b4db6e4d44d9243",
+    "name": "race_invite_1790325542216",
+    "email": "race_invite_1790325542216@company.test",
+    "googleId": "google_race_invite_1790325542216@company.test",
+    "role": "funeral_manager",
+    "status": "active",
+    "mfaEnabled": false,
+    "createdBy": "6ab633216bffbf582360fbd1",
+    "isDeleted": false,
+    "deletedAt": null,
+    "orders": [],
+    "createdAt": "2026-09-25T08:39:02.615Z",
+    "updatedAt": "2026-09-25T08:39:02.815Z",
+    "__v": 0,
+    "managerProfile": "6ab633268b4db6e4d44d9245"
+  },
+  {
+    "_id": "6ab633a58b4db6e4d44d9251",
+    "name": "new_google_1790325668982",
+    "email": "new_google_1790325668982@gmail.com",
+    "googleId": "google_new_google_1790325668982@gmail.com",
+    "role": "customer",
+    "status": "active",
+    "mfaEnabled": false,
+    "isDeleted": false,
+    "deletedAt": null,
+    "orders": [],
+    "createdAt": "2026-09-25T08:41:09.197Z",
+    "updatedAt": "2026-09-25T08:41:09.197Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab633a58b4db6e4d44d9256",
+    "name": "invited_staff_1790325669298",
+    "email": "invited_staff_1790325669298@company.test",
+    "googleId": "google_invited_staff_1790325669298@company.test",
+    "role": "funeral_staff",
+    "status": "active",
+    "mfaEnabled": false,
+    "createdBy": "6ab633a2ba548cbb6723cb37",
+    "isDeleted": false,
+    "deletedAt": null,
+    "orders": [],
+    "createdAt": "2026-09-25T08:41:09.701Z",
+    "updatedAt": "2026-09-25T08:41:09.903Z",
+    "__v": 0,
+    "staffProfile": "6ab633a58b4db6e4d44d9258"
+  },
+  {
+    "_id": "6ab633a78b4db6e4d44d9265",
+    "name": "Authorized Operations Admin",
+    "email": "created_admin_1790325670796@eternalrest.test",
+    "role": "admin",
+    "status": "active",
+    "mfaEnabled": true,
+    "phone": "1234567890",
+    "createdBy": "6ab633a2ba548cbb6723cb37",
+    "isDeleted": false,
+    "deletedAt": null,
+    "adminDetails": {
+      "adminId": "ADM-0796",
+      "accessLevel": "limited",
+      "_id": "6ab633a78b4db6e4d44d9266"
+    },
+    "orders": [],
+    "createdAt": "2026-09-25T08:41:11.063Z",
+    "updatedAt": "2026-09-25T08:41:11.261Z",
+    "__v": 0,
+    "adminProfile": "6ab633a78b4db6e4d44d9268"
+  },
+  {
+    "_id": "6ab633a88b4db6e4d44d9276",
+    "name": "race_invite_1790325671894",
+    "email": "race_invite_1790325671894@company.test",
+    "googleId": "google_race_invite_1790325671894@company.test",
+    "role": "funeral_manager",
+    "status": "active",
+    "mfaEnabled": false,
+    "createdBy": "6ab633a2ba548cbb6723cb37",
+    "isDeleted": false,
+    "deletedAt": null,
+    "orders": [],
+    "createdAt": "2026-09-25T08:41:12.316Z",
+    "updatedAt": "2026-09-25T08:41:12.316Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab6408e7ebb2184cf5d5405",
+    "name": "sahan",
+    "email": "sahan@gmail.com",
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "hearse_driver",
+    "status": "active",
+    "mfaEnabled": false,
+    "phone": "1234567890",
+    "address": "Kegalle",
+    "provisionedBy": null,
+    "orders": [],
+    "createdAt": "2026-09-25T09:36:14.052Z",
+    "updatedAt": "2026-09-25T09:37:45.121Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab6415b7ebb2184cf5d5481",
+    "name": "bbbb",
+    "email": "bbb@gmail.com",
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "funeral_staff",
+    "status": "active",
+    "mfaEnabled": false,
+    "phone": "0771234567",
+    "provisionedBy": "6ab628424aae5008a90a48fa",
+    "orders": [],
+    "createdAt": "2026-09-25T09:39:39.985Z",
+    "updatedAt": "2026-09-25T09:39:40.195Z",
+    "__v": 0,
+    "staffProfile": "6ab6415c7ebb2184cf5d5483"
+  },
+  {
+    "_id": "6ab66a808bfd0e4df731e859",
+    "name": "Maleesha Ransarani",
+    "email": "malee@gmail.com",
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "customer",
+    "phone": "0801193948",
+    "address": "Thispane Kanda",
+    "orders": [],
+    "createdAt": "2026-09-25T12:35:12.765Z",
+    "updatedAt": "2026-09-25T12:35:12.765Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab692dc7448e788b8100725",
+    "name": "Admin User",
+    "email": "admin@example.com",
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "customer",
+    "status": "active",
+    "mfaEnabled": false,
+    "phone": "",
+    "address": "",
+    "provisionedBy": null,
+    "orders": [],
+    "createdAt": "2026-09-25T15:27:24.259Z",
+    "updatedAt": "2026-09-25T15:27:24.259Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab694c69260aa809be76296",
+    "name": "V15 Victim User",
+    "email": "v15_victim@example.com",
+    "googleId": "google_oauth_victim_12345",
+    "authProvider": "google",
+    "isProfileComplete": true,
+    "role": "customer",
+    "status": "active",
+    "mfaEnabled": false,
+    "provisionedBy": null,
+    "orders": [],
+    "createdAt": "2026-09-25T15:35:34.968Z",
+    "updatedAt": "2026-09-25T15:35:34.968Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab6a235cb599abddccb2ad3",
+    "email": "callback_test@example.com",
+    "__v": 0,
+    "authProvider": "google",
+    "createdAt": "2026-09-25T16:32:50.419Z",
+    "isProfileComplete": false,
+    "mfaEnabled": false,
+    "name": "Callback Tester",
+    "orders": [],
+    "provisionedBy": null,
+    "role": "customer",
+    "status": "active",
+    "updatedAt": "2026-09-25T16:32:50.419Z"
+  },
+  {
+    "_id": "6ab6aa827448e788b810080b",
+    "name": "Test Staff",
+    "email": "teststaff@example.com",
+    "authProvider": "local",
+    "isProfileComplete": false,
+    "role": "staff",
+    "status": "active",
+    "mfaEnabled": false,
+    "provisionedBy": null,
+    "staffDetails": {
+      "staffId": "STAFF001",
+      "_id": "6ab6aa827448e788b810080c",
+      "joinedDate": "2026-09-25T17:08:18.844Z"
+    },
+    "orders": [],
+    "createdAt": "2026-09-25T17:08:18.845Z",
+    "updatedAt": "2026-09-25T17:10:19.018Z",
+    "__v": 0,
+    "passwordResetRequired": true
+  },
+  {
+    "_id": "6ab6ab37a737f79c2f97fcd2",
+    "name": "New Test Staff",
+    "email": "newstaff@example.com",
+    "authProvider": "local",
+    "isProfileComplete": false,
+    "role": "staff",
+    "status": "active",
+    "mfaEnabled": false,
+    "provisionedBy": null,
+    "staffDetails": {
+      "staffId": "STAFF003",
+      "_id": "6ab6ab37a737f79c2f97fcd3",
+      "joinedDate": "2026-09-25T17:11:19.006Z"
+    },
+    "orders": [],
+    "createdAt": "2026-09-25T17:11:19.012Z",
+    "updatedAt": "2026-09-25T17:11:19.012Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab6ab3c1b313e5eb70d535c",
+    "name": "V03 V04 Test Admin",
+    "email": "v03_v04_test_admin@test.com",
+    "passwordResetRequired": false,
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "admin",
+    "status": "active",
+    "mfaEnabled": false,
+    "provisionedBy": null,
+    "orders": [],
+    "createdAt": "2026-09-25T17:11:24.706Z",
+    "updatedAt": "2026-09-25T17:11:24.706Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab6b00c266b85553bffe6ce",
+    "name": "V02 Test Admin",
+    "email": "v02_test_admin@test.com",
+    "passwordResetRequired": false,
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "admin",
+    "status": "active",
+    "mfaEnabled": false,
+    "provisionedBy": null,
+    "orders": [],
+    "createdAt": "2026-09-25T17:31:56.749Z",
+    "updatedAt": "2026-09-25T17:31:56.749Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab6b00e266b85553bffe6e6",
+    "name": "V02 Customer 1",
+    "email": "v02_test_cust1@test.com",
+    "passwordResetRequired": false,
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "customer",
+    "status": "active",
+    "mfaEnabled": false,
+    "provisionedBy": null,
+    "orders": [],
+    "createdAt": "2026-09-25T17:31:58.626Z",
+    "updatedAt": "2026-09-25T17:31:58.626Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab6b02686c7c18e43230f6e",
+    "name": "V02 Customer 2",
+    "email": "v02_test_cust2@test.com",
+    "passwordResetRequired": false,
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "customer",
+    "status": "active",
+    "mfaEnabled": false,
+    "provisionedBy": null,
+    "orders": [],
+    "createdAt": "2026-09-25T17:32:22.858Z",
+    "updatedAt": "2026-09-25T17:32:22.858Z",
+    "__v": 0
+  },
+  {
+    "_id": "6ab6b1257d5969e6fb3bfb31",
+    "name": "Attacker",
+    "email": "attacker@example.com",
+    "authProvider": "local",
+    "isProfileComplete": true,
+    "role": "customer",
+    "status": "active",
+    "mfaEnabled": false,
+    "phone": "",
+    "address": "",
+    "provisionedBy": null,
+    "orders": [],
+    "createdAt": "2026-09-25T17:36:37.255Z",
+    "updatedAt": "2026-09-25T17:36:37.255Z",
+    "__v": 0
+  }
+]
+

@@ -1,0 +1,48 @@
+======================================================================
+Probe 1: Unauthenticated GET /api/users
+======================================================================
+GET /api/users HTTP/1.1
+Host: localhost:5000
+
+HTTP/1.1 401
+x-powered-by: Express
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-frame-options: DENY
+vary: Origin
+access-control-allow-credentials: true
+content-type: application/json; charset=utf-8
+content-length: 47
+etag: W/"2f-X0RkviWP3TEIe7w17JaDynToP6c"
+date: Sat, 26 Sep 2026 03:54:57 GMT
+connection: keep-alive
+keep-alive: timeout=5
+
+{
+  "message": "Not authorized, no token provided"
+}
+
+======================================================================
+Probe 2: Unauthenticated GET /api/users/:userId
+======================================================================
+GET /api/users/6ab6b1257d5969e6fb3bfb31 HTTP/1.1
+Host: localhost:5000
+
+HTTP/1.1 401
+x-powered-by: Express
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-frame-options: DENY
+vary: Origin
+access-control-allow-credentials: true
+content-type: application/json; charset=utf-8
+content-length: 47
+etag: W/"2f-X0RkviWP3TEIe7w17JaDynToP6c"
+date: Sat, 26 Sep 2026 03:54:57 GMT
+connection: keep-alive
+keep-alive: timeout=5
+
+{
+  "message": "Not authorized, no token provided"
+}
+

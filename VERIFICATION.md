@@ -1,94 +1,107 @@
-# VERIFICATION.md — V15 Acceptance & Verification Matrix
+# VERIFICATION.md — Vulnerability V10 Acceptance Verification
 
-**Assessment Date:** 2026-09-25  
-**Remediation Target:** Vulnerability V15 — Token Leakage via URL Query String (OAuth Flow)  
-**Standard Compliance:** RFC 6749 §10.3, RFC 7636 (PKCE S256), OAuth 2.0 Security BCP, OAuth 2.1  
-**Overall Verdict:**  **PASSED (19 / 19 Acceptance Criteria Verified)**
-
----
-
-## 1. Acceptance Verification Matrix
-
-| # | Acceptance Test Case | Requirement / Invariant | Status | Evidence / Verification Details |
-|---|---|---|---|---|
-| **1** | `grep -R "?token=" src/` after fix | Zero instances across codebase |  **PASS** | Ripgrep & filesystem scanner confirmed 0 matches in `frontend/src` and `backend`. Verified by `v15_remediation.test.js:44`. |
-| **2** | OAuth Flow Final Redirect URL | No JWT, no `access_token`, no `refresh_token` in URL |  **PASS** | Redirect URL format: `http://localhost:3000/auth/callback?code=<opaque>`. Confirmed no JWT dots, no `token=`. Verified by `v15_remediation.test.js:75`. |
-| **3** | Pattern A Cookie Delivery | `Set-Cookie: at=...; HttpOnly; Secure; SameSite=Lax` |  **PASS** | When `AUTH_OAUTH_DELIVERY=cookie`, backend sets `at` (15m) and `rt` (7d) as HttpOnly SameSite=Lax cookies and redirects to `/oauth/done` without query parameters. Verified by `v15_remediation.test.js:106`. |
-| **4** | Pattern B Opaque Exchange Code | `?code=<opaque>`, length ≤ 64 chars, not a JWT |  **PASS** | Code is 32 random bytes (base64url, 43 chars ≤ 64 chars), high entropy (256 bits). Verified by `v15_remediation.test.js:146`. |
-| **5** | `POST /auth/oauth/exchange` Valid Code | `200 { accessToken }`, no refresh in JSON body |  **PASS** | Responds `HTTP 200`, body contains `accessToken` and user object, `refreshToken` is `undefined` in JSON body, delivered via HttpOnly `rt` cookie. Verified by `v15_remediation.test.js:174`. |
-| **6** | Exchange Code Replay / Reuse Detection | 2nd call returns `401`; writes `auth.oauth.code_reuse_detected` |  **PASS** | First exchange consumes code atomically via `findOneAndDelete`. Second request fails with `HTTP 401` and inserts high-severity audit record. Verified by `v15_remediation.test.js:219`. |
-| **7** | Code Expiry after 60s | TTL hard cap returns `401` |  **PASS** | Codes older than 60 seconds are rejected with `HTTP 401 Exchange code has expired`. MongoDB TTL index purges them after 60s. Verified by `v15_remediation.test.js:264`. |
-| **8** | Tampered PKCE Verifier | PKCE S256 verification failure returns `401` |  **PASS** | When code verifier digest does not match SHA-256 code challenge, server rejects with `HTTP 401 PKCE verification failed`. Verified by `v15_remediation.test.js:292`. |
-| **9** | Mismatched `redirect_uri` | Code bound to redirect URI; mismatch returns `401` |  **PASS** | Tampering with `redirectUri` during POST exchange results in `HTTP 401 redirect_uri mismatch`. Verified by `v15_remediation.test.js:324`. |
-| **10** | `GET /auth/oauth/exchange` | `405 Method Not Allowed` with `Allow: POST` |  **PASS** | Non-POST requests return `HTTP 405` with `Allow: POST` header. Verified by `v15_remediation.test.js:351`. |
-| **11** | Referrer Isolation | No token leaked via `Referer` header |  **PASS** | `Referrer-Policy: no-referrer` header emitted on OAuth callback routes; `<meta name="referrer" content="strict-origin-when-cross-origin">` added to `frontend/index.html`. Verified by `v15_remediation.test.js:358`. |
-| **12** | Access Log Redaction | `token` and `code` query parameters redacted in logs |  **PASS** | Express `logRedactor` middleware scrubs `req.query.code`, `req.query.token`, `req.query.access_token` to `[REDACTED]`. Verified by `v15_remediation.test.js:365`. |
-| **13** | Refresh Token Rotation | Old `jti` revoked, new `jti` issued |  **PASS** | Calling `/api/auth/refresh` marks old token `revokedAt = Date.now()` and generates new token in same family. Verified by `v15_remediation.test.js:384`. |
-| **14** | Refresh Token Family Reuse Detection | Reusing revoked token revokes entire family, returns `401` |  **PASS** | Presentation of a revoked refresh token triggers immediate invalidation of all sibling tokens in that `familyId` and logs `auth.oauth.refresh_reuse_detected`. Verified by `v15_remediation.test.js:421`. |
-| **15** | Browser Storage Cleanliness | No tokens extracted from URL query into storage |  **PASS** | `CompleteProfile.jsx` and `AuthCallback.jsx` inspected and verified to contain zero `params.get('token')` calls. Verified by `v15_remediation.test.js:467`. |
-| **16** | History Sanitization via `replaceState` | URL scrubbed before first render |  **PASS** | `AuthCallback.jsx` executes `window.history.replaceState({}, '', '/auth/callback')` immediately upon mount. Verified by `v15_remediation.test.js:481`. |
-| **17** | Security Headers Baseline | `Cache-Control: no-store`, `nosniff`, `DENY` |  **PASS** | Header inspection confirms `Cache-Control: no-store, no-cache, must-revalidate`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`. Verified by `v15_remediation.test.js:493`. |
-| **18** | MongoDB Exchange Code Deletion | Atomically deleted upon successful exchange |  **PASS** | Collection query for `OAuthExchangeCode.findOne({ codeHash })` returns `null` immediately post-exchange. Verified by `v15_remediation.test.js:503`. |
-| **19** | Refresh Token Cryptographic Hashing | MongoDB stores only SHA-256 `tokenHash`, never raw token |  **PASS** | Database dump confirms raw cookie value is not present in MongoDB; only `tokenHash === sha256(rawToken)` is stored. Verified by `v15_remediation.test.js:527`. |
+**Audit Date:** 2026-09-26  
+**Target Application:** Funeral Services Management Platform  
+**Target Vulnerability:** V10 — Missing Authorization on User Profiles & Directory  
+**Auditor:** Senior Application Security Engineer (Google Antigravity)  
+**Status:** ✅ REMEDIATED & VERIFIED  
 
 ---
 
-## 2. Automated Test Suite Results
+## 1. Executive Summary
 
+Vulnerability V10 has been thoroughly remediated and verified across the application server, data persistence, validation, authorization, and rate-limiting boundaries. 
+
+All 23 machine-checkable acceptance criteria specified in Section 11 have passed:
+- `tests/v10_remediation.test.js`: **22 / 22 Passed (100% GREEN)**
+- Regression Suite (`tests/v01_remediation.test.js` & `tests/v15_remediation.test.js`): **34 / 34 Passed (100% GREEN)**
+- Full Suite Total: **56 / 56 Passed**
+
+---
+
+## 2. Acceptance Criteria Results (Section 11 Matrix)
+
+| # | Acceptance Test Case | Target Endpoint / Action | Expected Result | Actual Result | Status |
+|---|---|---|---|---|---|
+| 1 | Unauthenticated Directory Read | `GET /api/users` | `401 Unauthorized` | `401 {"message":"Not authorized, no token provided"}` | ✅ PASS |
+| 2 | Customer Directory Read | `GET /api/users` as `customer` | `403 Forbidden` | `403 {"message":"Forbidden: Insufficient privileges."}` | ✅ PASS |
+| 3 | Staff Directory Read | `GET /api/users` as `funeral_staff` | `403 Forbidden` | `403 {"message":"Forbidden: Insufficient privileges."}` | ✅ PASS |
+| 4 | Manager Directory Read | `GET /api/users` as `manager` | `200 OK`, paginated, scoped fields | `200 OK`, `limit=20`, `page=1`, sensitive internals omitted | ✅ PASS |
+| 5 | Admin Directory Read | `GET /api/users` as `admin` | `200 OK`, paginated, full fields | `200 OK`, `limit=20`, `page=1`, password hashes stripped | ✅ PASS |
+| 6 | Customer Self-Profile Read | `GET /api/users/:selfId` as `customer` | `200 OK`, self-scoped fields | `200 OK`, own PII returned; `passwordResetRequired` omitted | ✅ PASS |
+| 7 | Customer Cross-Profile Read (IDOR) | `GET /api/users/:otherId` as `customer` | `403 Forbidden` | `403 {"message":"Forbidden: Insufficient privileges."}` | ✅ PASS |
+| 8 | Manager Cross-Profile Read | `GET /api/users/:otherId` as `manager` | `200 OK`, manager-scoped | `200 OK`, operational fields returned; reset flags omitted | ✅ PASS |
+| 9 | Admin Cross-Profile Read | `GET /api/users/:otherId` as `admin` | `200 OK`, full fields | `200 OK`, administrative fields returned | ✅ PASS |
+| 10 | Malformed User ID | `GET /api/users/not-an-objectid` | `400 Bad Request` | `400 {"message":"Invalid user ID format."}` | ✅ PASS |
+| 11 | Non-Existent User ID by Customer | `GET /api/users/:nonexistentId` | `403 Forbidden` (Anti-Oracle) | `403 {"message":"Forbidden: Insufficient privileges."}` (No 404 leak) | ✅ PASS |
+| 12 | Privilege Escalation in Self-Update | `PUT /api/users/:selfId` with `{ role:"admin" }` | `400 Bad Request` | `400 {"message":"Field 'role' is not allowed or unrecognized."}` | ✅ PASS |
+| 13 | Customer Cross-Profile Update | `PUT /api/users/:otherId` as `customer` | `403 Forbidden` | `403 {"message":"Forbidden: Insufficient privileges."}` | ✅ PASS |
+| 14 | Manager Delete User | `DELETE /api/users/:anyId` as `manager` | `403 Forbidden` | `403 {"message":"Forbidden: Insufficient privileges."}` | ✅ PASS |
+| 15 | Admin Delete User | `DELETE /api/users/:anyId` as `admin` | `204 No Content` | `204 No Content` (Account status updated to suspended) | ✅ PASS |
+| 16 | Unbounded Limit Query | `GET /api/users?limit=100000` as `admin` | Capped at `limit=100` | `200 OK`, response payload `limit` equals `100` | ✅ PASS |
+| 17 | Illegal Sort Field | `GET /api/users?sort=password` as `admin` | `400 Bad Request` | `400 {"error":"INVALID_SORT_FIELD"}` | ✅ PASS |
+| 18 | Unrecognized Query Parameter | `GET /api/users?foo=bar` as `admin` | `400 Bad Request` | `400 {"error":"INVALID_QUERY_PARAMETER"}` | ✅ PASS |
+| 19 | Customer Profile Secret Leak Check | Body of `GET /api/users/:selfId` | No `password`, `passwordResetRequired`, `mfaEnabled` | `undefined` for all internal flags | ✅ PASS |
+| 20 | Rapid Directory Probing Rate Limit | 61st hit to `/api/users` in 60s | `429 Too Many Requests` | `429 {"message":"Too many requests on user endpoints..."}` | ✅ PASS |
+| 21 | Directory Read Audit Log | `GET /api/users?role=staff` | `user.directory.read` logged | Verified in MongoDB `AuditLog` collection | ✅ PASS |
+| 22 | Cross-Profile Read Audit Log | `GET /api/users/:victimId` as admin | `user.profile.read.other` logged | Verified in MongoDB `AuditLog` collection | ✅ PASS |
+| 23 | Non-Regression on Prior Fixes | `tests/v01_remediation.test.js`, `v15` | All existing suites PASS | 34 / 34 Passed cleanly | ✅ PASS |
+
+---
+
+## 3. Test Execution Evidence
+
+### 3.1 V10 Acceptance Suite Output (`backend/tests/v10_remediation.test.js`)
+```text
+PASS tests/v10_remediation.test.js (38.223 s)
+  V10 Remediation Acceptance Suite: Authorization on User Profiles & Directory
+    √ 1. GET /api/users unauthenticated returns 401 (37 ms)
+    √ 2. GET /api/users as customer returns 403 (130 ms)
+    √ 3. GET /api/users as funeral_staff returns 403 (106 ms)
+    √ 4. GET /api/users as manager returns 200 with paginated scoped fields (478 ms)
+    √ 5. GET /api/users as admin returns 200 with paginated full fields (413 ms)
+    √ 6. GET /api/users/:selfId as customer returns 200 self-scoped (206 ms)
+    √ 7. GET /api/users/:otherId as customer returns 403 (108 ms)
+    √ 8. GET /api/users/:otherId as manager returns 200 scoped (308 ms)
+    √ 9. GET /api/users/:otherId as admin returns 200 full (312 ms)
+    √ 10. GET /api/users/not-an-objectid returns 400 (111 ms)
+    √ 11. GET /api/users/:nonexistentId as customer returns uniform 403 (not 404) (108 ms)
+    √ 12. PUT /api/users/:selfId with { role: "admin" } returns 400 (126 ms)
+    √ 13. PUT /api/users/:otherId as customer returns 403 (110 ms)
+    √ 14. DELETE /api/users/:anyId as manager returns 403 (105 ms)
+    √ 15. DELETE /api/users/:anyId as admin returns 204 (615 ms)
+    √ 16. GET /api/users?limit=100000 is capped at 100 (539 ms)
+    √ 17. GET /api/users?sort=password returns 400 (112 ms)
+    √ 18. GET /api/users?foo=bar returns 400 (104 ms)
+    √ 19. Response body of GET /api/users/:selfId as customer has no secrets or internal flags (210 ms)
+    √ 20. 61st request to /api/users in 60s returns 429 rate limit (25597 ms)
+    √ 21. Audit log for GET /api/users records actorId, filters, resultCount (451 ms)
+    √ 22. Audit log for cross-user profile read records actorId and targetUserId (415 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       22 passed, 22 total
+Snapshots:   0 total
+Time:        38.527 s
 ```
-PASS tests/v15_remediation.test.js (12.469 s)
-  V15 Remediation Verification Suite: Token Leakage via URL Query String
-    √ 1. Static check: zero instances of "?token=" exist in frontend or backend codebase (21 ms)
-    √ 2. Complete OAuth flow redirect URL contains no JWT, no access_token, no refresh_token (1668 ms)
-    √ 3. Pattern A cookie delivery: Set-Cookie at=... with HttpOnly and SameSite=Lax, redirects to /oauth/done (325 ms)
-    √ 4. Pattern B exchange code is opaque, <= 64 characters, and not a JWT (217 ms)
-    √ 5. POST /auth/oauth/exchange with valid code returns 200 { accessToken } and no refresh token in body (615 ms)
-    √ 6. Replay attack: exchanging same code twice returns 401 and creates code_reuse_detected audit log (878 ms)
-    √ 7. Exchange code older than 60s returns 401 expired (230 ms)
-    √ 8. Exchange with tampered or mismatched PKCE verifier returns 401 (241 ms)
-    √ 9. Exchange with mismatched redirect_uri returns 401 (226 ms)
-    √ 10. GET /api/auth/oauth/exchange returns 405 Method Not Allowed with Allow: POST header (13 ms)
-    √ 11. Security headers enforce Referrer-Policy: no-referrer on OAuth callback routes (12 ms)
-    √ 12. Query param log redactor scrubs token and code parameters
-    √ 13. POST /api/auth/refresh rotates token, revoking old jti and issuing new jti in same family (754 ms)
-    √ 14. Reuse of revoked refresh token revokes entire token family and returns 401 (797 ms)
-    √ 15. CompleteProfile and AuthCallback component code does not extract "?token=" from URL (3 ms)
-    √ 16. AuthCallback.jsx invokes window.history.replaceState to scrub code before rendering (1 ms)
-    √ 17. Auth endpoints include Cache-Control: no-store and MIME sniffing protection (12 ms)
-    √ 18. Mongo oauth_exchange_codes record is atomically deleted after exchange (659 ms)
-    √ 19. Mongo refresh_tokens stores only SHA-256 tokenHash, never the plaintext raw token (648 ms)
 
-PASS tests/v01_remediation.test.js (8.8 s)
-  V01 Remediation Verification Suite: Mass Assignment & Privilege Escalation
-    √ 15/15 tests passed
+### 3.2 Regression Suite Output (`v01` and `v15`)
+```text
+PASS tests/v01_remediation.test.js (11.066 s)
+PASS tests/v15_remediation.test.js (12.916 s)
 
 Test Suites: 2 passed, 2 total
 Tests:       34 passed, 34 total
 Snapshots:   0 total
-Time:        21.492 s
+Time:        16.149 s
 ```
 
 ---
 
-## 3. End-to-End PoC Verification Output
+## 4. Remediation Invariants Enforced
 
-Execution of [`poc/verify_v15_remediated.js`](file:///d:/SLIIT/YEAR%2004/Secure%20Software%20Development/Assignment/SSD_assingment/poc/verify_v15_remediated.js):
-
-```
-=== V15 Remediation Verification PoC ===
-[+] Connected to MongoDB
-[+] Testing with user: v15_victim@example.com
-[+] Captured Secure Redirect URL:
-    http://localhost:3000/auth/callback?code=1cE0FQFvxVht1rzcACWa8gfjpj-7Yeu8hb5Qu2StBRc
-[+] VERIFIED: URL contains ZERO bearer tokens. Opaque exchange code: 1cE0FQFvxVht1rzcACWa8gfjpj-7Yeu8hb5Qu2StBRc
-[+] VERIFIED: MongoDB stores only SHA-256 codeHash: fd330df233e9b742881703b9c41e4d20cb88ff07f63a78e9b217e657f4d56762
-POST /api/auth/oauth/exchange 200 404.583 ms - 399
-[+] Code Exchange Successful: HTTP 200
-    Issued Access Token in JSON body: [Present]
-    Refresh Token in JSON body: [NONE - Compliant with Invariant 2]
-[+] Refresh Token Set-Cookie: rt=vjmffjxoYxO1O0EWWgnguUQH1vdMQBiYIKLWDHNPJL8; Max-Age=604800; Path=/; Expires=Fri, 02 Oct 2026 15:48:24 GMT; HttpOnly; SameSite=Lax
-[+] VERIFIED: Exchange code was atomically consumed and purged from MongoDB.
-POST /api/auth/oauth/exchange 401 202.325 ms - 66
-[+] Replay Attack Blocked: HTTP 401 Unauthorized.
-[+] REMEDIATION VERIFICATION COMPLETE. V15 SUCCESSFULLY MITIGATED.
-```
+1. **Deny-by-Default on Directory:** Only callers with verified `admin` or `manager` roles can access `GET /api/users`.
+2. **Self-or-Admin/Manager Guard:** `requireSelfOrRole('admin', 'manager')` guarantees that profile reads, updates, and deletes are authorized against `req.user._id` and `req.user.role`.
+3. **Anti-Enumeration Uniform Responses:** Unauthorized callers requesting existing or non-existing accounts receive an identical `403 Forbidden` response.
+4. **Input Sanitization & Exception Suppression:** `ObjectId.isValid` check intercepts malformed IDs, returning clean `400 Bad Request` responses without exposing internal Mongoose CastError traces.
+5. **Role-Aware Output Serialization:** `serializeUser(user, viewer)` strips sensitive security internals (`password`, `passwordResetRequired`, MFA flags) and scopes field visibility according to the caller's operational need-to-know.
+6. **Audit Accountability & Rate Limiting:** High-risk actions (`user.directory.read`, `user.profile.read.other`, `user.profile.update`, `user.delete`) are recorded in the audit trail, and requests to `/api/users*` are rate-limited to 60 req/min for authenticated callers and 10 req/min for unauthenticated IPs.
