@@ -168,8 +168,7 @@ const orderController = {
 
   sendEmailReceipt: async (req, res) => {
     try {
-      const { orderId, email, orderDetails } = req.body;
-      console.log('Attempting to send email receipt:', { orderId, email });
+      const { orderId } = req.body;
 
       const order = await Order.findById(orderId)
         .populate('user', 'email')
@@ -180,21 +179,19 @@ const orderController = {
         return res.status(404).json({ message: 'Order not found' });
       }
 
-      console.log('Found order:', {
-        orderNumber: order.orderNumber,
-        email: email || order.user.email
-      });
+      const isPrivileged = ['admin', 'manager'].includes(req.user.role);
+      if (!isPrivileged && order.user._id.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: 'Not authorized to access this order receipt' });
+      }
 
-      const emailResult = await sendOrderReceipt({
-        email: email || order.user.email,
+      await sendOrderReceipt({
+        email: order.user.email,
         orderNumber: order.orderNumber,
         items: order.items,
         totalAmount: order.totalAmount,
         shippingAddress: order.shippingAddress,
         orderDate: order.createdAt
       });
-
-      console.log('Email sent successfully:', emailResult);
 
       res.status(200).json({
         success: true,
