@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
+const { paymentRateLimiter } = require('../middleware/rateLimiter');
 const {
   getAllPayments,
   getPaymentById,
@@ -21,9 +22,9 @@ router.get('/:id', protect, getPaymentById);
 router.get('/user/:userId', protect, getUserPayments);
 
 // Payment operations
-router.post('/process', protect, processPayment);
+router.post('/process', protect, paymentRateLimiter, processPayment);
 router.get('/history', protect, getPaymentHistory);
-router.post('/create-intent', protect, createPaymentIntent);
-router.post('/:orderId/complete', protect, updatePaymentStatus);
+router.post('/create-intent', protect, paymentRateLimiter, createPaymentIntent);
+router.post('/:orderId/complete', protect, paymentRateLimiter, updatePaymentStatus);
 
 module.exports = router; 

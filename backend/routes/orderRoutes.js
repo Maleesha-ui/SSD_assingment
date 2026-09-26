@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
 const orderController = require('../controllers/orderController');
+const { orderCreationRateLimiter, emailReceiptRateLimiter } = require('../middleware/rateLimiter');
 
 // User-specific order endpoints (already have ownership checks in controllers)
 router.get('/history', protect, orderController.getUserOrderHistory);
@@ -10,8 +11,8 @@ router.get('/shipping-status', protect, orderController.getShippingStatus);
 router.get('/user-shipping/:userId', protect, orderController.getUserShippingStatus);
 
 // Create order - any authenticated user
-router.post('/', protect, orderController.createOrder);
-router.post('/email-receipt', protect, orderController.sendEmailReceipt);
+router.post('/', protect, orderCreationRateLimiter, orderController.createOrder);
+router.post('/email-receipt', protect, emailReceiptRateLimiter, orderController.sendEmailReceipt);
 
 // Admin-only order management endpoints
 router.get('/', protect, authorize('admin', 'manager'), orderController.getAllOrders);

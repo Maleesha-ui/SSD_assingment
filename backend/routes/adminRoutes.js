@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect, admin } = require('../middleware/auth');
+const { adminActionRateLimiter } = require('../middleware/rateLimiter');
 const {
   getDashboardStats,
   getAllOrders,
@@ -47,8 +48,8 @@ router.get('/debug', protect, admin, (req, res) => {
 });
 
 // New admin routes for staff management
-router.post('/staff/add', protect, admin, addStaff);
-router.post('/staff/assign-task', protect, admin, assignTask);
+router.post('/staff/add', protect, admin, adminActionRateLimiter, addStaff);
+router.post('/staff/assign-task', protect, admin, adminActionRateLimiter, assignTask);
 router.get('/staff/tasks', protect, admin, getAllStaffTasks);
 router.put('/staff/leave/:leaveId', protect, admin, approveLeaveRequest);
 router.get('/staff/leave-requests', protect, admin, getAllLeaveRequests);

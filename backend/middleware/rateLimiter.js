@@ -4,6 +4,51 @@
  */
 
 const rateLimits = new Map();
+const { rateLimit } = require('express-rate-limit');
+
+const createIpRateLimiter = (windowMs, limit, message) => rateLimit({
+  windowMs,
+  limit,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: { message },
+});
+
+const loginRateLimiter = createIpRateLimiter(
+  15 * 60 * 1000,
+  10,
+  'Too many login attempts. Please try again later.'
+);
+const registrationRateLimiter = createIpRateLimiter(
+  60 * 60 * 1000,
+  5,
+  'Too many registration attempts. Please try again later.'
+);
+const googleAuthRateLimiter = createIpRateLimiter(
+  15 * 60 * 1000,
+  20,
+  'Too many Google authentication requests. Please try again later.'
+);
+const orderCreationRateLimiter = createIpRateLimiter(
+  15 * 60 * 1000,
+  20,
+  'Too many order creation requests. Please try again later.'
+);
+const paymentRateLimiter = createIpRateLimiter(
+  15 * 60 * 1000,
+  10,
+  'Too many payment requests. Please try again later.'
+);
+const emailReceiptRateLimiter = createIpRateLimiter(
+  15 * 60 * 1000,
+  5,
+  'Too many receipt requests. Please try again later.'
+);
+const adminActionRateLimiter = createIpRateLimiter(
+  60 * 1000,
+  30,
+  'Too many administrative requests. Please try again later.'
+);
 
 const privilegedRateLimiter = (options = { windowMs: 60 * 1000, max: 10 }) => {
   return (req, res, next) => {
@@ -32,4 +77,13 @@ const privilegedRateLimiter = (options = { windowMs: 60 * 1000, max: 10 }) => {
   };
 };
 
-module.exports = { privilegedRateLimiter };
+module.exports = {
+  privilegedRateLimiter,
+  loginRateLimiter,
+  registrationRateLimiter,
+  googleAuthRateLimiter,
+  orderCreationRateLimiter,
+  paymentRateLimiter,
+  emailReceiptRateLimiter,
+  adminActionRateLimiter,
+};
