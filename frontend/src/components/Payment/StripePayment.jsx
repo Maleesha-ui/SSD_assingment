@@ -41,10 +41,7 @@ const CheckoutForm = ({ orderId, amount, onSuccess }) => {
 
     setProcessing(true);
     try {
-      const { data: { clientSecret } } = await api.post('/payments/create-intent', {
-        orderId,
-        amount: Math.round(amount * 100)
-      });
+      const { data: { clientSecret } } = await api.post('/payments/create-intent', { orderId });
 
       const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(
         clientSecret,
@@ -69,8 +66,6 @@ const CheckoutForm = ({ orderId, amount, onSuccess }) => {
           if (response.data.emailStatus) {
             if (!response.data.emailStatus.sent) {
               setError('Payment successful but receipt email failed to send. Please check your email settings.');
-            } else {
-              setSuccess('Payment successful and receipt sent to your email!');
             }
           }
           

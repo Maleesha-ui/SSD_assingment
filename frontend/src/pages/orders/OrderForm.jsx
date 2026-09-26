@@ -44,6 +44,7 @@ const OrderForm = () => {
   const [error, setError] = useState('');
   const [products, setProducts] = useState([]);
   const [orderId, setOrderId] = useState(null);
+  const [orderTotal, setOrderTotal] = useState(null);
   const [step, setStep] = useState('order');
 
   const [orderData, setOrderData] = useState({
@@ -141,17 +142,20 @@ const OrderForm = () => {
     setLoading(true);
     try {
       const orderPayload = {
-        ...orderData,
-        totalAmount: calculateTotal(),
-        status: 'pending',
-        items: orderData.items.map(item => ({
-          ...item,
-          serviceDetails: item.additionalDetails
-        }))
+        paymentMethod: orderData.paymentMethod,
+        shippingAddress: {
+          street: orderData.serviceLocation.street,
+          city: orderData.serviceLocation.city,
+          state: orderData.serviceLocation.state,
+          zipCode: orderData.serviceLocation.postalCode,
+          country: orderData.serviceLocation.country
+        },
+        items: orderData.items.map(({ product, quantity }) => ({ product, quantity }))
       };
 
       const response = await api.post('/orders', orderPayload);
       setOrderId(response.data._id);
+      setOrderTotal(response.data.totalAmount);
       setStep('payment');
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to create funeral service order');
@@ -241,7 +245,7 @@ const OrderForm = () => {
             <Divider sx={{ my: 2 }} />
             <StripePayment
               orderId={orderId}
-              amount={calculateTotal()}
+              amount={orderTotal}
               onSuccess={handlePaymentSuccess}
             />
           </CardContent>

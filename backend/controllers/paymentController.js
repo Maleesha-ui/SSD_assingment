@@ -4,14 +4,23 @@ const Order = require('../models/Order');
 const mongoose = require('mongoose');
 const { sendPaymentReceipt } = require('../utils/emailService');
 
+const getOrderAmountInCents = (order) => {
+  const amount = Math.round(Number(order.totalAmount) * 100);
+  return Number.isSafeInteger(amount) && amount > 0 ? amount : null;
+};
+
+const canAccessOrder = (order, user) => (
+  ['admin', 'manager'].includes(user.role) || order.user.toString() === user._id.toString()
+);
+
 const paymentController = {
   // Create payment intent
   createPaymentIntent: async (req, res) => {
     try {
-      const { orderId, amount } = req.body;
+      const { orderId } = req.body || {};
       
-      if (!orderId || !amount) {
-        return res.status(400).json({ message: 'OrderId and amount are required' });
+      if (!orderId) {
+        return res.status(400).json({ message: 'OrderId is required' });
       }
 
       // Validate orderId format
@@ -22,6 +31,19 @@ const paymentController = {
       const order = await Order.findById(orderId);
       if (!order) {
         return res.status(404).json({ message: 'Order not found' });
+      }
+
+      if (!canAccessOrder(order, req.user)) {
+        return res.status(403).json({ message: 'Not authorized to pay this order' });
+      }
+
+      if (order.paymentStatus !== 'pending' || order.orderStatus === 'cancelled') {
+        return res.status(409).json({ message: 'Order is not available for payment' });
+      }
+
+      const amount = getOrderAmountInCents(order);
+      if (amount === null) {
+        return res.status(400).json({ message: 'Order has an invalid payment total' });
       }
 
       const paymentIntent = await stripe.paymentIntents.create({
@@ -67,12 +89,29 @@ const paymentController = {
         return res.status(404).json({ message: 'Order not found' });
       }
 
+      if (!canAccessOrder(order, req.user)) {
+        return res.status(403).json({ message: 'Not authorized to complete payment for this order' });
+      }
+
+      if (order.paymentStatus !== 'pending' || order.orderStatus === 'cancelled') {
+        return res.status(409).json({ message: 'Order is not awaiting payment' });
+      }
+
       // Verify payment intent with Stripe
       const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-      
-      if (paymentIntent.metadata.orderId !== orderId) {
+
+      const expectedAmount = getOrderAmountInCents(order);
+      if (
+        paymentIntent.metadata.orderId !== orderId ||
+        paymentIntent.metadata.userId !== req.user._id.toString() ||
+        paymentIntent.status !== 'succeeded' ||
+        paymentIntent.currency !== 'usd' ||
+        expectedAmount === null ||
+        paymentIntent.amount !== expectedAmount ||
+        paymentIntent.amount_received !== expectedAmount
+      ) {
         return res.status(400).json({ 
-          message: 'Payment intent does not match order' 
+          message: 'Payment intent does not match the order or is not successfully paid'
         });
       }
 
@@ -104,50 +143,9 @@ const paymentController = {
   },
 
   processPayment: async (req, res) => {
-    try {
-      const { orderId, amount, paymentMethod, cardDetails } = req.body;
-
-      // Find the order and populate user details
-      const order = await Order.findById(orderId).populate('user', 'email');
-      if (!order) {
-        return res.status(404).json({ message: 'Order not found' });
-      }
-
-      // Verify amount matches order total
-      if (amount !== order.totalAmount) {
-        return res.status(400).json({ 
-          message: 'Payment amount does not match order total' 
-        });
-      }
-
-      // Create payment record
-      const payment = await Payment.create({
-        orderId,
-        amount,
-        paymentMethod,
-        status: 'completed',
-        transactionId: `TXN${Date.now()}`
-      });
-
-      // Update order payment status
-      order.paymentStatus = 'paid';
-      order.orderStatus = 'processing';
-      await order.save();
-
-      // Send payment receipt email
-      await sendPaymentReceipt(order, payment, order.user.email);
-
-      res.status(201).json({
-        message: 'Payment processed successfully and receipt sent',
-        payment: {
-          ...payment.toObject(),
-          order: order
-        }
-      });
-    } catch (error) {
-      console.error('Payment processing error:', error);
-      res.status(500).json({ message: error.message });
-    }
+    return res.status(410).json({
+      message: 'Direct payment processing is unavailable. Use the Stripe payment-intent flow.'
+    });
   },
 
   getPaymentHistory: async (req, res) => {
@@ -244,56 +242,8 @@ const paymentController = {
   },
 
   completePayment: async (req, res) => {
-    try {
-      const { orderId } = req.params;
-      const { paymentIntentId } = req.body;
-      
-      console.log('Payment completion started:', { orderId, paymentIntentId });
-
-      const order = await Order.findById(orderId).populate('user', 'email');
-      if (!order) {
-        throw new Error('Order not found');
-      }
-
-      // Create payment record
-      const payment = await Payment.create({
-        orderId,
-        amount: order.totalAmount,
-        paymentMethod: 'stripe',
-        status: 'completed',
-        transactionId: paymentIntentId
-      });
-
-      // Update order status
-      order.paymentStatus = 'paid';
-      order.orderStatus = 'processing';
-      await order.save();
-
-      // Send email receipt
-      let emailStatus = { sent: false, error: null };
-      try {
-        await sendPaymentReceipt(order, payment, order.user.email);
-        emailStatus.sent = true;
-      } catch (emailError) {
-        console.error('Email sending failed:', emailError);
-        emailStatus.error = emailError.message;
-      }
-
-      res.status(200).json({
-        success: true,
-        message: 'Payment completed successfully',
-        payment: payment,
-        emailStatus
-      });
-
-    } catch (error) {
-      console.error('Payment completion error:', error);
-      res.status(500).json({
-        success: false,
-        message: error.message,
-        error: error
-      });
-    }
+    req.params.orderId = req.params.orderId || req.params.id;
+    return paymentController.updatePaymentStatus(req, res);
   }
 };
 
