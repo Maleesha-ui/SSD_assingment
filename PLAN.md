@@ -1,293 +1,180 @@
-# PLAN.md — V15 Remediation: Token Leakage via URL Query String (OAuth Flow)
+# PLAN.md — Remediation Plan for Vulnerability V10: Missing Authorization on User Profiles & Directory
 
-**Target Issue:** V15 (High) — Leaking Bearer JWT tokens in OAuth redirect URL query string (`?token=...`)  
-**Architecture:** MERN Stack (React 18 Vite SPA + Node.js/Express + MongoDB Mongoose)  
-**Standard Compliance:** OAuth 2.0 Security BCP (RFC 6819 §4.3.4), RFC 7636 (PKCE), OAuth 2.1 Draft, OWASP ASVS v4.0 §3.4.1  
-**Author:** Senior Application Security Engineer (Google Antigravity)  
-**Status:** PROPOSED — PENDING APPROVAL
-
----
-
-## 1. Architectural Decision: Pattern B with Dual Delivery Support
-
-### 1.1 Decision Rationale
-The deployment topology consists of a React Vite SPA running on origin `http://localhost:3000` (port 3000) communicating with an Express REST API backend running on origin `http://localhost:5000` (port 5000). In production cloud environments (e.g. Vercel/Netlify for frontend and Railway/AWS for API), cross-origin and cross-subdomain separation is common. 
-
-To ensure complete compliance with Section 5 and Section 12 acceptance criteria, we implement **Pattern B (One-Time PKCE Authorization Code Exchange)** as the default cross-origin exchange mechanism, while providing first-class support for **Pattern A (HttpOnly Secure Cookie delivery)** selectable via the feature flag `AUTH_OAUTH_DELIVERY=code|cookie`.
-
-In both modes:
-- **Zero tokens appear in URLs:** No JWT, no access token, and no refresh token ever appears in query parameters, path segments, or URL fragments.
-- In Pattern B, the URL carries only a transient, single-use, 32-byte opaque code (entropy ≥ 256 bits, TTL 60 seconds).
-- The SPA immediately invokes `window.history.replaceState({}, '', '/auth/callback')` to wipe the `?code=` query parameter prior to DOM render.
-- The exchange code is stored only as a SHA-256 hash in MongoDB and atomically consumed via `findOneAndDelete`.
-- Refresh tokens are strictly delivered via `HttpOnly`, `Secure`, `SameSite=Lax` cookies, with automatic reuse detection and cryptographic family invalidation.
+**Target Application:** Funeral Services Management Platform  
+**Target Vulnerability:** V10 (OWASP A01:2021 — Broken Access Control / Missing Authorization / IDOR)  
+**Lead Auditor & Remediation Architect:** Senior Application Security Engineer (Google Antigravity)  
+**Status:** PROPOSED — PENDING APPROVAL  
 
 ---
 
-## 2. File Tree & Impact Scope
+## 1. Scope & Objective
 
-```
-SSD_assingment/
-├── DETECTION.md                         [Created] Static & dynamic vulnerability audit
-├── PLAN.md                              [Current] Architectural remediation plan
-├── SECURITY.md                          [Update] V15 root cause, security invariants, operational guides
-├── VERIFICATION.md                      [Deliverable] Section 12 test verification matrix
-├── poc/
-│   ├── reproduce_v15_leak.js            [Created] Runnable PoC script reproducing leak
-│   └── redirect_capture.txt             [Created] Raw redirect capture proving leak
-├── backend/
-│   ├── models/
-│   │   ├── OAuthExchangeCode.js         [New] Schema for one-time exchange codes (TTL: 60s, hashed)
-│   │   ├── RefreshToken.js              [New] Schema for rotating refresh tokens (hashed, family tracking)
-│   │   └── AuditLog.js                  [Update] Ensure action index and OAuth security event tracking
-│   ├── controllers/
-│   │   └── authController.js            [Update] Rewrite googleCallbackHandler, add oauthExchange, refresh, logout
-│   ├── routes/
-│   │   └── authRoutes.js                [Update] Add /oauth/exchange, /refresh, /logout, enforce POST-only (405 for GET)
-│   ├── middleware/
-│   │   ├── rateLimiter.js               [New] Lightweight sliding-window rate limiter for exchange & refresh
-│   │   └── securityHeaders.js           [New] Referrer-Policy, Cache-Control, log redaction middleware
-│   ├── app.js                           [Update] Mount cookie parser, security headers, logger redactor
-│   ├── tests/
-│   │   ├── v01_remediation.test.js      [Preserve] Keep existing 15 tests green
-│   │   └── v15_remediation.test.js      [New] Complete Section 12 acceptance test suite (19 criteria)
-│   └── scripts/
-│       └── migrate_v15_indexes.js       [New] Safe idempotent MongoDB index migration script
-└── frontend/
-    ├── index.html                       [Update] Add <meta name="referrer" content="strict-origin-when-cross-origin">
-    ├── src/
-    │   ├── context/
-    │   │   └── AuthContext.jsx          [Update] Secure in-memory token state, silent cookie refresh, no URL token
-    │   ├── components/
-    │   │   └── auth/
-    │   │       └── GoogleAuthButton.jsx [Update] Generate PKCE verifier/challenge before OAuth redirect
-    │   ├── pages/
-    │   │   └── auth/
-    │   │       ├── AuthCallback.jsx     [Update] Pattern B: replaceState immediate sanitization, POST exchange
-    │   │       ├── OAuthDone.jsx        [New] Pattern A: silent page for cookie hydration
-    │   │       └── CompleteProfile.jsx  [Update] Remove token from query parameters; rely on authenticated session
-    │   └── App.jsx                      [Update] Register /oauth/done route
-```
+Remediate missing authorization, horizontal/vertical IDOR, existence enumeration, and unconstrained directory access across `/api/users*` endpoints. Ensure strict adherence to the Principle of Least Privilege (PoLP) and defense-in-depth security invariants across authentication, authorization, input validation, serialization, and audit logging layers.
 
 ---
 
-## 3. MongoDB Schema & Index Migrations
+## 2. Authorization Matrix (Confirming Section 5.1)
 
-### 3.1 `oauth_exchange_codes` Collection
-```javascript
-const oauthExchangeCodeSchema = new mongoose.Schema({
-  codeHash: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-  clientId: {
-    type: String,
-    required: true,
-  },
-  redirectUri: {
-    type: String,
-    required: true,
-  },
-  codeChallenge: {
-    type: String,
-    required: true,
-  },
-  codeChallengeMethod: {
-    type: String,
-    enum: ['S256'],
-    default: 'S256',
-  },
-  state: {
-    type: String,
-    default: null,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-    expires: 60, // TTL index: automatically deleted after 60 seconds
-  },
-  consumedAt: {
-    type: Date,
-    default: null,
-  },
-});
-```
-**Security Invariants:**
-- Raw `exchange_code` is **never stored**; only `SHA-256(rawCode)` is persisted.
-- Atomic consumption via `OAuthExchangeCode.findOneAndDelete({ codeHash })`.
+| Route | Verb | Unauthenticated | `customer` | `funeral_staff` / `hearse_driver` | `manager` / `funeral_manager` | `admin` |
+|---|---|---|---|---|---|---|
+| `/api/users` | `GET` | 401 | 403 | 403 | 200 (Scoped) | 200 (Full) |
+| `/api/users/me` | `GET` | 401 | 200 (Self-scoped) | 200 (Self-scoped) | 200 (Self-scoped) | 200 (Full) |
+| `/api/users/:userId` (self) | `GET` | 401 | 200 (Self-scoped) | 200 (Self-scoped) | 200 (Self-scoped) | 200 (Full) |
+| `/api/users/:userId` (other) | `GET` | 401 | 403 | 403 | 200 (Manager-scoped) | 200 (Full) |
+| `/api/users/:userId` (self) | `PUT`/`PATCH` | 401 | 200 (Self-DTO whitelist) | 200 (Self-DTO whitelist) | 200 (Self-DTO whitelist) | 200 (Admin DTO) |
+| `/api/users/:userId` (other) | `PUT`/`PATCH` | 401 | 403 | 403 | 403 | 200 (Admin DTO) |
+| `/api/users/:userId` | `DELETE` | 401 | 403 | 403 | 403 | 204 (Soft/Hard Delete) |
+| `/api/users/:userId/role` | `PATCH`/`PUT` | 401 | 403 | 403 | 403 | 200 (+ Step-Up Token) |
+| `/api/users/update-profile` *(Compat)* | `PUT` | 401 | 200 (Self-DTO whitelist) | 200 (Self-DTO whitelist) | 200 (Self-DTO whitelist) | 200 (Self-DTO whitelist) |
+| `/api/users/delete-account` *(Compat)* | `DELETE` | 401 | 200 (Self) | 200 (Self) | 200 (Self) | 200 (Self) |
 
-### 3.2 `refresh_tokens` Collection
-```javascript
-const refreshTokenSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-  jti: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  tokenHash: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  familyId: {
-    type: String,
-    required: true,
-    index: true,
-  },
-  expiresAt: {
-    type: Date,
-    required: true,
-  },
-  revokedAt: {
-    type: Date,
-    default: null,
-  },
-  replacedByJti: {
-    type: String,
-    default: null,
-  },
-  ip: String,
-  userAgent: String,
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
-
-refreshTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 }); // MongoDB TTL
-refreshTokenSchema.index({ familyId: 1 });
-```
-**Security Invariants:**
-- Raw refresh token is **never stored**; only `SHA-256(rawRefreshToken)` is persisted.
-- If a revoked token within a `familyId` is submitted, the **entire token family is revoked immediately**, and an audit event is triggered.
+### Uniformity & Anti-Enumeration Invariants
+1. If caller does not possess self-ownership or role clearance (`admin` or `manager`), the request is rejected immediately at the middleware boundary with `403 Forbidden` (`{"message":"Forbidden: Insufficient privileges."}`).
+2. Non-existent IDs requested by unauthorized users return `403 Forbidden` (identical timing and payload), eliminating differential existence oracles.
+3. Only authorized actors (`admin`/`manager`) receive a `404 Not Found` when requesting an ID that does not exist in the database.
+4. Non-ObjectId values on any `:userId` parameter return `400 Bad Request` (`{"message":"Invalid user ID format."}`) before reaching Mongoose queries.
 
 ---
 
-## 4. API Endpoints & Contract Specification
+## 3. Architecture & Component Changes
 
-| Method | Endpoint | Access | Purpose & Security Controls |
-|---|---|---|---|
-| `GET` | `/api/auth/google` | Public | Generates OAuth `state` + accepts client PKCE challenge, stores in session, redirects (302) to Google. |
-| `GET` | `/api/auth/google/callback` | Public (Google) | Verifies Google auth. If `AUTH_OAUTH_DELIVERY=cookie`, sets HttpOnly cookies and redirects to `/oauth/done`. If `code`, generates 60s single-use `exchange_code`, stores SHA-256 hash, redirects to `/auth/callback?code=<opaque>`. |
-| `POST` | `/api/auth/oauth/exchange` | Public | Body: `{ code, codeVerifier, redirectUri }`. Atomically consumes code (`findOneAndDelete`), verifies PKCE S256, matches `redirect_uri`. Returns `200 { accessToken, user, isProfileComplete }` + sets HttpOnly `rt` cookie. Double consumption yields `401` + `auth.oauth.code_reuse_detected` audit log. |
-| `GET` | `/api/auth/oauth/exchange` | Public | Explicitly returns `405 Method Not Allowed`. |
-| `POST` | `/api/auth/refresh` | Cookie / Body | Reads `rt` cookie or body refresh token. Validates hash and family. Revokes old `jti`, issues new `jti`, sets rotated `rt` cookie. If reused token detected: revokes family and returns `401`. |
-| `POST` | `/api/auth/logout` | Authenticated | Clears `at` and `rt` cookies, revokes active refresh family in MongoDB. Returns `204 No Content`. |
-| `GET` | `/api/auth/me` | Authenticated | Supports both `Authorization: Bearer <token>` and `at` cookie. Returns sanitized profile. |
-
----
-
-## 5. Frontend & UI Flow Architecture
-
-### 5.1 Pattern B Exchange Flow (`/auth/callback`)
 ```mermaid
-sequenceDiagram
-    autonumber
-    actor User
-    participant Browser
-    participant SPA as React SPA (/auth/callback)
-    participant API as Backend API
-    participant Google as Google IdP
+flowchart TD
+    Client[HTTP Request] --> RateLimiter[User Rate Limiter: 60/min Auth, 10/min Unauth]
+    RateLimiter --> Protect[protect: JWT Verification]
+    
+    Protect --> RouteCheck{Route Target}
+    
+    RouteCheck -->|GET /api/users| AuthorizeAdminManager[authorize('admin', 'manager')]
+    AuthorizeAdminManager --> QueryValidator[validateDirectoryQuery: Whitelist & Pagination Cap]
+    QueryValidator --> GetAllUsers[getAllUsers Handler]
+    GetAllUsers --> AuditDir[AuditLog: user.directory.read]
+    AuditDir --> SerializeDir[serializeUser: Scoped per Role]
+    SerializeDir --> Response200A[200 OK Paginated]
+    
+    RouteCheck -->|GET /api/users/:userId| RequireSelfOrRole[requireSelfOrRole('admin', 'manager')]
+    RequireSelfOrRole -->|Invalid ObjectId| Resp400[400 Bad Request]
+    RequireSelfOrRole -->|Not Self & Not Role| Resp403[403 Forbidden Uniform]
+    RequireSelfOrRole -->|Valid Self or Role| GetUser[getUserProfile Handler]
+    GetUser --> AuditRead[If actor !== target: AuditLog user.profile.read.other]
+    AuditRead --> SerializeProfile[serializeUser: Scoped per Role]
+    SerializeProfile --> Response200B[200 OK Profile]
 
-    User->>SPA: Click "Continue with Google"
-    SPA->>SPA: Generate PKCE (verifier + S256 challenge), store verifier in sessionStorage
-    SPA->>API: GET /api/auth/google?code_challenge=...&redirect_uri=...
-    API->>Google: 302 Redirect to Google OAuth consent
-    Google->>API: GET /api/auth/google/callback?code=...&state=...
-    API->>API: Verify Google profile, create SHA-256 hashed 60s exchange_code
-    API->>Browser: 302 Redirect to /auth/callback?code=<opaque_32_bytes>
-    Browser->>SPA: Load /auth/callback?code=<opaque>
-    SPA->>SPA: window.history.replaceState({}, '', '/auth/callback') [Wipe from address bar]
-    SPA->>API: POST /api/auth/oauth/exchange { code, codeVerifier }
-    API->>API: findOneAndDelete(codeHash) + Verify PKCE S256 + Issue JWT
-    API-->>SPA: 200 { accessToken, user, isProfileComplete } + Set-Cookie: rt (HttpOnly)
-    SPA->>SPA: Store accessToken in React memory only; navigate to dashboard
+    RouteCheck -->|PUT /api/users/:userId| RequireSelfOrRolePut[requireSelfOrRole('admin', 'manager')]
+    RequireSelfOrRolePut --> ValidateDtoPut[validateDto: Strict DTO Whitelist]
+    ValidateDtoPut --> UpdateUser[updateUserProfile Handler]
+    UpdateUser --> AuditUpdate[AuditLog: user.profile.update]
+    AuditUpdate --> Response200C[200 OK Updated]
 ```
 
-### 5.2 Pattern A Silent Cookie Hydration (`/oauth/done`)
-```mermaid
-sequenceDiagram
-    autonumber
-    actor User
-    participant Browser
-    participant SPA as React SPA (/oauth/done)
-    participant API as Backend API
+### 3.1 Middleware Components
+1. **`requireSelfOrRole(...roles)` (`backend/middleware/auth.js`):**
+   - Validates `mongoose.Types.ObjectId.isValid(req.params.userId)` -> returns `400 Bad Request`.
+   - Checks `req.user && String(req.user._id) === String(req.params.userId)` (`isSelf`).
+   - Checks `req.user && roles.includes(req.user.role)` (`hasRole`).
+   - If neither, returns `403 Forbidden`.
+   - Attaches `req.targetUserId = req.params.userId; req.isSelf = isSelf;`.
+2. **`userRateLimiter` (`backend/middleware/rateLimiter.js`):**
+   - Sliding window limiter on `/api/users*`: 60 req/min for authenticated user IDs, 10 req/min for unauthenticated IPs.
+   - Emits 429 Too Many Requests when threshold exceeded.
+3. **`validateDirectoryQuery` (`backend/middleware/validate.js`):**
+   - Whitelist query params: `role`, `branch`, `status`, `q`, `page`, `limit`, `sort`.
+   - Forbid unknown query parameters with `400 Bad Request`.
+   - Enforce pagination: `page >= 1`, default `20`, hard cap `limit = 100`.
+   - Whitelist sort fields: `createdAt`, `name`, `fullName`, `role`. Unknown sort fields return `400`.
+   - Validate `role` is valid enum; invalid values return `400`.
 
-    Browser->>SPA: Load /oauth/done (NO query params, NO fragment)
-    SPA->>API: GET /api/auth/me (Cookie: at=...)
-    API-->>SPA: 200 { user profile }
-    SPA->>SPA: Hydrate user context; navigate to /dashboard
-```
+### 3.2 Serialization Layer (`backend/utils/userSerializer.js`)
+Centralized role-aware serializer function: `serializeUser(userDoc, viewerUser)`
+- **Viewer = `admin`:** Full user document; sensitive credentials stripped (`password`, `__v`). Includes administrative details, audit fields, and all profiles.
+- **Viewer = `manager`:** Operational fields (`_id`, `name`, `email`, `role`, `status`, `phone`, `address`, `staffProfile`, `driverProfile`, `managerProfile`, `staffDetails`, `driverDetails`, `createdAt`). Internal security flags (`passwordResetRequired`, MFA secrets, step-up tokens) omitted.
+- **Viewer = `customer` / `staff` (Self-Read):** Own profile (`_id`, `name`, `email`, `role`, `status`, `avatar`, `phone`, `address`, `orders`, `isProfileComplete`, `createdAt`). Internal administration details omitted.
+- **Viewer = `customer` / `staff` (Other):** Blocked at middleware (fallback in serializer returns `null`).
 
-### 5.3 CompleteProfile Sanitization
-- `frontend/src/pages/auth/CompleteProfile.jsx` currently extracts `params.get('token')`.
-- This is completely removed. `CompleteProfile` will rely strictly on the active in-memory authenticated session or `useAuth()`.
+### 3.3 Mongoose Schema Hardening (`backend/models/User.js`)
+- `password`: Add `select: false` to schema definition.
+- `phone`: Add `select: false` (explicitly re-selected in queries for authorized viewers).
+- `passwordResetRequired`: Add `{ type: Boolean, default: false, select: false }`.
+- `schema.set('toJSON')`:
+  ```javascript
+  transform: (_doc, ret) => {
+    delete ret.password;
+    delete ret.passwordResetRequired;
+    delete ret.__v;
+    return ret;
+  }
+  ```
+
+### 3.4 Controller Updates (`backend/controllers/userController.js`)
+- **`getAllUsers`:**
+  - Restricted to `admin` and `manager`.
+  - Applies pagination (`page`, `limit`), search query (`q`), and filters (`role`, `status`).
+  - Returns `{ data: User[], page, limit, total, totalPages }`.
+  - Serializes items via `serializeUser(u, req.user)`.
+  - Emits audit log: `user.directory.read` with `{ filters, page, limit, resultCount }`.
+- **`getUserProfile`:**
+  - Authorized via `requireSelfOrRole('admin', 'manager')`.
+  - Emits audit log `user.profile.read.other` if `String(req.user._id) !== String(targetId)`.
+  - Applies `serializeUser(user, req.user)`.
+- **`updateUserProfile` & `patchUserProfile`:**
+  - Validates body against strict DTO whitelist (`name`, `phone`, `address`, `avatar`).
+  - Prohibits modification of `role`, `email`, `status`, `passwordResetRequired`, `isAdmin`.
+  - Emits audit log `user.profile.update`.
+- **`deleteUser`:**
+  - Admin-only on `DELETE /api/users/:userId`.
+  - Emits audit log `user.delete`.
+
+### 3.5 Frontend Verification & Alignment
+- Verify `frontend/src/services/api.js` and `frontend/src/pages/profile/ProfilePage.jsx` continue to function seamlessly via compatibility routes.
+- Verify `frontend/src/pages/admin/dashboard/DashboardPage.jsx` and `UsersTable.jsx` continue to load directory data via authorized endpoints.
 
 ---
 
-## 6. Hardening & Security Policies
+## 4. Acceptance Criteria Matrix (Machine-Checkable)
 
-1. **Cookie Configuration:**
-   - Name: `rt` (Refresh Token) and `at` (Access Token in cookie mode).
-   - Attributes: `HttpOnly: true; Secure: ${NODE_ENV === 'production'}; SameSite: 'Lax'; Path: '/'` (or `/api/auth`).
-2. **Referrer-Policy:**
-   - Injected in HTTP headers: `strict-origin-when-cross-origin`.
-   - Set in `frontend/index.html`: `<meta name="referrer" content="strict-origin-when-cross-origin">`.
-   - On OAuth callback routes: `no-referrer`.
-3. **Cache-Control:**
-   - `no-store, no-cache, must-revalidate, proxy-revalidate` on all `/api/auth/*` routes.
-4. **Log Redaction:**
-   - Express logging middleware scrubs `token`, `access_token`, `refresh_token`, `code`, `id_token` from query parameters and request headers.
-5. **Rate Limiting:**
-   - `/api/auth/oauth/exchange` and `/api/auth/refresh` restricted to 20 requests per minute per IP.
-6. **CORS:**
-   - Explicit origin allowlist (`http://localhost:3000`, `http://127.0.0.1:3000`, `CLIENT_URL`) with `credentials: true`.
-
----
-
-## 7. Rollout, Rollback & Kill Switch Strategy
-
-- **Feature Flag:** `AUTH_OAUTH_DELIVERY`
-  - Values: `code` (Pattern B - default) | `cookie` (Pattern A).
-  - Setting `AUTH_OAUTH_DELIVERY=cookie` switches callback handling immediately to direct HttpOnly cookie delivery.
-- **Rollback Plan:**
-  - If a runtime regression occurs, `AUTH_OAUTH_DELIVERY` can be flipped dynamically without modifying schemas.
-  - The MongoDB collections `oauth_exchange_codes` and `refresh_tokens` are non-breaking additions that do not modify existing user collections.
-  - Index rollback script provided in `backend/scripts/rollback_v15.js`.
-
----
-
-## 8. Acceptance Verification Suite (Section 12 Mapping)
-
-| # | Acceptance Test Case | Target Assertion |
+| # | Test Case Description | Expected Result |
 |---|---|---|
-| 1 | `grep -R "?token=" src/` after fix | Zero matches across codebase |
-| 2 | OAuth Flow Final URL | Zero tokens/JWTs in URL |
-| 3 | Pattern A Cookie Delivery | `Set-Cookie: at=...; HttpOnly; Secure; SameSite=Lax` |
-| 4 | Pattern B Opaque Code | `?code=<opaque>`, length ≤ 64 chars, not a JWT |
-| 5 | `POST /auth/oauth/exchange` Valid Code | `200 { accessToken }`, no refresh in JSON body |
-| 6 | Code Replay / Reuse Detection | 2nd call returns `401`, triggers `auth.oauth.code_reuse_detected` |
-| 7 | Code Expiry after 60s | Returns `401 Unauthorized` |
-| 8 | Tampered PKCE Verifier | Returns `401 Unauthorized` |
-| 9 | Mismatched Redirect URI | Returns `401 Unauthorized` |
-| 10 | `GET /auth/oauth/exchange` | Returns `405 Method Not Allowed` |
-| 11 | Referrer Isolation | No token leaked via Referer header |
-| 12 | Access Log Redaction | Logs redact `token`, `code`, `access_token` query params |
-| 13 | Refresh Token Rotation | Old `jti` revoked, new `jti` issued |
-| 14 | Refresh Token Family Reuse | Reusing old token revokes entire family, returns `401` |
-| 15 | Storage Scanning | No JWT stored in `localStorage` or `sessionStorage` in cookie mode |
-| 16 | History Sanitization | `window.history.replaceState` called before first paint |
-| 17 | Security Headers Check | `Referrer-Policy`, `Cache-Control: no-store`, `SameSite` flags |
-| 18 | Mongo Exchange Code Deletion | Atomically consumed, no leftover code in DB |
-| 19 | Mongo Refresh Token Hashing | Only `tokenHash` stored; raw token never in DB |
+| 1 | `GET /api/users` unauthenticated | `401 Unauthorized` |
+| 2 | `GET /api/users` as `customer` | `403 Forbidden` |
+| 3 | `GET /api/users` as `funeral_staff` | `403 Forbidden` |
+| 4 | `GET /api/users` as `manager` | `200 OK`, paginated, scoped fields |
+| 5 | `GET /api/users` as `admin` | `200 OK`, paginated, full administrative fields |
+| 6 | `GET /api/users/:selfId` as `customer` | `200 OK`, self-scoped fields only |
+| 7 | `GET /api/users/:otherId` as `customer` | `403 Forbidden` |
+| 8 | `GET /api/users/:otherId` as `manager` | `200 OK`, manager-scoped fields |
+| 9 | `GET /api/users/:otherId` as `admin` | `200 OK`, full fields |
+| 10 | `GET /api/users/not-an-objectid` | `400 Bad Request` |
+| 11 | `GET /api/users/:nonexistentId` as customer | `403 Forbidden` (Uniform anti-enumeration) |
+| 12 | `PUT /api/users/:selfId` with `{ role:"admin" }` | `400 Bad Request` (DTO whitelist violation) |
+| 13 | `PUT /api/users/:otherId` as customer | `403 Forbidden` |
+| 14 | `DELETE /api/users/:anyId` as `manager` | `403 Forbidden` |
+| 15 | `DELETE /api/users/:anyId` as `admin` | `204 No Content` |
+| 16 | `GET /api/users?limit=100000` | Capped at `limit=100` |
+| 17 | `GET /api/users?sort=password` | `400 Bad Request` |
+| 18 | `GET /api/users?foo=bar` | `400 Bad Request` (Unknown query parameter) |
+| 19 | Response body of `GET /api/users/:selfId` as customer | No `password`, no `passwordResetRequired`, no internal flags |
+| 20 | 61st request to `GET /api/users` in 60s as same user | `429 Too Many Requests` |
+| 21 | Audit log for `GET /api/users` | Entry written with actorId, filters, resultCount |
+| 22 | Audit log for cross-user read | Entry written with actorId and targetUserId |
+| 23 | Existing automated test suites (`v01`, `v15`) | All remain 100% GREEN |
+
+---
+
+## 5. Implementation Steps (Order of Execution)
+
+1. **Step 1:** Create `backend/utils/userSerializer.js` defining `serializeUser(user, viewer)`.
+2. **Step 2:** Update `backend/models/User.js` with `select: false` on `password`, `phone`, and `passwordResetRequired`, and configure schema `toJSON` transform.
+3. **Step 3:** Add `requireSelfOrRole` middleware in `backend/middleware/auth.js`.
+4. **Step 4:** Add `validateDirectoryQuery` and self/admin update DTO schemas in `backend/middleware/validate.js`.
+5. **Step 5:** Add `userEndpointRateLimiter` in `backend/middleware/rateLimiter.js`.
+6. **Step 6:** Refactor `backend/controllers/userController.js` to implement paginated, filtered, audited, and serialized directory and profile handlers.
+7. **Step 7:** Reconfigure `backend/routes/userRoutes.js` with `protect`, `authorize('admin', 'manager')`, `requireSelfOrRole`, rate limiters, and DTO validators.
+8. **Step 8:** Add comprehensive test suite in `backend/tests/v10_remediation.test.js` validating all 23 acceptance criteria.
+9. **Step 9:** Execute test suites, verify all tests pass, and generate `VERIFICATION.md` and `SECURITY.md`.
+
+---
+
+## 6. Rollback Plan
+
+- If any unexpected regression occurs, the route definitions in `backend/routes/userRoutes.js` and middleware compositions can be reverted cleanly via git checkout.
+- No database migrations modify table schemas or delete persistent customer data. Schema field adjustments (`select: false`) are backward-compatible.

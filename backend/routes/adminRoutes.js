@@ -5,7 +5,6 @@ const {
   getDashboardStats,
   getAllOrders,
   getAllPayments,
-  getAllUsers,
   updateOrderStatus,
   getAllBookings,
   createBooking,
@@ -25,6 +24,7 @@ const {
   getAllStaffTasks,
   getAllLeaveRequests
 } = require('../controllers/adminController');
+const { getAllUsers } = require('../controllers/userController');
 
 router.get('/stats', protect, admin, getDashboardStats);
 router.get('/orders', protect, admin, getAllOrders);

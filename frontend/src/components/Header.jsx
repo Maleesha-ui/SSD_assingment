@@ -105,10 +105,18 @@ const Header = () => {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 3, mb: 2 }}>
         <Typography 
           variant="h5" 
+          component={Link}
+          to="/dashboard"
+          onClick={handleDrawerToggle}
           sx={{ 
             fontFamily: '"Playfair Display", serif',
             fontWeight: 600,
-            color: '#1B2A3D'
+            color: '#1B2A3D',
+            textDecoration: 'none',
+            cursor: 'pointer',
+            '&:hover': {
+              color: '#C9A961'
+            }
           }}
         >
           Eternal Rest
@@ -267,7 +275,7 @@ const Header = () => {
             <Typography 
               variant="h4" 
               component={Link} 
-              to="/" 
+              to="/dashboard" 
               sx={{ 
                 fontFamily: '"Playfair Display", serif',
                 textDecoration: 'none',

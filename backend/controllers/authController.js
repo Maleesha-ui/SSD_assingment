@@ -74,7 +74,7 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const normalizedEmail = email ? email.toLowerCase().trim() : '';
-    const user = await User.findOne({ email: normalizedEmail });
+    const user = await User.findOne({ email: normalizedEmail }).select('+password +phone');
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
@@ -117,7 +117,7 @@ exports.login = async (req, res) => {
 exports.getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id)
-      .select('-password')
+      .select('+phone')
       .populate('staffProfile')
       .populate('driverProfile')
       .populate('managerProfile')

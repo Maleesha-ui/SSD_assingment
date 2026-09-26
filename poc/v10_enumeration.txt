@@ -1,0 +1,123 @@
+Probe 1: ID Walking by Customer across 4 targets:
+Target ID: 6ab6b1257d5969e6fb3bfb31 -> Status: 200 Body length: 346 bytes
+Target ID: 6ab694c69260aa809be76296 -> Status: 200 Body length: 371 bytes
+Target ID: 68246b5359cae8f0a85eb7e6 -> Status: 200 Body length: 363 bytes
+Target ID: 6ab6ab3c1b313e5eb70d535c -> Status: 200 Body length: 366 bytes
+
+======================================================================
+Probe 2: Malformed ObjectId (CastError check)
+======================================================================
+GET /api/users/not-an-objectid HTTP/1.1
+Host: localhost:5000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhYjZiMTI1N2Q1OTY5ZTZmYjNiZmIzMSIsInJvbGUiOiJjdXN0b21lciIsImlhdCI6MTc5MDM5NDg5NywiZXhwIjoxNzkwMzk4NDk3fQ.EnzS7FUWNpXeTZ38eFW1mxuQwXxDCsS-8fqs7p4XjKw
+
+HTTP/1.1 500
+x-powered-by: Express
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-frame-options: DENY
+vary: Origin
+access-control-allow-credentials: true
+content-type: application/json; charset=utf-8
+content-length: 116
+etag: W/"74-hvPMKHa05SeQ9p0w1Q8agzfMbfY"
+date: Sat, 26 Sep 2026 03:54:59 GMT
+connection: keep-alive
+keep-alive: timeout=5
+
+{
+  "message": "Cast to ObjectId failed for value \"not-an-objectid\" (type string) at path \"_id\" for model \"User\""
+}
+
+======================================================================
+Probe 3: Nonexistent ObjectId (Existence Oracle check)
+======================================================================
+GET /api/users/60c72b2f9b1d8b2bad888888 HTTP/1.1
+Host: localhost:5000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhYjZiMTI1N2Q1OTY5ZTZmYjNiZmIzMSIsInJvbGUiOiJjdXN0b21lciIsImlhdCI6MTc5MDM5NDg5NywiZXhwIjoxNzkwMzk4NDk3fQ.EnzS7FUWNpXeTZ38eFW1mxuQwXxDCsS-8fqs7p4XjKw
+
+HTTP/1.1 404
+x-powered-by: Express
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-frame-options: DENY
+vary: Origin
+access-control-allow-credentials: true
+content-type: application/json; charset=utf-8
+content-length: 28
+etag: W/"1c-ZEVVcvtFhxKX/QUvVKqKxwGbbNA"
+date: Sat, 26 Sep 2026 03:54:59 GMT
+connection: keep-alive
+keep-alive: timeout=5
+
+{
+  "message": "User not found"
+}
+
+======================================================================
+Probe 4: Customer PUT /api/users/:victimId
+======================================================================
+PUT /api/users/6ab694c69260aa809be76296 HTTP/1.1
+Host: localhost:5000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhYjZiMTI1N2Q1OTY5ZTZmYjNiZmIzMSIsInJvbGUiOiJjdXN0b21lciIsImlhdCI6MTc5MDM5NDg5NywiZXhwIjoxNzkwMzk4NDk3fQ.EnzS7FUWNpXeTZ38eFW1mxuQwXxDCsS-8fqs7p4XjKw
+Content-Type: application/json
+
+HTTP/1.1 404
+x-powered-by: Express
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-frame-options: DENY
+vary: Origin
+access-control-allow-credentials: true
+content-security-policy: default-src 'none'
+content-type: text/html; charset=utf-8
+content-length: 173
+date: Sat, 26 Sep 2026 03:54:59 GMT
+connection: keep-alive
+keep-alive: timeout=5
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot PUT /api/users/6ab694c69260aa809be76296</pre>
+</body>
+</html>
+
+
+======================================================================
+Probe 5: Customer DELETE /api/users/:victimId
+======================================================================
+DELETE /api/users/6ab694c69260aa809be76296 HTTP/1.1
+Host: localhost:5000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhYjZiMTI1N2Q1OTY5ZTZmYjNiZmIzMSIsInJvbGUiOiJjdXN0b21lciIsImlhdCI6MTc5MDM5NDg5NywiZXhwIjoxNzkwMzk4NDk3fQ.EnzS7FUWNpXeTZ38eFW1mxuQwXxDCsS-8fqs7p4XjKw
+
+HTTP/1.1 404
+x-powered-by: Express
+referrer-policy: strict-origin-when-cross-origin
+x-content-type-options: nosniff
+x-frame-options: DENY
+vary: Origin
+access-control-allow-credentials: true
+content-security-policy: default-src 'none'
+content-type: text/html; charset=utf-8
+content-length: 176
+date: Sat, 26 Sep 2026 03:54:59 GMT
+connection: keep-alive
+keep-alive: timeout=5
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot DELETE /api/users/6ab694c69260aa809be76296</pre>
+</body>
+</html>
+
+
