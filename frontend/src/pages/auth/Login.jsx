@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -16,6 +16,7 @@ import {
   CircularProgress,
   Fade,
   Slide,
+  Divider,
 } from '@mui/material';
 import {
   Email as EmailIcon,
@@ -27,15 +28,43 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
+import GoogleAuthButton from '../../components/auth/GoogleAuthButton';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const [infoMessage, setInfoMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const theme = useTheme();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const expired = params.get('expired') || params.get('timeout');
+    const restricted = params.get('restricted');
+    const err = params.get('error');
+
+    if (expired) {
+      setError('Your login session has timed out (1 hour limit). Please sign in again.');
+      return;
+    }
+
+    if (restricted) {
+      setInfoMessage('Please sign in or create an account to view funeral packages and access services.');
+      return;
+    }
+
+    if (err) {
+      if (err === 'google_auth_failed') {
+        setError('Google authentication was cancelled or failed. Please try again.');
+      } else {
+        setError('Authentication error occurred. Please try again.');
+      }
+    }
+  }, [location.search]);
 
   const validateForm = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -53,6 +82,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setInfoMessage('');
 
     if (!validateForm()) return;
 
@@ -268,6 +298,27 @@ const Login = () => {
                   Sign in to your account
                 </Typography>
 
+                {infoMessage && (
+                  <Fade in={!!infoMessage}>
+                    <Alert
+                      severity="info"
+                      sx={{
+                        mb: 3,
+                        backgroundColor: 'rgba(201, 169, 97, 0.12)',
+                        color: '#1B2A3D',
+                        borderRadius: 2,
+                        border: '1px solid rgba(201, 169, 97, 0.4)',
+                        fontWeight: 500,
+                        '& .MuiAlert-icon': {
+                          color: '#C9A961'
+                        }
+                      }}
+                    >
+                      {infoMessage}
+                    </Alert>
+                  </Fade>
+                )}
+
                 {error && (
                   <Fade in={!!error}>
                     <Alert
@@ -394,6 +445,24 @@ const Login = () => {
                   >
                     {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Sign In'}
                   </Button>
+
+                  <Box sx={{ display: 'flex', alignItems: 'center', my: 1.5 }}>
+                    <Divider sx={{ flexGrow: 1, borderColor: '#E8E4DF' }} />
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        px: 2,
+                        color: '#8C9BA5',
+                        fontWeight: 600,
+                        letterSpacing: 0.5,
+                      }}
+                    >
+                      OR CONTINUE WITH
+                    </Typography>
+                    <Divider sx={{ flexGrow: 1, borderColor: '#E8E4DF' }} />
+                  </Box>
+
+                  <GoogleAuthButton text="Sign in with Google" />
 
                   <Typography
                     align="center"

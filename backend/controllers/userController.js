@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const Staff = require('../models/Staff');
 
-exports.getAllUsers = async (req, res) => {
+const getAllUsers = async (req, res) => {
   try {
     const users = await User.find()
       .select('-password')
@@ -22,9 +22,12 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-exports.getUserProfile = async (req, res) => {
+const getUserProfile = async (req, res) => {
   try {
     const userId = req.params.userId;
+    
+    // Admin can view any user's profile (enforced at route level)
+    // This controller is now protected by authorize('admin') middleware
     const user = await User.findById(userId)
       .select('-password')
       .populate({
@@ -43,7 +46,29 @@ exports.getUserProfile = async (req, res) => {
   }
 };
 
-exports.updateUserProfile = async (req, res) => {
+// Get own profile - for authenticated users to view their own profile
+const getOwnProfile = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId)
+      .select('-password')
+      .populate({
+        path: 'orders',
+        select: 'orderNumber totalAmount status createdAt',
+        options: { sort: { createdAt: -1 } }
+      })
+      .lean();
+
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const staffData = user.role === 'staff' ? await Staff.findOne({ userId }).select('tasks leaveRequests attendance leaveBalance') : null;
+    res.json({ ...user, staffData });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const updateUserProfile = async (req, res) => {
   const { name, email, phone, address, staffDetails } = req.body;
   try {
     const user = await User.findById(req.user._id);
@@ -57,7 +82,7 @@ exports.updateUserProfile = async (req, res) => {
 };
 
 
-exports.deleteUserAccount = async (req, res) => {
+const deleteUserAccount = async (req, res) => {
   try {
     const userId = req.user._id;
     
@@ -76,4 +101,12 @@ exports.deleteUserAccount = async (req, res) => {
     console.error('Error deleting account:', error);
     res.status(500).json({ message: error.message });
   }
+};
+
+module.exports = {
+  getAllUsers,
+  getUserProfile,
+  getOwnProfile,
+  updateUserProfile,
+  deleteUserAccount
 };

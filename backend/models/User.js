@@ -1,16 +1,70 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  name: { type: String, required: true, trim: true },
+  email: { type: String, required: true, unique: true, lowercase: true, trim: true, index: true },
+  password: { 
+    type: String, 
+    required: function() { 
+      // Password is required for traditional local registration, but optional for OAuth accounts
+      return !this.googleId; 
+    } 
+  },
+  googleId: { 
+    type: String, 
+    unique: true, 
+    sparse: true 
+  },
+  avatar: { type: String },
+  authProvider: {
+    type: String,
+    enum: ['local', 'google'],
+    default: 'local'
+  },
+  isProfileComplete: {
+    type: Boolean,
+    default: false
+  },
+  // Security Invariant: Role defaults to customer. Public registration can never elevate role.
   role: { 
     type: String, 
-    enum: ['admin', 'manager', 'staff', 'driver', 'customer'], 
-    required: true 
+    enum: [
+      'customer',
+      'funeral_staff',
+      'hearse_driver',
+      'funeral_manager',
+      'admin',
+      'staff',
+      'driver',
+      'manager'
+    ], 
+    default: 'customer',
+    required: true,
+    index: true
   },
-  phone: { type: String },
-  address: { type: String },
+  status: {
+    type: String,
+    enum: ['active', 'pending_invite', 'suspended'],
+    default: 'active',
+    index: true
+  },
+  mfaEnabled: {
+    type: Boolean,
+    default: false
+  },
+  phone: { type: String, trim: true },
+  address: { type: String, trim: true },
+  
+  // Normalized Role Profile References (Section 6)
+  staffProfile: { type: mongoose.Schema.Types.ObjectId, ref: 'FuneralStaffProfile' },
+  driverProfile: { type: mongoose.Schema.Types.ObjectId, ref: 'HearseDriverProfile' },
+  managerProfile: { type: mongoose.Schema.Types.ObjectId, ref: 'FuneralManagerProfile' },
+  adminProfile: { type: mongoose.Schema.Types.ObjectId, ref: 'AdminProfile' },
+  
+  // Auditing: who created/provisioned this user
+  provisionedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+
+  // Backward compatibility embedded details (preserved for existing dashboard modules)
   staffDetails: {
     type: {
       staffId: { 
@@ -30,19 +84,19 @@ const userSchema = new mongoose.Schema({
       salary: { type: Number },
       joinedDate: { type: Date, default: Date.now },
     },
-    required: function() { return this.role === 'staff' || this.role === 'manager'; }
+    required: false
   },
   driverDetails: {
     type: {
       licenseNumber: { type: String },
       vehicleAssigned: { type: String },
     },
-    required: function() { return this.role === 'driver'; }
+    required: false
   },
   adminDetails: {
     type: {
       adminId: { 
-        type: String,
+        type: String, 
         sparse: true,
         index: { 
           unique: true,
@@ -52,12 +106,12 @@ const userSchema = new mongoose.Schema({
       accessLevel: { type: String, enum: ['full', 'limited'], default: 'full' },
       lastLogin: { type: Date },
     },
-    required: function() { return this.role === 'admin'; }
+    required: false
   },
   managerDetails: {
     type: {
       managerId: { 
-        type: String,
+        type: String, 
         sparse: true,
         index: { 
           unique: true,
@@ -67,7 +121,7 @@ const userSchema = new mongoose.Schema({
       department: { type: String },
       reportingTo: { type: String },
     },
-    required: function() { return this.role === 'manager'; }
+    required: false
   },
   orders: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
 }, { timestamps: true });

@@ -11,6 +11,9 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import DashboardLayout from "./components/Layout/DashboardLayout";
 import Register from "./pages/auth/Register";
 import Login from "./pages/auth/Login";
+import CompleteProfile from "./pages/auth/CompleteProfile";
+import AuthCallback from "./pages/auth/AuthCallback";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import Dashboard from "./pages/Dashboard";
 import OrderForm from "./pages/orders/OrderForm";
 import OrderTracking from "./pages/orders/OrderTracking";
@@ -68,13 +71,22 @@ import MaintenanceReport from "./pages/Report/MaintenanceReport";
 import DriverLayout from "./components/Layout/DriverLayout";
 
 const ProtectedRoute = () => {
-  const { token } = useAuth();
+  const { token, loading } = useAuth();
+  if (loading) return null;
   if (!token) return <Navigate to="/login" />;
   return (
     <DashboardLayout>
       <Outlet />
     </DashboardLayout>
   );
+};
+
+// Route guard requiring authentication for packages and service actions
+const RequireLoginRoute = () => {
+  const { token, loading } = useAuth();
+  if (loading) return null;
+  if (!token) return <Navigate to="/login?restricted=true" replace />;
+  return <Outlet />;
 };
 
 const AdminRoute = () => {
@@ -118,20 +130,25 @@ const PublicLayout = () => (
   </>
 );
 
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '452663214771-g886a0fghi69aqfbhfrs5oh0u0pqevo2.apps.googleusercontent.com';
+
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <AuthProvider>
-          <BrowserRouter>
-            <CssBaseline />
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <ThemeProvider theme={theme}>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <AuthProvider>
+            <BrowserRouter>
+              <CssBaseline />
 
-            <ErrorBoundary>
-              <Routes>
-                <Route path="/" element={<Navigate to="/home" replace />} />
-                {/* Auth Routes */}
-                <Route path="/register" element={<Register />} />
-                <Route path="/login" element={<Login />} />
+              <ErrorBoundary>
+                <Routes>
+                  <Route path="/" element={<Navigate to="/home" replace />} />
+                  {/* Auth Routes */}
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/complete-profile" element={<CompleteProfile />} />
+                  <Route path="/auth/callback" element={<AuthCallback />} />
 
                 {/* Protected Routes */}
                 <Route element={<ProtectedRoute />}>
@@ -144,6 +161,7 @@ function App() {
                     <Route path="/admin" element={<AdminDashboard />} />
                     <Route path="/admin/feedback" element={<FeedbackAdmin />} />
                     <Route path="/admin/package" element={<PackageAdmin />} />
+                    <Route path="/admin/booking" element={<BookingAdmin />} />
                     <Route
                       path="/admin/staff-management/add-staff"
                       element={<AddStaff />}
@@ -185,30 +203,30 @@ function App() {
 </Route>
       
 
-                <Route path="/order/new" element={<OrderForm />} />
-
-                <Route path="/payments" element={<Payments />} />
-
-                <Route path="/admin/booking" element={<BookingAdmin />} />
-
-                <Route path="/create-order" element={<CreateOrder />} />
-                <Route
-                  path="/order-confirmation/:orderId"
-                  element={<OrderConfirmation />}
-                />
-                <Route path="/payment/:orderId" element={<PaymentPage />} />
-
-                {/* Public Routes */}
+                {/* Public / Customer Routes with Header and Footer */}
                 <Route element={<PublicLayout />}>
+                  {/* Home is accessible to all visitors */}
                   <Route path="/home" element={<Home />} />
-                  <Route path="/packages" element={<Packages />} />
-                  <Route path="/package/:name" element={<PackageDetails />} />
-                  <Route path="/about-us" element={<AboutUs />} />
-                  <Route path="/contact-us" element={<ContactUs />} />
-                  <Route
-                    path="/funeral-procedures"
-                    element={<FuneralProcedures />}
-                  />
+
+                  {/* Restricted to authenticated users - redirects to /login?restricted=true if not logged in */}
+                  <Route element={<RequireLoginRoute />}>
+                    <Route path="/packages" element={<Packages />} />
+                    <Route path="/package/:name" element={<PackageDetails />} />
+                    <Route path="/about-us" element={<AboutUs />} />
+                    <Route path="/contact-us" element={<ContactUs />} />
+                    <Route
+                      path="/funeral-procedures"
+                      element={<FuneralProcedures />}
+                    />
+                    <Route path="/order/new" element={<OrderForm />} />
+                    <Route path="/payments" element={<Payments />} />
+                    <Route path="/create-order" element={<CreateOrder />} />
+                    <Route
+                      path="/order-confirmation/:orderId"
+                      element={<OrderConfirmation />}
+                    />
+                    <Route path="/payment/:orderId" element={<PaymentPage />} />
+                  </Route>
                 </Route>
               </Routes>
             </ErrorBoundary>
@@ -216,6 +234,7 @@ function App() {
         </AuthProvider>
       </LocalizationProvider>
     </ThemeProvider>
+  </GoogleOAuthProvider>
   );
 }
 

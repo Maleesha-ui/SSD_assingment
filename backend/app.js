@@ -23,6 +23,12 @@ const maintenanceRoutes = require("./routes/MaintenanceRoutes");
 
 // Load env vars
 dotenv.config();
+require('./config/jwtSecrets').validateJwtSecrets();
+
+// Passport & Session
+const session = require('express-session');
+const passport = require('passport');
+require('./config/passport')(passport);
 
 // Connect to database
 connectDB();
@@ -30,9 +36,28 @@ connectDB();
 const app = express();
 
 // Middleware
-app.use(cors());
+const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+app.use(cors({
+  origin: [clientUrl, 'http://localhost:3000', 'http://127.0.0.1:3000'],
+  credentials: true
+}));
 app.use(express.json());
 app.use(morgan('dev'));
+
+// Session middleware for OAuth state verification
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'funeral_mgmt_session_secret_key_2024',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 60 * 60 * 1000 // 1 hour login session timeout
+  }
+}));
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Routes
 try {
@@ -43,6 +68,8 @@ try {
   app.use('/api/sales', require('./routes/salesRoutes'));
   app.use('/api/orders', require('./routes/orderRoutes'));
   app.use('/api/reports', require('./routes/reportRoutes'));
+  app.use('/api/admin/users', require('./routes/adminUserRoutes'));
+  app.use('/admin/users', require('./routes/adminUserRoutes'));
   app.use('/api/admin', require('./routes/adminRoutes'));
   app.use('/api/users', require('./routes/userRoutes'));
   app.use('/api/feedback', require('./routes/feedbackRoutes'));
@@ -69,6 +96,10 @@ app.use(require('./middleware/errorHandler'));
 // Start the server
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app;

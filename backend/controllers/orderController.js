@@ -1,7 +1,11 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const mongoose = require('mongoose');
 const { sendOrderReceipt } = require('../utils/emailUtils');
 const { sendPaymentReceipt } = require('../utils/emailService');
+
+const MAX_ORDER_QUANTITY = 100;
+const MAX_ORDER_ITEMS = 50;
 
 const orderController = {
   getAllOrders: async (req, res) => {
@@ -23,6 +27,12 @@ const orderController = {
       if (!order) {
         return res.status(404).json({ message: 'Order not found' });
       }
+
+      // Check if user is admin/manager or order owner
+      if (req.user.role !== 'admin' && req.user.role !== 'manager' && order.user.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: 'Not authorized to view this order' });
+      }
+
       res.json(order);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -32,35 +42,58 @@ const orderController = {
   createOrder: async (req, res) => {
     try {
       const { items, paymentMethod, shippingAddress } = req.body;
+      if (!Array.isArray(items) || items.length === 0 || items.length > MAX_ORDER_ITEMS) {
+        return res.status(400).json({ message: `Order must contain between 1 and ${MAX_ORDER_ITEMS} items` });
+      }
+
       const orderNumber = `ORD${Date.now()}`;
       let totalAmount = 0;
       const orderItems = [];
+      const quantitiesByProduct = new Map();
 
       for (const item of items) {
-        if (item.product) {
-          const product = await Product.findById(item.product);
-          if (!product) {
-            return res.status(404).json({ message: `Product not found: ${item.product}` });
-          }
-          orderItems.push({
-            product: product._id,
-            productName: product.name,
-            quantity: item.quantity,
-            price: product.price
-          });
-          totalAmount += product.price * item.quantity;
-        } else if (item.productName && item.price) {
-          orderItems.push({
-            productName: item.productName,
-            quantity: item.quantity,
-            price: item.price
-          });
-          totalAmount += item.price * item.quantity;
-        } else {
+        if (!item || !mongoose.isValidObjectId(item.product)) {
+          return res.status(400).json({ message: 'Each item must include a valid product ID' });
+        }
+
+        if (!Number.isSafeInteger(item.quantity) || item.quantity < 1 || item.quantity > MAX_ORDER_QUANTITY) {
           return res.status(400).json({
-            message: 'Invalid item format'
+            message: `Quantity must be an integer between 1 and ${MAX_ORDER_QUANTITY}`
           });
         }
+
+        const product = await Product.findById(item.product);
+        if (!product || !product.isActive) {
+          return res.status(404).json({ message: 'Product not found or unavailable' });
+        }
+
+        if (!Number.isSafeInteger(product.stock) || product.stock < 0 || item.quantity > product.stock) {
+          return res.status(400).json({ message: `Only ${product.stock} units are available` });
+        }
+
+        const productId = product._id.toString();
+        const combinedQuantity = (quantitiesByProduct.get(productId) || 0) + item.quantity;
+        if (combinedQuantity > product.stock) {
+          return res.status(400).json({ message: `Only ${product.stock} units are available` });
+        }
+        quantitiesByProduct.set(productId, combinedQuantity);
+
+        const lineTotal = product.price * item.quantity;
+        if (!Number.isFinite(product.price) || product.price < 0 || !Number.isFinite(lineTotal)) {
+          return res.status(400).json({ message: 'Invalid product price' });
+        }
+
+        orderItems.push({
+          product: product._id,
+          productName: product.name,
+          quantity: item.quantity,
+          price: product.price,
+        });
+        totalAmount += lineTotal;
+      }
+
+      if (!Number.isFinite(totalAmount)) {
+        return res.status(400).json({ message: 'Invalid order total' });
       }
 
       const order = await Order.create({
@@ -85,11 +118,28 @@ const orderController = {
 
   updateOrder: async (req, res) => {
     try {
-      const order = await Order.findByIdAndUpdate(
-        req.params.id, 
-        req.body, 
-        { new: true }
-      );
+      const order = await Order.findById(req.params.id);
+      
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+
+      // Check if user is admin/manager or order owner
+      if (req.user.role !== 'admin' && req.user.role !== 'manager' && order.user.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: 'Not authorized to update this order' });
+      }
+
+      if (order.paymentStatus !== 'pending' || order.orderStatus !== 'pending') {
+        return res.status(409).json({ message: 'Only pending orders can be updated' });
+      }
+
+      const { shippingAddress } = req.body || {};
+      if (!shippingAddress || typeof shippingAddress !== 'object' || Array.isArray(shippingAddress)) {
+        return res.status(400).json({ message: 'A valid shipping address is required' });
+      }
+
+      order.shippingAddress = shippingAddress;
+      await order.save();
       res.json(order);
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -98,6 +148,17 @@ const orderController = {
 
   deleteOrder: async (req, res) => {
     try {
+      const order = await Order.findById(req.params.id);
+      
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+
+      // Check if user is admin/manager or order owner
+      if (req.user.role !== 'admin' && req.user.role !== 'manager' && order.user.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: 'Not authorized to delete this order' });
+      }
+
       await Order.findByIdAndDelete(req.params.id);
       res.json({ message: 'Order deleted' });
     } catch (error) {
@@ -107,8 +168,7 @@ const orderController = {
 
   sendEmailReceipt: async (req, res) => {
     try {
-      const { orderId, email, orderDetails } = req.body;
-      console.log('Attempting to send email receipt:', { orderId, email });
+      const { orderId } = req.body;
 
       const order = await Order.findById(orderId)
         .populate('user', 'email')
@@ -119,21 +179,19 @@ const orderController = {
         return res.status(404).json({ message: 'Order not found' });
       }
 
-      console.log('Found order:', {
-        orderNumber: order.orderNumber,
-        email: email || order.user.email
-      });
+      const isPrivileged = ['admin', 'manager'].includes(req.user.role);
+      if (!isPrivileged && order.user._id.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: 'Not authorized to access this order receipt' });
+      }
 
-      const emailResult = await sendOrderReceipt({
-        email: email || order.user.email,
+      await sendOrderReceipt({
+        email: order.user.email,
         orderNumber: order.orderNumber,
         items: order.items,
         totalAmount: order.totalAmount,
         shippingAddress: order.shippingAddress,
         orderDate: order.createdAt
       });
-
-      console.log('Email sent successfully:', emailResult);
 
       res.status(200).json({
         success: true,
